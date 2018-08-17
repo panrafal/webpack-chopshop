@@ -2,11 +2,13 @@
   "name": "webpack-chopshop",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://panrafal.github.io/webpack-chopshop",
   "dependencies": {
     "@material-ui/core": "^1.4.3",
     "classnames": "^2.2.6",
     "flow-bin": "^0.78.0",
     "fuse.js": "^3.2.1",
+    "gh-pages": "^1.2.0",
     "lodash": "^4.17.10",
     "numeral": "^2.0.6",
     "react": "^16.4.2",
@@ -32,7 +34,9 @@
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-app-rewired eject",
-    "flow": "flow"
+    "flow": "flow",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
