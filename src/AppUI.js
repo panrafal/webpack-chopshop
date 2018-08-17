@@ -45,6 +45,7 @@ type Props = {|
   onChangesUpdate: ($ReadOnlyArray<Change>) => any,
   onFileDrop: (files: File[], rejectedFiles: File[]) => any,
   onShowChangesToggle: () => any,
+  onPinnedToggle: NodeID => any,
   classes: Object,
 |}
 
@@ -116,10 +117,12 @@ class AppUI extends React.Component<Props> {
       graph,
       fromNode,
       toNode,
+      pinned,
       classes,
       onFromNodeSelect,
       onToNodeSelect,
       onAddChange,
+      onPinnedToggle,
     } = this.props
     if (!graph || !baseGraph) return null
     return (
@@ -128,6 +131,7 @@ class AppUI extends React.Component<Props> {
           className={classes.parentsExplorer}
           baseGraph={baseGraph}
           graph={graph}
+          pinned={pinned}
           toNode={toNode}
           fromNode={fromNode}
           onNodeSelect={onFromNodeSelect}
@@ -137,11 +141,13 @@ class AppUI extends React.Component<Props> {
             className={classes.pathsExplorer}
             baseGraph={baseGraph}
             graph={graph}
+            pinned={pinned}
             fromNode={fromNode}
             toNode={toNode}
             onFromNodeSelect={onFromNodeSelect}
             onToNodeSelect={onToNodeSelect}
             onAddChange={onAddChange}
+            onPinnedToggle={onPinnedToggle}
           />
         ) : null}
         {fromNode ? (
@@ -149,6 +155,7 @@ class AppUI extends React.Component<Props> {
             className={classes.childrenExplorer}
             baseGraph={baseGraph}
             graph={graph}
+            pinned={pinned}
             toNode={toNode}
             fromNode={fromNode}
             onNodeSelect={onToNodeSelect}

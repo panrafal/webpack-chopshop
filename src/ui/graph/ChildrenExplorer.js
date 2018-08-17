@@ -15,6 +15,7 @@ import {keepOnlyLeafModules, getDeepNodeChildren} from '../../analysis/dependenc
 type Props = {|
   baseGraph: Graph,
   graph: Graph,
+  pinned: $ReadOnlyArray<NodeID>,
   fromNode: ?Node,
   toNode: ?Node,
   onNodeSelect: NodeID => void,
@@ -124,7 +125,7 @@ class ChildrenExplorer extends React.PureComponent<Props> {
   }
 
   render() {
-    const {classes, className, toNode, baseGraph, graph, onNodeSelect} = this.props
+    const {classes, className, toNode, baseGraph, graph, pinned, onNodeSelect} = this.props
 
     return (
       <GraphExplorer
@@ -133,6 +134,7 @@ class ChildrenExplorer extends React.PureComponent<Props> {
         defaultMode={'children'}
         baseGraph={baseGraph}
         graph={graph}
+        pinned={pinned}
         onNodeSelect={onNodeSelect}
         selected={toNode}
       />

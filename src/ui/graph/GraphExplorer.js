@@ -31,7 +31,7 @@ type Mode = {
 export type Props = {|
   baseGraph: Graph,
   graph: Graph,
-
+  pinned: $ReadOnlyArray<NodeID>,
   selected: ?Node,
   modes: {
     [string]: Mode,
@@ -93,7 +93,7 @@ class GraphExplorer extends React.Component<Props, State> {
   }
 
   renderList(nodes) {
-    const {classes, baseGraph, graph, selected, onNodeSelect} = this.props
+    const {classes, baseGraph, graph, selected, pinned, onNodeSelect} = this.props
     const mode = this.modeSelector(this.state, this.props)
 
     return (
@@ -103,6 +103,7 @@ class GraphExplorer extends React.Component<Props, State> {
         loading={nodes == null}
         baseGraph={baseGraph}
         graph={graph}
+        pinned={pinned}
         selected={selected}
         sortGroupsBySize
         renderItem={itemProps => (

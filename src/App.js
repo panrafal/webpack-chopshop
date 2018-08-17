@@ -192,6 +192,17 @@ class App extends React.Component<{}, AppState> {
     this.setNodesSelection(fromNodeId || toNodeId, toNodeId)
   }
 
+  togglePinned = (id: NodeID) => {
+    let {pinned} = this.state
+    const wasPinned = pinned.indexOf(id) >= 0
+    pinned = pinned.filter(pin => pin !== id)
+    if (!wasPinned) {
+      pinned = [id, ...pinned]
+    }
+    this.setState({pinned})
+    window.localStorage.setItem('pinned', JSON.stringify(pinned))
+  }
+
   render() {
     const {
       graph,
@@ -222,6 +233,7 @@ class App extends React.Component<{}, AppState> {
         onChangesUpdate={this.updateChanges}
         onFileDrop={this.handleDrop}
         onShowChangesToggle={this.toggleShowChanges}
+        onPinnedToggle={this.togglePinned}
       />
     )
   }

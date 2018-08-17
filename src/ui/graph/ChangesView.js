@@ -50,7 +50,7 @@ class ChangesView extends React.PureComponent<Props> {
             const toNode = getNode(graph, edge.to)
             const fromName = fromNode.file || fromNode.name || fromNode.id
             const toName = edge.name || toNode.name || toNode.id
-            textsToCopy.push(`Remove "${toName}" from "${fromName}"`)
+            textsToCopy.push(`${edge.enabled ? 'Add' : 'Remove'} "${toName}" from "${fromName}"`)
             return (
               <ListItem key={index} graph={graph} change={change}>
                 <IconButton
@@ -63,7 +63,7 @@ class ChangesView extends React.PureComponent<Props> {
                 <ListItemText
                   primary={
                     <>
-                      Remove "<b>{toName}</b>" from "<b>{fromName}</b>"
+                      {edge.enabled ? 'Add' : 'Remove'} "<b>{toName}</b>" from "<b>{fromName}</b>"
                     </>
                   }
                 />

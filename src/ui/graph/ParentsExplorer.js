@@ -20,6 +20,7 @@ type Props = {|
   baseGraph: Graph,
   graph: Graph,
   fromNode: ?Node,
+  pinned: $ReadOnlyArray<NodeID>,
   toNode: ?Node,
   onNodeSelect: NodeID => void,
 
@@ -146,7 +147,16 @@ class ParentsExplorer extends React.PureComponent<Props> {
 
   render() {
     // const {} = this.state
-    const {classes, className, fromNode, toNode, baseGraph, graph, onNodeSelect} = this.props
+    const {
+      classes,
+      className,
+      fromNode,
+      toNode,
+      baseGraph,
+      graph,
+      pinned,
+      onNodeSelect,
+    } = this.props
 
     return (
       <GraphExplorer
@@ -155,6 +165,7 @@ class ParentsExplorer extends React.PureComponent<Props> {
         defaultMode={fromNode && toNode ? 'parents' : 'initialAll'}
         baseGraph={baseGraph}
         graph={graph}
+        pinned={pinned}
         onNodeSelect={onNodeSelect}
         selected={fromNode}
       />

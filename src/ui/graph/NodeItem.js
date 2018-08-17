@@ -23,7 +23,7 @@ type Props = {|
 
 const styles = theme => ({
   root: {
-    paddingLeft: 16,
+    // paddingLeft: 16,
   },
 })
 

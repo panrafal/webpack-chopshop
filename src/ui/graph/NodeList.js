@@ -20,7 +20,7 @@ import {
 import classNames from 'classnames'
 import {createSelector} from 'reselect'
 
-import type {Node, Graph} from '../../analysis/graph'
+import type {Node, Graph, NodeID} from '../../analysis/graph'
 import {flattenTreeToRows, toggleTreeRowState, isTreeExpanded} from '../tree'
 import {getPackageName} from '../../analysis/info'
 
@@ -32,6 +32,7 @@ type Props = {|
   renderEmpty: any => React.Node,
   search?: string,
   selected?: ?Node,
+  pinned: $ReadOnlyArray<NodeID>,
   sortGroupsBySize?: boolean,
   loading?: boolean,
   classes: Object,
@@ -81,17 +82,25 @@ class NodeList extends React.PureComponent<Props, State> {
       return search ? fuse.search(search) : fuse.list
     },
   )
+  pinnedSelector = createSelector(
+    this.searchSelector,
+    (_, p) => p.pinned,
+    (nodes, pinned) => {
+      return nodes.filter(node => pinned.indexOf(node.id) >= 0)
+    },
+  )
   groupSelector = createSelector(
     this.searchSelector,
+    this.pinnedSelector,
     (_, p) => p.sortGroupsBySize,
-    (nodes, sortGroupsBySize) => {
+    (nodes, pinned, sortGroupsBySize) => {
       const groups = groupBy(nodes, node => {
         if (node.kind === 'module') {
           return getPackageName(node) || '(root modules)'
         }
         return `(${node.kind}s)`
       })
-      return sortBy(
+      const rows = sortBy(
         map(groups, (children, name) => ({
           name,
           children: sortBy(children, 'file'),
@@ -100,6 +109,8 @@ class NodeList extends React.PureComponent<Props, State> {
         })),
         sortGroupsBySize ? group => -group.size : 'name',
       )
+      rows.unshift(...pinned)
+      return rows
     },
   )
   nodesSelector = createSelector(

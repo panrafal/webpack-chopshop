@@ -21,6 +21,8 @@ type Props = {|
   graph: Graph,
   fromNode: ?Node,
   toNode: ?Node,
+  pinned: $ReadOnlyArray<NodeID>,
+  onPinnedToggle: NodeID => any,
   onAddChange: Change => any,
   onFromNodeSelect: NodeID => any,
   onToNodeSelect: NodeID => any,
@@ -111,7 +113,15 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
   }
 
   renderSelectedChain = () => {
-    const {baseGraph, graph, onAddChange, onFromNodeSelect, onToNodeSelect} = this.props
+    const {
+      baseGraph,
+      graph,
+      pinned,
+      onAddChange,
+      onFromNodeSelect,
+      onToNodeSelect,
+      onPinnedToggle,
+    } = this.props
     const {selectedChain} = this.state
     if (!selectedChain) return null
     const nodes = getNodes(graph, selectedChain)
@@ -170,6 +180,9 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
                     </IconButton>
                   </Tooltip>
                 )}
+                <IconButton onClick={() => onPinnedToggle(node.id)}>
+                  <Icon>{pinned.indexOf(node.id) >= 0 ? 'star' : 'star_border'}</Icon>
+                </IconButton>
               </>
             }
           />
@@ -196,7 +209,17 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {className, classes, baseGraph, graph, fromNode, toNode, onToNodeSelect} = this.props
+    const {
+      className,
+      classes,
+      baseGraph,
+      graph,
+      fromNode,
+      toNode,
+      pinned,
+      onPinnedToggle,
+      onToNodeSelect,
+    } = this.props
     const chainsPromise = this.chainsPromiseSelector(this.props)
 
     return (
@@ -221,18 +244,23 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
               graph={graph}
               node={fromNode}
               actions={
-                fromNode !== toNode && (
-                  <Tooltip
-                    title="Set as the last node"
-                    disableFocusListener
-                    enterDelay={500}
-                    placement="top"
-                  >
-                    <IconButton onClick={() => onToNodeSelect(fromNode.id)}>
-                      <Icon>vertical_align_bottom</Icon>
-                    </IconButton>
-                  </Tooltip>
-                )
+                <>
+                  {fromNode !== toNode && (
+                    <Tooltip
+                      title="Set as the last node"
+                      disableFocusListener
+                      enterDelay={500}
+                      placement="top"
+                    >
+                      <IconButton onClick={() => onToNodeSelect(fromNode.id)}>
+                        <Icon>vertical_align_bottom</Icon>
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  <IconButton onClick={() => onPinnedToggle(fromNode.id)}>
+                    <Icon>{pinned.indexOf(fromNode.id) >= 0 ? 'star' : 'star_border'}</Icon>
+                  </IconButton>
+                </>
               }
             />
           )}
