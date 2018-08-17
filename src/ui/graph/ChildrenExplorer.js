@@ -50,7 +50,7 @@ class ChildrenExplorer extends React.PureComponent<Props> {
 
   childrenNodesSelector = createSelector(
     (_, p) => p.graph,
-    (_, p) => p.toNode,
+    (_, p) => p.fromNode,
     (graph, fromNode) => {
       if (!fromNode) return []
       return getDeepNodeChildren(graph, fromNode).then(ids => getNodes(graph, ids))

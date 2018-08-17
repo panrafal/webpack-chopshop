@@ -146,7 +146,7 @@ class NodeList extends React.PureComponent<Props, State> {
                       onClick={() => this.setState(toggleTreeRowState(node, treeOptions))}
                       disableGutters
                       style={style}
-                      key={node.name}
+                      key={index}
                       divider
                     >
                       <ListItemText
