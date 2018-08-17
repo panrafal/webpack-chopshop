@@ -96,6 +96,10 @@ export function getNodes(graph: Graph, ids: $ReadOnlyArray<NodeID>): $ReadOnlyAr
   return ids.map(getNode.bind(null, graph))
 }
 
+export function getAllNodes(graph: Graph): $ReadOnlyArray<Node> {
+  return (Object.values(graph.nodes): any)
+}
+
 export function getEdges(graph: Graph, ids: $ReadOnlyArray<EdgeID>): $ReadOnlyArray<Edge> {
   return ids.map(getEdge.bind(null, graph))
 }

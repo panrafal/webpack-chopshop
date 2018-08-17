@@ -25,11 +25,10 @@ import ChainsExplorer from './ui/graph/ChainsExplorer'
 import {applyChanges, addChange} from './analysis/changes'
 import WarningBar from './ui/WarningBar'
 import ErrorBar from './ui/ErrorBar'
-import GraphExplorer from './ui/graph/GraphExplorer'
-import Dot from './ui/Dot'
-import NodeName from './ui/graph/NodeName'
 import ChangesView from './ui/graph/ChangesView'
 import EmptyBox from './ui/EmptyBox'
+import ParentsExplorer from './ui/graph/ParentsExplorer'
+import ChildrenExplorer from './ui/graph/ChildrenExplorer'
 
 type Props = {|
   classes: Object,
@@ -52,10 +51,10 @@ const styles = {
   root: {
     display: 'flex',
     height: '100vh',
-    width: '100vw',
-    'flex-direction': 'column',
-    'justify-content': 'stretch',
-    'font-family': ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+    minWidth: 1200,
+    flexDirection: 'column',
+    justifyContent: 'stretch',
+    fontFamily: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
   },
   container: {
     maxWidth: 2000,
@@ -217,9 +216,9 @@ class App extends React.Component<Props, State> {
   }
 
   selectFromNode = (fromNodeId: NodeID) => {
-    const {graph} = this.state
+    const {graph, toNodeId} = this.state
     if (graph) console.log('Selected FROM node', getNode(graph, fromNodeId))
-    this.setState({fromNodeId})
+    this.setState({fromNodeId, toNodeId: toNodeId || fromNodeId})
   }
 
   selectToNode = (toNodeId: NodeID) => {
@@ -236,37 +235,13 @@ class App extends React.Component<Props, State> {
     const toNode = resolveNode(graph, toNodeId)
     return (
       <div className={classNames(classes.container, classes.panes)}>
-        <GraphExplorer
+        <ParentsExplorer
           className={classes.parentsExplorer}
-          header={
-            <>
-              <Typography variant="headline">
-                {fromNode ? (
-                  <>Parents</>
-                ) : (
-                  <>
-                    First node <Dot>1</Dot>
-                  </>
-                )}
-              </Typography>
-              <Typography variant="subheading" gutterBottom>
-                {toNode ? (
-                  <>
-                    Move up to one of the parents of <NodeName node={toNode} />
-                  </>
-                ) : (
-                  'Select node to start analysis from'
-                )}
-              </Typography>
-            </>
-          }
           baseGraph={baseGraph}
           graph={graph}
-          walkParents
+          toNode={toNode}
+          fromNode={fromNode}
           onNodeSelect={this.selectFromNode}
-          node={toNode}
-          selected={fromNode}
-          emptyMessage="No parents found"
         />
         {fromNode && toNode ? (
           <ChainsExplorer
@@ -281,30 +256,13 @@ class App extends React.Component<Props, State> {
           />
         ) : null}
         {fromNode ? (
-          <GraphExplorer
+          <ChildrenExplorer
             className={classes.childrenExplorer}
-            header={
-              <>
-                <Typography variant="headline">
-                  {toNodeId ? (
-                    <>Children</>
-                  ) : (
-                    <>
-                      Children <Dot>2</Dot>
-                    </>
-                  )}
-                </Typography>
-                <Typography variant="subheading" gutterBottom>
-                  Move down to the children of <NodeName node={fromNode} />
-                </Typography>
-              </>
-            }
             baseGraph={baseGraph}
             graph={graph}
+            toNode={toNode}
+            fromNode={fromNode}
             onNodeSelect={this.selectToNode}
-            node={fromNode}
-            selected={toNode}
-            emptyMessage="No children found"
           />
         ) : null}
       </div>

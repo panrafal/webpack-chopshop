@@ -4,27 +4,47 @@ import type {Graph, Node, NodeID} from '../../analysis/graph'
 
 import * as React from 'react'
 import classNames from 'classnames'
+import {map} from 'lodash'
 import {createSelector} from 'reselect'
 import Async from 'react-promise'
-import {withStyles, Icon} from '@material-ui/core'
+import {
+  withStyles,
+  Icon,
+  Typography,
+  Menu,
+  MenuItem,
+  ListItem,
+  ListItemText,
+} from '@material-ui/core'
 
-import {getDeepNodeChildren, getDeepNodeParents} from '../../analysis/dependencies'
-import {getNodes} from '../../analysis/graph'
 import EmptyBox from '../EmptyBox'
 import NodeItem from './NodeItem'
 import NodeList from './NodeList'
 
+type Mode = {
+  getNodes: () => $ReadOnlyArray<Node> | Promise<$ReadOnlyArray<Node>>,
+  renderTitle: () => React.Node,
+  renderInfo: () => React.Node,
+  renderEmpty: () => string,
+}
+
 export type Props = {|
   baseGraph: Graph,
   graph: Graph,
-  header: React.Node,
-  node: ?Node,
+
   selected: ?Node,
-  walkParents?: boolean,
-  emptyMessage?: string,
+  modes: {
+    [string]: Mode,
+  },
+  defaultMode: string,
   onNodeSelect: NodeID => void,
   classes: Object,
   className?: string,
+|}
+
+type State = {|
+  modeId: ?string,
+  modeMenuAnchor: any,
 |}
 
 const styles = theme => ({
@@ -40,33 +60,42 @@ const styles = theme => ({
   listProgress: {
     marginTop: 16,
   },
+  modeMenuItem: {
+    width: 300,
+  },
 })
 
-class GraphExplorer extends React.PureComponent<Props> {
-  nodesSelector = createSelector(
-    (_, p) => p.graph,
-    (_, p) => p.node,
-    (_, p) => p.walkParents,
-    (graph, node, walkParents) => {
-      if (!node) {
-        return Promise.resolve(Object.values(graph.nodes))
-      }
-      const promise = walkParents
-        ? getDeepNodeParents(graph, node)
-        : getDeepNodeChildren(graph, node)
-      return promise.then(ids => getNodes(graph, ids))
-    },
+class GraphExplorer extends React.Component<Props, State> {
+  state = {modeId: null, modeMenuAnchor: null}
+
+  modeSelector = (s, p) => p.modes[s.modeId || ''] || p.modes[p.defaultMode]
+  nodesSelector = (s, p) => this.modeSelector(s, p).getNodes()
+
+  nodesPromiseSelector = createSelector(
+    this.nodesSelector,
+    // Needed so we don't recreate the promise on every render
+    nodes => Promise.resolve(nodes),
   )
 
+  static getDerivedStateFromProps({modes = {}}, state = {}) {
+    if (!modes[state.modeId]) {
+      // If selected mode is not available anymore, switch to default
+      return {modeId: null}
+    }
+    return null
+  }
+
+  handleModeMenuOpen = event => {
+    this.setState({modeMenuAnchor: event.currentTarget})
+  }
+  handleModeMenuClose = () => {
+    this.setState({modeMenuAnchor: null})
+  }
+
   renderList(nodes) {
-    const {
-      classes,
-      baseGraph,
-      graph,
-      selected,
-      emptyMessage = 'No nodes found',
-      onNodeSelect,
-    } = this.props
+    const {classes, baseGraph, graph, selected, onNodeSelect} = this.props
+    const mode = this.modeSelector(this.state, this.props)
+
     return (
       <NodeList
         className={classes.list}
@@ -83,21 +112,63 @@ class GraphExplorer extends React.PureComponent<Props> {
             checked={selected ? selected.id === itemProps.node.id : false}
           />
         )}
-        renderEmpty={() => <EmptyBox icon={<Icon>block</Icon>}>{emptyMessage}</EmptyBox>}
+        renderEmpty={() => <EmptyBox icon={<Icon>block</Icon>}>{mode.renderEmpty()}</EmptyBox>}
       />
     )
   }
 
-  render() {
-    const {header, className, classes} = this.props
+  renderModeMenu() {
+    const {classes, modes, defaultMode} = this.props
+    const {modeMenuAnchor, modeId} = this.state
+    const currentModeId = modeId || defaultMode
+    return (
+      <Menu
+        id="lock-menu"
+        anchorEl={modeMenuAnchor}
+        open={Boolean(modeMenuAnchor)}
+        onClose={this.handleModeMenuClose}
+      >
+        {map(modes, (mode: Mode, id) => (
+          <MenuItem
+            className={classes.modeMenuItem}
+            key={id}
+            selected={id === currentModeId}
+            onClick={() => this.setState({modeId: id, modeMenuAnchor: null})}
+          >
+            {mode.renderTitle()}
+          </MenuItem>
+        ))}
+      </Menu>
+    )
+  }
 
-    const dependenciesPromise = this.nodesSelector(null, this.props)
+  render() {
+    const {className, classes} = this.props
+
+    const mode = this.modeSelector(this.state, this.props)
+    const nodesPromise = this.nodesPromiseSelector(this.state, this.props)
 
     return (
       <div className={classNames(className, classes.root)}>
-        {header}
+        <ListItem
+          button
+          disableGutters
+          className={classes.header}
+          onClick={this.handleModeMenuOpen}
+        >
+          <ListItemText>
+            <Typography variant="headline">{mode.renderTitle()}</Typography>
+            <Typography variant="subheading" gutterBottom>
+              {mode.renderInfo()}
+            </Typography>
+          </ListItemText>
+          <Icon color="action" className={classes.headerMore}>
+            more_vert
+          </Icon>
+        </ListItem>
+        {this.renderModeMenu()}
         <Async
-          promise={dependenciesPromise}
+          promise={nodesPromise}
           then={nodes => this.renderList(nodes)}
           pending={() => this.renderList(null)}
         />

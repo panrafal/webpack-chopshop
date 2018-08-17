@@ -37,9 +37,11 @@ export async function readWebpackStats(
       continue
     }
     const isConcat = module.name.indexOf(' + ') > 0
+    const isNamespace = module.name.indexOf(' namespace object') > 0
+    const kind = isConcat ? 'concat' : isNamespace ? 'namespace' : 'module'
     addNode(graph, {
       id: getNodeId('module', module.id),
-      kind: isConcat ? 'concat' : 'module',
+      kind,
       name: module.name,
       file: isConcat ? undefined : (module.name || '').replace(/^.*!/),
       size: module.size,

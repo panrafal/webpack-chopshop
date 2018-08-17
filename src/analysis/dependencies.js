@@ -42,3 +42,17 @@ export function getDeepNodeParents(graph: Graph, node: Node): Promise<$ReadOnlyA
   }
   return graph.cache[key]
 }
+
+export function keepOnlyEntryModules(graph: Graph, nodes: $ReadOnlyArray<Node>) {
+  return nodes.filter((node: Node) => {
+    if (node.kind !== 'module') return false
+    return node.parents.every(parentId => getNode(graph, parentId).kind !== 'module')
+  })
+}
+
+export function keepOnlyLeafModules(graph: Graph, nodes: $ReadOnlyArray<Node>) {
+  return nodes.filter((node: Node) => {
+    if (node.kind !== 'module') return false
+    return node.children.length === 0
+  })
+}
