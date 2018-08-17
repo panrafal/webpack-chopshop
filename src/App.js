@@ -5,6 +5,7 @@ import type {Change} from './analysis/changes'
 
 import * as React from 'react'
 import {hot} from 'react-hot-loader'
+import {isEqual, pick} from 'lodash'
 
 import {readWebpackStats} from './analysis/webpack'
 import {getNode, cloneGraph, abortGraph, resolveNode} from './analysis/graph'
@@ -53,6 +54,14 @@ class App extends React.Component<{}, AppState> {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const hasNewBaseGraph = prevState.baseGraph !== this.state.baseGraph
+    const hasNewChanges = !isEqual(prevState.changes, this.state.changes)
+    if (hasNewBaseGraph || hasNewChanges) {
+      this.applyChanges()
+    }
+  }
+
   initLocalStorage() {
     try {
       const pinned = JSON.parse(window.localStorage.getItem('pinned') || '[]')
@@ -83,18 +92,16 @@ class App extends React.Component<{}, AppState> {
   }
 
   handleHistoryChange = () => {
-    const {fromNodeId = null, toNodeId = null} = JSON.parse(
-      atob((window.location.hash || '#').slice(1)) || '{}',
-    )
-    this.setState({
-      fromNodeId,
-      toNodeId,
-    })
+    const hash = (window.location.hash || '#').slice(1)
+    if (!hash) return
+    const hashState = JSON.parse(atob(hash))
+    this.setState(pick(hashState, ['fromNodeId', 'toNodeId', 'changes']))
   }
 
   pushHistory = () => {
-    const {fromNodeId, toNodeId} = this.state
-    window.history.pushState(null, null, `/#${btoa(JSON.stringify({fromNodeId, toNodeId}))}`)
+    const {fromNodeId, toNodeId, changes} = this.state
+    const encodedState = btoa(JSON.stringify({fromNodeId, toNodeId, changes}))
+    window.history.pushState(null, null, `/#${encodedState}`)
   }
 
   openFile = async callback => {
@@ -153,16 +160,20 @@ class App extends React.Component<{}, AppState> {
     this.setState({showChanges: !this.state.showChanges})
   }
 
-  updateChanges = changes => {
-    const {baseGraph, graph} = this.state
-    if (!graph || !baseGraph) throw new Error('No graph available now')
+  applyChanges = () => {
+    const {baseGraph, graph, changes} = this.state
+    if (!graph || !baseGraph) return
     const newGraph = cloneGraph(baseGraph)
     // discard old graph
     if (graph !== baseGraph) {
       abortGraph(graph)
     }
     applyChanges(newGraph, changes)
-    this.setState({graph: newGraph, changes: changes})
+    this.setState({graph: newGraph})
+  }
+
+  updateChanges = changes => {
+    this.setState({changes}, this.pushHistory)
     window.localStorage.setItem('changes', JSON.stringify(changes))
   }
 
