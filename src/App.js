@@ -122,10 +122,10 @@ class App extends React.Component<Props, State> {
   dropzone: any
 
   async componentDidMount() {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.REACT_APP_STATS) {
       this.openFile(async () => {
         console.time('loading')
-        const result = await fetch('./stats/build-stats.json')
+        const result = await fetch(`./${process.env.REACT_APP_STATS || ''}`)
         console.timeEnd('loading')
         console.time('parsing')
         const json = await result.json()
