@@ -71,7 +71,11 @@ function NodeName({node, hidePackage, onlyPackage, tooltip, children, classes, c
   if (tooltip) {
     return (
       <Tooltip
-        title={typeof tooltip === 'boolean' ? `${node.name || ''} (${String(node.id)})` : tooltip}
+        title={
+          typeof tooltip === 'boolean'
+            ? `${node.kind}: ${node.name || ''} (${String(node.originalId)})`
+            : tooltip
+        }
         placement="top"
         enterDelay={100}
         disableFocusListener

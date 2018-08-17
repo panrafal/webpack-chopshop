@@ -23,7 +23,7 @@ import EmptyBox from '../EmptyBox'
 type Props = {|
   graph: Graph,
   changes: $ReadOnlyArray<Change>,
-  onUpdateChanges: ($ReadOnlyArray<Change>) => void,
+  onChangesUpdate: ($ReadOnlyArray<Change>) => void,
   classes: Object,
 |}
 
@@ -38,7 +38,7 @@ const styles = theme => ({
 
 class ChangesView extends React.PureComponent<Props> {
   render() {
-    const {classes, graph, changes, onUpdateChanges} = this.props
+    const {classes, graph, changes, onChangesUpdate} = this.props
     const textsToCopy = []
     return (
       <div>
@@ -56,7 +56,7 @@ class ChangesView extends React.PureComponent<Props> {
                 <IconButton
                   aria-label="Delete"
                   className={classes.delete}
-                  onClick={() => onUpdateChanges(without(changes, change))}
+                  onClick={() => onChangesUpdate(without(changes, change))}
                 >
                   <Icon>delete</Icon>
                 </IconButton>
@@ -78,7 +78,7 @@ class ChangesView extends React.PureComponent<Props> {
           )}
         </List>
         <Toolbar>
-          <Button onClick={() => onUpdateChanges([])}>Reset changes</Button>
+          <Button onClick={() => onChangesUpdate([])}>Reset changes</Button>
           {textsToCopy.length > 0 ? (
             <CopyToClipboard text={textsToCopy.join('\n\n')}>
               <Button>Copy to clipboard</Button>

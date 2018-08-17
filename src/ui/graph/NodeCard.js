@@ -105,10 +105,16 @@ class NodeCard extends React.PureComponent<Props, State> {
                 {node.name}
               </Typography>
               <Typography variant="caption" color="textSecondary">
+                Kind
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                {String(node.kind)}
+              </Typography>
+              <Typography variant="caption" color="textSecondary">
                 ID
               </Typography>
               <Typography variant="body2" gutterBottom>
-                {String(node.id)}
+                {String(node.originalId)}
               </Typography>
               {edge && (
                 <>

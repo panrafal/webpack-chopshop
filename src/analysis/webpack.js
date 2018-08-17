@@ -21,6 +21,7 @@ export async function readWebpackStats(
     for (const chunk of chunks) {
       addNode(graph, {
         id: getNodeId('chunk', chunk.id),
+        originalId: chunk.id,
         kind: chunk.reason && chunk.reason.indexOf('split chunk') ? 'split-chunk' : 'chunk',
         name: chunk.names[0],
         size: 0,
@@ -40,7 +41,8 @@ export async function readWebpackStats(
     const isNamespace = module.name.indexOf(' namespace object') > 0
     const kind = isConcat ? 'concat' : isNamespace ? 'namespace' : 'module'
     addNode(graph, {
-      id: getNodeId('module', module.id),
+      id: getNodeId('module', module.identifier),
+      originalId: module.id,
       kind,
       name: module.name,
       file: isConcat ? undefined : (module.name || '').replace(/^.*!/),
@@ -73,8 +75,8 @@ export async function readWebpackStats(
         continue
       }
       addEdge(graph, {
-        from: getNodeId('module', reason.moduleId),
-        to: getNodeId('module', module.id),
+        from: getNodeId('module', reason.moduleIdentifier),
+        to: getNodeId('module', module.identifier),
         kind: type,
         name: reason.userRequest,
         async,

@@ -4,38 +4,14 @@ import type {NodeID, Graph} from './analysis/graph'
 import type {Change} from './analysis/changes'
 
 import * as React from 'react'
-import classNames from 'classnames'
 import {hot} from 'react-hot-loader'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import Dropzone from 'react-dropzone'
-import {
-  AppBar,
-  Typography,
-  Toolbar,
-  CssBaseline,
-  withStyles,
-  Button,
-  Drawer,
-  Icon,
-} from '@material-ui/core'
 
 import {readWebpackStats} from './analysis/webpack'
-import {getNode, cloneGraph, resolveNode, abortGraph} from './analysis/graph'
-import ChainsExplorer from './ui/graph/ChainsExplorer'
+import {getNode, cloneGraph, abortGraph, resolveNode} from './analysis/graph'
 import {applyChanges, addChange} from './analysis/changes'
-import WarningBar from './ui/WarningBar'
-import ErrorBar from './ui/ErrorBar'
-import ChangesView from './ui/graph/ChangesView'
-import EmptyBox from './ui/EmptyBox'
-import ParentsExplorer from './ui/graph/ParentsExplorer'
-import ChildrenExplorer from './ui/graph/ChildrenExplorer'
+import AppUI from './AppUI'
 
-type Props = {|
-  classes: Object,
-  theme: Object,
-|}
-
-type State = {|
+export type AppState = {|
   loading: boolean,
   baseGraph: ?Graph,
   graph: ?Graph,
@@ -45,68 +21,10 @@ type State = {|
   toNodeId: ?NodeID,
   changes: $ReadOnlyArray<Change>,
   showChanges: boolean,
+  pinned: $ReadOnlyArray<NodeID>,
 |}
 
-const styles = {
-  root: {
-    display: 'flex',
-    height: '100vh',
-    minWidth: 1200,
-    flexDirection: 'column',
-    justifyContent: 'stretch',
-    fontFamily: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-  },
-  container: {
-    maxWidth: 2000,
-    minWidth: 1200,
-    width: '100vw',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  panes: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexGrow: 1,
-    justifyContent: 'space-between',
-    padding: '24px 24px 0 24px',
-  },
-  parentsExplorer: {
-    width: 250,
-    flexShrink: 0,
-    flexGrow: 0.2,
-    marginRight: 48,
-  },
-  pathsExplorer: {
-    flexShrink: 1,
-    flexGrow: 1,
-    marginRight: 48,
-  },
-  childrenExplorer: {
-    width: 250,
-    flexShrink: 0,
-    flexGrow: 0.2,
-  },
-  title: {
-    marginLeft: 'auto',
-    textTransform: 'uppercase',
-  },
-  search: {
-    color: '#fff',
-    borderBottom: '2px solid #fff',
-    width: 300,
-  },
-  dropzone: {},
-  openButton: {},
-  openFileMessage: {
-    textAlign: 'center',
-    width: '30em',
-    alignSelf: 'center',
-    margin: 'auto',
-    cursor: 'pointer',
-  },
-}
-
-class App extends React.Component<Props, State> {
+class App extends React.Component<{}, AppState> {
   state = {
     loading: false,
     error: null,
@@ -116,11 +34,12 @@ class App extends React.Component<Props, State> {
     toNodeId: null,
     changes: [],
     showChanges: false,
+    pinned: [],
   }
 
-  dropzone: any
-
   async componentDidMount() {
+    this.initLocalStorage()
+    this.initHistory()
     if (process.env.REACT_APP_STATS) {
       this.openFile(async () => {
         console.time('loading')
@@ -134,15 +53,56 @@ class App extends React.Component<Props, State> {
     }
   }
 
+  initLocalStorage() {
+    try {
+      const pinned = JSON.parse(window.localStorage.getItem('pinned') || '[]')
+      const changes = JSON.parse(window.localStorage.getItem('changes') || '[]')
+      this.setState({pinned, changes})
+      window.addEventListener('storage', this.handleStorageEvent)
+    } catch (error) {
+      console.error('Local storage failed to initialize', error)
+    }
+  }
+
+  handleStorageEvent = (event: StorageEvent) => {
+    if (event.key === 'pinned' && event.newValue) {
+      const pinned = JSON.parse(event.newValue)
+      if (pinned !== this.state.pinned) {
+        this.setState({pinned})
+      }
+    }
+  }
+
+  initHistory() {
+    try {
+      window.addEventListener('popstate', this.handleHistoryChange)
+      this.handleHistoryChange()
+    } catch (error) {
+      console.error('History failed to initialize', error)
+    }
+  }
+
+  handleHistoryChange = () => {
+    const {fromNodeId = null, toNodeId = null} = JSON.parse(
+      atob((window.location.hash || '#').slice(1)) || '{}',
+    )
+    this.setState({
+      fromNodeId,
+      toNodeId,
+    })
+  }
+
+  pushHistory = () => {
+    const {fromNodeId, toNodeId} = this.state
+    window.history.pushState(null, null, `/#${btoa(JSON.stringify({fromNodeId, toNodeId}))}`)
+  }
+
   openFile = async callback => {
     this.setState({
       loading: true,
       error: null,
       baseGraph: null,
       graph: null,
-      fromNodeId: null,
-      toNodeId: null,
-      changes: [],
     })
     try {
       const json = await callback()
@@ -203,6 +163,7 @@ class App extends React.Component<Props, State> {
     }
     applyChanges(newGraph, changes)
     this.setState({graph: newGraph, changes: changes})
+    window.localStorage.setItem('changes', JSON.stringify(changes))
   }
 
   addChange = (change: Change) => {
@@ -211,147 +172,59 @@ class App extends React.Component<Props, State> {
     this.updateChanges(addChange(graph, changes, change))
   }
 
+  setNodesSelection = (fromNodeId: ?NodeID, toNodeId: ?NodeID) => {
+    this.setState({fromNodeId, toNodeId}, this.pushHistory)
+  }
+
   resetNodesSelection = () => {
-    this.setState({fromNodeId: null, toNodeId: null})
+    this.setNodesSelection(null, null)
   }
 
   selectFromNode = (fromNodeId: NodeID) => {
     const {graph, toNodeId} = this.state
     if (graph) console.log('Selected FROM node', getNode(graph, fromNodeId))
-    this.setState({fromNodeId, toNodeId: toNodeId || fromNodeId})
+    this.setNodesSelection(fromNodeId, toNodeId || fromNodeId)
   }
 
   selectToNode = (toNodeId: NodeID) => {
-    const {graph} = this.state
+    const {graph, fromNodeId} = this.state
     if (graph) console.log('Selected TO node', getNode(graph, toNodeId))
-    this.setState({toNodeId})
-  }
-
-  renderGraph() {
-    const {baseGraph, graph, fromNodeId, toNodeId} = this.state
-    const {classes} = this.props
-    if (!graph || !baseGraph) return null
-    const fromNode = resolveNode(graph, fromNodeId)
-    const toNode = resolveNode(graph, toNodeId)
-    return (
-      <div className={classNames(classes.container, classes.panes)}>
-        <ParentsExplorer
-          className={classes.parentsExplorer}
-          baseGraph={baseGraph}
-          graph={graph}
-          toNode={toNode}
-          fromNode={fromNode}
-          onNodeSelect={this.selectFromNode}
-        />
-        {fromNode && toNode ? (
-          <ChainsExplorer
-            className={classes.pathsExplorer}
-            baseGraph={baseGraph}
-            graph={graph}
-            fromNode={fromNode}
-            toNode={toNode}
-            onSelectFromNode={this.selectFromNode}
-            onSelectToNode={this.selectToNode}
-            onAddChange={this.addChange}
-          />
-        ) : null}
-        {fromNode ? (
-          <ChildrenExplorer
-            className={classes.childrenExplorer}
-            baseGraph={baseGraph}
-            graph={graph}
-            toNode={toNode}
-            fromNode={fromNode}
-            onNodeSelect={this.selectToNode}
-          />
-        ) : null}
-      </div>
-    )
+    this.setNodesSelection(fromNodeId || toNodeId, toNodeId)
   }
 
   render() {
-    const {loading, error, graph, showChanges, changes, fromNodeId} = this.state
-    const {classes} = this.props
+    const {
+      graph,
+      baseGraph,
+      loading,
+      error,
+      fromNodeId,
+      toNodeId,
+      changes,
+      showChanges,
+      pinned,
+    } = this.state
     return (
-      <Dropzone
-        multiple={false}
-        activeClassName=""
-        rejectClassName=""
-        accept=".json"
-        onDrop={this.handleDrop}
-        className={classes.dropzone}
-        disableClick
-        ref={node => {
-          this.dropzone = node
-        }}
-      >
-        <div className={classes.root}>
-          <CssBaseline />
-          <AppBar position="static">
-            <Toolbar variant="regular" className={classes.container}>
-              {!loading && (
-                <Button color="inherit" onClick={() => this.dropzone.open()}>
-                  Open stats
-                </Button>
-              )}
-              {graph && (
-                <Button color="inherit" onClick={this.toggleShowChanges}>
-                  See changes
-                  {changes.length ? ` (${changes.length})` : null}
-                </Button>
-              )}
-              {fromNodeId && (
-                <Button color="inherit" onClick={this.resetNodesSelection}>
-                  Choose root node
-                </Button>
-              )}
-              <Typography variant="title" color="inherit" className={classes.title}>
-                Webpack Chop Shop
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          {loading && <LinearProgress className={classes.progress} />}
-          {graph &&
-            graph.errors.length > 0 && (
-              <WarningBar>
-                There where {graph.errors.length} errors found. Check the console for more
-              </WarningBar>
-            )}
-          {error && <ErrorBar>{String(error)}</ErrorBar>}
-          {this.renderGraph()}
-          {!graph &&
-            !loading && (
-              <div onClick={() => this.dropzone.open()} className={classes.openFileMessage}>
-                <EmptyBox
-                  icon={
-                    <Icon color="inherit" fontSize="default">
-                      open_in_browser
-                    </Icon>
-                  }
-                >
-                  First,{' '}
-                  <a
-                    href="https://webpack.js.org/api/cli/#stats-options"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    generate the stats file in webpack
-                  </a>
-                  , then click here or drop it anywhere on the page to start
-                </EmptyBox>
-              </div>
-            )}
-          {graph && (
-            <Drawer anchor="top" open={showChanges} onClose={this.toggleShowChanges}>
-              <div className={classes.container}>
-                <ChangesView graph={graph} changes={changes} onUpdateChanges={this.updateChanges} />
-              </div>
-            </Drawer>
-          )}
-        </div>
-      </Dropzone>
+      <AppUI
+        baseGraph={baseGraph}
+        graph={graph}
+        loading={loading}
+        error={error}
+        fromNode={graph && resolveNode(graph, fromNodeId)}
+        toNode={graph && resolveNode(graph, toNodeId)}
+        changes={changes}
+        showChanges={showChanges}
+        pinned={pinned}
+        onAddChange={this.addChange}
+        onFromNodeSelect={this.selectFromNode}
+        onToNodeSelect={this.selectToNode}
+        onNodesSelectionReset={this.resetNodesSelection}
+        onChangesUpdate={this.updateChanges}
+        onFileDrop={this.handleDrop}
+        onShowChangesToggle={this.toggleShowChanges}
+      />
     )
   }
 }
 
-export default hot(module)(withStyles(styles, {withTheme: true})(App))
+export default hot(module)(App)

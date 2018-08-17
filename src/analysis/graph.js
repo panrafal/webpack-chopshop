@@ -26,6 +26,7 @@ export type Edge = {
 
 export type NodeSpec = {|
   id: NodeID,
+  originalId: string,
   name?: string,
   kind: NodeKind,
   size: number,

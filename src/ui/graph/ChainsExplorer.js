@@ -22,8 +22,8 @@ type Props = {|
   fromNode: ?Node,
   toNode: ?Node,
   onAddChange: Change => any,
-  onSelectFromNode: NodeID => any,
-  onSelectToNode: NodeID => any,
+  onFromNodeSelect: NodeID => any,
+  onToNodeSelect: NodeID => any,
   classes: Object,
   className?: string,
 |}
@@ -111,7 +111,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
   }
 
   renderSelectedChain = () => {
-    const {baseGraph, graph, onAddChange, onSelectFromNode, onSelectToNode} = this.props
+    const {baseGraph, graph, onAddChange, onFromNodeSelect, onToNodeSelect} = this.props
     const {selectedChain} = this.state
     if (!selectedChain) return null
     const nodes = getNodes(graph, selectedChain)
@@ -154,7 +154,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
                   enterDelay={500}
                   placement="top"
                 >
-                  <IconButton onClick={() => onSelectFromNode(node.id)}>
+                  <IconButton onClick={() => onFromNodeSelect(node.id)}>
                     <Icon>vertical_align_top</Icon>
                   </IconButton>
                 </Tooltip>
@@ -165,7 +165,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
                     enterDelay={500}
                     placement="top"
                   >
-                    <IconButton onClick={() => onSelectToNode(node.id)}>
+                    <IconButton onClick={() => onToNodeSelect(node.id)}>
                       <Icon>vertical_align_bottom</Icon>
                     </IconButton>
                   </Tooltip>
@@ -196,7 +196,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {className, classes, baseGraph, graph, fromNode, toNode, onSelectToNode} = this.props
+    const {className, classes, baseGraph, graph, fromNode, toNode, onToNodeSelect} = this.props
     const chainsPromise = this.chainsPromiseSelector(this.props)
 
     return (
@@ -228,7 +228,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
                     enterDelay={500}
                     placement="top"
                   >
-                    <IconButton onClick={() => onSelectToNode(fromNode.id)}>
+                    <IconButton onClick={() => onToNodeSelect(fromNode.id)}>
                       <Icon>vertical_align_bottom</Icon>
                     </IconButton>
                   </Tooltip>
