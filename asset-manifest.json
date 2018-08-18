@@ -1,10 +1,10 @@
 {
   "runtime~main.js": "/webpack-chopshop/static/js/runtime~main.ae8c253c.js",
   "runtime~main.js.map": "/webpack-chopshop/static/js/runtime~main.ae8c253c.js.map",
-  "vendors.js": "/webpack-chopshop/static/js/vendors.a8d3b224.chunk.js",
-  "vendors.js.map": "/webpack-chopshop/static/js/vendors.a8d3b224.chunk.js.map",
-  "main.css": "/webpack-chopshop/static/css/main.5980d1fc.chunk.css",
-  "main.js": "/webpack-chopshop/static/js/main.ec835414.chunk.js",
-  "main.js.map": "/webpack-chopshop/static/js/main.ec835414.chunk.js.map",
+  "vendors.js": "/webpack-chopshop/static/js/vendors.ad2e4601.chunk.js",
+  "vendors.js.map": "/webpack-chopshop/static/js/vendors.ad2e4601.chunk.js.map",
+  "main.css": "/webpack-chopshop/static/css/main.58a22eb3.chunk.css",
+  "main.js": "/webpack-chopshop/static/js/main.a85347cb.chunk.js",
+  "main.js.map": "/webpack-chopshop/static/js/main.a85347cb.chunk.js.map",
   "index.html": "/webpack-chopshop/index.html"
 }
