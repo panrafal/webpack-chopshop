@@ -11,6 +11,7 @@ import {readWebpackStats} from './analysis/webpack'
 import {getNode, cloneGraph, abortGraph, resolveNode} from './analysis/graph'
 import {applyChanges, addChange} from './analysis/changes'
 import AppUI from './AppUI'
+import {decodeUrlStateHash, encodeUrlStateHash} from './history'
 
 export type AppState = {|
   loading: boolean,
@@ -94,13 +95,13 @@ class App extends React.Component<{}, AppState> {
   handleHistoryChange = () => {
     const hash = (window.location.hash || '#').slice(1)
     if (!hash) return
-    const hashState = JSON.parse(atob(hash))
-    this.setState(pick(hashState, ['fromNodeId', 'toNodeId', 'changes']))
+    const hashState = decodeUrlStateHash(hash)
+    this.setState(pick(hashState, ['fromNodeId', 'toNodeId', 'changes', 'pinned']))
   }
 
   pushHistory = () => {
-    const {fromNodeId, toNodeId, changes} = this.state
-    const encodedState = btoa(JSON.stringify({fromNodeId, toNodeId, changes}))
+    const {fromNodeId, toNodeId} = this.state
+    const encodedState = encodeUrlStateHash({fromNodeId, toNodeId})
     window.history.pushState(null, null, `/#${encodedState}`)
   }
 
@@ -173,7 +174,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   updateChanges = changes => {
-    this.setState({changes}, this.pushHistory)
+    this.setState({changes})
     window.localStorage.setItem('changes', JSON.stringify(changes))
   }
 

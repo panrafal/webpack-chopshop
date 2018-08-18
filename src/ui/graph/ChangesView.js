@@ -1,6 +1,6 @@
 // @flow
 
-import type {Graph} from '../../analysis/graph'
+import type {Graph, NodeID} from '../../analysis/graph'
 import type {Change} from '../../analysis/changes'
 
 import * as React from 'react'
@@ -19,10 +19,12 @@ import {
 } from '@material-ui/core'
 import {resolveEdgeForNodes, getNode} from '../../analysis/graph'
 import EmptyBox from '../EmptyBox'
+import {encodeUrlStateHash, decodeUrlStateHash} from '../../history'
 
 type Props = {|
   graph: Graph,
   changes: $ReadOnlyArray<Change>,
+  pinned: $ReadOnlyArray<NodeID>,
   onChangesUpdate: ($ReadOnlyArray<Change>) => void,
   classes: Object,
 |}
@@ -38,8 +40,17 @@ const styles = theme => ({
 
 class ChangesView extends React.PureComponent<Props> {
   render() {
-    const {classes, graph, changes, onChangesUpdate} = this.props
+    const {classes, graph, changes, pinned, onChangesUpdate} = this.props
     const textsToCopy = []
+    // Generate new url with pins and most current changes
+    const {origin, pathname, hash} = window.location
+    const currentUrlState = decodeUrlStateHash(hash.slice(1))
+    const shareUrl = `${origin}${pathname}#${encodeUrlStateHash({
+      ...currentUrlState,
+      changes,
+      pinned,
+    })}`
+    textsToCopy.push(shareUrl)
     return (
       <div>
         <List className={classes.list}>
@@ -50,7 +61,11 @@ class ChangesView extends React.PureComponent<Props> {
             const toNode = getNode(graph, edge.to)
             const fromName = fromNode.file || fromNode.name || fromNode.id
             const toName = edge.name || toNode.name || toNode.id
-            textsToCopy.push(`${edge.enabled ? 'Add' : 'Remove'} "${toName}" from "${fromName}"`)
+            textsToCopy.push(
+              edge.enabled
+                ? `Add "${toName}" to "${fromName}"`
+                : `Remove "${toName}" from "${fromName}"`,
+            )
             return (
               <ListItem key={index} graph={graph} change={change}>
                 <IconButton
@@ -62,9 +77,15 @@ class ChangesView extends React.PureComponent<Props> {
                 </IconButton>
                 <ListItemText
                   primary={
-                    <>
-                      {edge.enabled ? 'Add' : 'Remove'} "<b>{toName}</b>" from "<b>{fromName}</b>"
-                    </>
+                    edge.enabled ? (
+                      <>
+                        Add "<b>{toName}</b>" to "<b>{fromName}</b>"
+                      </>
+                    ) : (
+                      <>
+                        Remove "<b>{toName}</b>" from "<b>{fromName}</b>"
+                      </>
+                    )
                   }
                 />
                 <ListItemSecondaryAction />
@@ -81,9 +102,12 @@ class ChangesView extends React.PureComponent<Props> {
           <Button onClick={() => onChangesUpdate([])}>Reset changes</Button>
           {textsToCopy.length > 0 ? (
             <CopyToClipboard text={textsToCopy.join('\n\n')}>
-              <Button>Copy to clipboard</Button>
+              <Button>Copy changes to clipboard</Button>
             </CopyToClipboard>
           ) : null}
+          <CopyToClipboard text={shareUrl}>
+            <Button>Copy URL to clipboard</Button>
+          </CopyToClipboard>
         </Toolbar>
       </div>
     )
