@@ -172,6 +172,7 @@ class AppUI extends React.Component<Props> {
       graph,
       showChanges,
       changes,
+      pinned,
       fromNode,
       classes,
       onNodesSelectionReset,
@@ -251,7 +252,12 @@ class AppUI extends React.Component<Props> {
           {graph && (
             <Drawer anchor="top" open={showChanges} onClose={onShowChangesToggle}>
               <div className={classes.container}>
-                <ChangesView graph={graph} changes={changes} onChangesUpdate={onChangesUpdate} />
+                <ChangesView
+                  graph={graph}
+                  changes={changes}
+                  pinned={pinned}
+                  onChangesUpdate={onChangesUpdate}
+                />
               </div>
             </Drawer>
           )}

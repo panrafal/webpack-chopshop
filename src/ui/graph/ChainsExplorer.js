@@ -62,6 +62,7 @@ const styles = theme => ({
   },
   selectedChainScroll: {
     overflowY: 'auto',
+    padding: '0 8px 0 8px',
   },
   listProgress: {
     marginTop: 16,
@@ -117,6 +118,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
       baseGraph,
       graph,
       pinned,
+      fromNode,
       onAddChange,
       onFromNodeSelect,
       onToNodeSelect,
@@ -144,6 +146,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
             baseGraph={baseGraph}
             graph={graph}
             node={node}
+            retainerRootNode={fromNode}
             edge={edge}
             actions={
               <>

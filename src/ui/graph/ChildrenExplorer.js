@@ -125,7 +125,16 @@ class ChildrenExplorer extends React.PureComponent<Props> {
   }
 
   render() {
-    const {classes, className, toNode, baseGraph, graph, pinned, onNodeSelect} = this.props
+    const {
+      classes,
+      className,
+      fromNode,
+      toNode,
+      baseGraph,
+      graph,
+      pinned,
+      onNodeSelect,
+    } = this.props
 
     return (
       <GraphExplorer
@@ -137,6 +146,7 @@ class ChildrenExplorer extends React.PureComponent<Props> {
         pinned={pinned}
         onNodeSelect={onNodeSelect}
         selected={toNode}
+        retainerRootNode={fromNode}
       />
     )
   }

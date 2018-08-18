@@ -33,6 +33,7 @@ export type Props = {|
   graph: Graph,
   pinned: $ReadOnlyArray<NodeID>,
   selected: ?Node,
+  retainerRootNode?: ?Node,
   modes: {
     [string]: Mode,
   },
@@ -93,7 +94,7 @@ class GraphExplorer extends React.Component<Props, State> {
   }
 
   renderList(nodes) {
-    const {classes, baseGraph, graph, selected, pinned, onNodeSelect} = this.props
+    const {classes, baseGraph, graph, retainerRootNode, selected, pinned, onNodeSelect} = this.props
     const mode = this.modeSelector(this.state, this.props)
 
     return (
@@ -109,6 +110,7 @@ class GraphExplorer extends React.Component<Props, State> {
         renderItem={itemProps => (
           <NodeItem
             {...itemProps}
+            retainerRootNode={retainerRootNode}
             onClick={() => onNodeSelect(itemProps.node.id)}
             checked={selected ? selected.id === itemProps.node.id : false}
           />

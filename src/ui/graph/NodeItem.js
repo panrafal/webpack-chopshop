@@ -12,6 +12,7 @@ type Props = {|
   graph: Graph,
   checked?: boolean,
   node: Node,
+  retainerRootNode?: ?Node,
   secondaryActions?: React.Node[],
   selectFromNode?: (node: NodeID) => void,
   selectToNode?: (node: NodeID) => void,
@@ -33,6 +34,7 @@ function NodeItem({
   checked,
   onClick,
   node,
+  retainerRootNode,
   selectFromNode,
   selectToNode,
   selectNode,
@@ -58,7 +60,14 @@ function NodeItem({
         <ListItemText
           primary={<NodeName node={node} hidePackage tooltip />}
           primaryTypographyProps={{noWrap: true, color: checked ? 'secondary' : 'default'}}
-          secondary={<NodeSize baseGraph={baseGraph} graph={graph} node={node} />}
+          secondary={
+            <NodeSize
+              baseGraph={baseGraph}
+              graph={graph}
+              node={node}
+              retainerRootNode={retainerRootNode}
+            />
+          }
         />
         {secondaryActions.map((action, index) => (
           <ListItemSecondaryAction key={index}>{action}</ListItemSecondaryAction>

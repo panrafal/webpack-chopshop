@@ -22,6 +22,7 @@ type Props = {|
   baseGraph: Graph,
   graph: Graph,
   node: Node,
+  retainerRootNode?: ?Node,
   edge?: ?Edge,
   actions?: React.Node,
   classes: Object,
@@ -70,7 +71,7 @@ class NodeCard extends React.PureComponent<Props, State> {
     expanded: false,
   }
   render() {
-    const {classes, className, baseGraph, graph, node, edge, actions} = this.props
+    const {classes, className, baseGraph, graph, node, retainerRootNode, edge, actions} = this.props
     const {expanded} = this.state
 
     return (
@@ -84,7 +85,12 @@ class NodeCard extends React.PureComponent<Props, State> {
               <NodeName node={node} onlyPackage />
             </Typography>
             <Typography color="textSecondary">
-              <NodeSize baseGraph={baseGraph} graph={graph} node={node} />
+              <NodeSize
+                baseGraph={baseGraph}
+                graph={graph}
+                node={node}
+                retainerRootNode={retainerRootNode}
+              />
             </Typography>
           </CardContent>
           <CardActions className={classes.actions} disableActionSpacing>
