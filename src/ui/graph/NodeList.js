@@ -4,7 +4,7 @@ import numeral from 'numeral'
 
 import * as React from 'react'
 import Fuse from 'fuse.js'
-import {groupBy, map, sortBy, sumBy} from 'lodash'
+import {groupBy, orderBy, map, sortBy, sumBy} from 'lodash'
 
 import {List, AutoSizer} from 'react-virtualized'
 import {
@@ -24,7 +24,7 @@ import type {Node, Graph, NodeID} from '../../analysis/graph'
 import {flattenTreeToRows, toggleTreeRowState, isTreeExpanded} from '../tree'
 import {getPackageName} from '../../analysis/info'
 
-type Props = {|
+export type Props = {|
   baseGraph: Graph,
   graph: Graph,
   nodes: $ReadOnlyArray<Node>,
@@ -33,7 +33,9 @@ type Props = {|
   search?: string,
   selected?: ?Node,
   pinned: $ReadOnlyArray<NodeID>,
-  sortGroupsBySize?: boolean,
+  groupNodesBy?: '' | 'package',
+  orderNodesBy?: [any[], string[]],
+  orderGroupsBy?: [any[], string[]],
   loading?: boolean,
   classes: Object,
   className?: string,
@@ -78,8 +80,13 @@ class NodeList extends React.PureComponent<Props, State> {
   searchSelector = createSelector(
     this.fuseSelector,
     s => s.search,
-    (fuse, search) => {
-      return search ? fuse.search(search) : fuse.list
+    (_, p) => p.orderNodesBy,
+    (fuse, search, orderNodesBy) => {
+      const nodes = search ? fuse.search(search) : fuse.list
+      if (orderNodesBy) {
+        return orderBy(nodes, ...orderNodesBy)
+      }
+      return nodes
     },
   )
   pinnedSelector = createSelector(
@@ -92,23 +99,27 @@ class NodeList extends React.PureComponent<Props, State> {
   groupSelector = createSelector(
     this.searchSelector,
     this.pinnedSelector,
-    (_, p) => p.sortGroupsBySize,
-    (nodes, pinned, sortGroupsBySize) => {
-      const groups = groupBy(nodes, node => {
-        if (node.kind === 'module') {
-          return getPackageName(node) || '(root modules)'
-        }
-        return `(${node.kind}s)`
-      })
-      const rows = sortBy(
-        map(groups, (children, name) => ({
+    (_, p) => p.groupNodesBy,
+    (_, p) => p.orderGroupsBy,
+    (nodes, pinned, groupNodesBy, orderGroupsBy) => {
+      let rows
+      if (groupNodesBy === 'package') {
+        const groups = groupBy(nodes, node => {
+          if (node.kind === 'module') {
+            return getPackageName(node) || '(root modules)'
+          }
+          return `(${node.kind}s)`
+        })
+        rows = map(groups, (children, name) => ({
           name,
           children: sortBy(children, 'file'),
           size: sumBy(children, 'size'),
           group: true,
-        })),
-        sortGroupsBySize ? group => -group.size : 'name',
-      )
+        }))
+        rows = orderBy(rows, ...orderGroupsBy)
+      } else {
+        rows = nodes.slice()
+      }
       rows.unshift(...pinned)
       return rows
     },
@@ -122,7 +133,8 @@ class NodeList extends React.PureComponent<Props, State> {
   )
 
   renderList() {
-    const {classes, baseGraph, graph, renderItem, renderEmpty} = this.props
+    const {classes, baseGraph, graph, groupNodesBy, renderItem, renderEmpty} = this.props
+    // $FlowFixMe
     const nodes = this.nodesSelector(this.state, this.props)
 
     return (
@@ -163,7 +175,14 @@ class NodeList extends React.PureComponent<Props, State> {
                     </ListItem>
                   )
                 }
-                return renderItem({node, key: node.id, baseGraph, graph, style})
+                return renderItem({
+                  node,
+                  key: node.id,
+                  baseGraph,
+                  graph,
+                  hidePackage: Boolean(groupNodesBy),
+                  style,
+                })
               }}
               noRowsRenderer={renderEmpty}
             />

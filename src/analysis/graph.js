@@ -39,6 +39,8 @@ export type Node = {
   ...NodeSpec,
   parents: Array<NodeID>,
   children: Array<NodeID>,
+  //
+  treeSize?: number,
 }
 
 export type Graph = {|

@@ -1,6 +1,7 @@
 // @flow
 
 import type {Graph, Node, NodeID} from '../../analysis/graph'
+import type {Props as NodeListProps} from './NodeList'
 
 import * as React from 'react'
 import classNames from 'classnames'
@@ -26,6 +27,7 @@ type Mode = {
   renderTitle: () => React.Node,
   renderInfo: () => React.Node,
   renderEmpty: () => string,
+  listProps?: () => $Shape<NodeListProps>,
 }
 
 export type Props = {|
@@ -96,7 +98,7 @@ class GraphExplorer extends React.Component<Props, State> {
   renderList(nodes) {
     const {classes, baseGraph, graph, retainerRootNode, selected, pinned, onNodeSelect} = this.props
     const mode = this.modeSelector(this.state, this.props)
-
+    const listProps = mode.listProps ? mode.listProps() : {}
     return (
       <NodeList
         className={classes.list}
@@ -106,7 +108,9 @@ class GraphExplorer extends React.Component<Props, State> {
         graph={graph}
         pinned={pinned}
         selected={selected}
-        sortGroupsBySize
+        groupNodesBy="package"
+        orderNodesBy={undefined}
+        orderGroupsBy={[['size'], ['desc']]}
         renderItem={itemProps => (
           <NodeItem
             {...itemProps}
@@ -116,6 +120,7 @@ class GraphExplorer extends React.Component<Props, State> {
           />
         )}
         renderEmpty={() => <EmptyBox icon={<Icon>block</Icon>}>{mode.renderEmpty()}</EmptyBox>}
+        {...listProps}
       />
     )
   }

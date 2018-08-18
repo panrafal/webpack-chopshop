@@ -16,6 +16,7 @@ import {
   getDeepNodeChildren,
   getRetainedNodes,
 } from '../../analysis/dependencies'
+import {calculateRetainedTreeSize} from '../../analysis/size'
 
 type Props = {|
   baseGraph: Graph,
@@ -45,10 +46,18 @@ class ChildrenExplorer extends React.PureComponent<Props> {
 
   directChildrenNodesSelector = createSelector(
     (_, p) => p.graph,
+    (_, p) => p.fromNode,
     (_, p) => p.toNode,
-    (graph, toNode) => {
-      if (!toNode) return []
-      return getNodes(graph, toNode.children)
+    async (graph, fromNode, toNode) => {
+      if (!fromNode || !toNode) return []
+      let nodes = await getNodes(graph, toNode.children)
+      nodes = await Promise.all(
+        nodes.map(async node => ({
+          ...node,
+          treeSize: await calculateRetainedTreeSize(graph, fromNode, node),
+        })),
+      )
+      return nodes
     },
   )
   getDirectChildrenNodes = () => this.directChildrenNodesSelector(this.state, this.props)
@@ -134,6 +143,10 @@ class ChildrenExplorer extends React.PureComponent<Props> {
         )
       },
       renderEmpty: () => 'No children found',
+      listProps: () => ({
+        groupNodesBy: '',
+        orderNodesBy: [['treeSize'], ['desc']],
+      }),
     },
     childLeafs: {
       getNodes: this.getChildLeafNodes,

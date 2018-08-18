@@ -12,6 +12,7 @@ type Props = {|
   graph: Graph,
   checked?: boolean,
   node: Node,
+  hidePackage?: boolean,
   retainerRootNode?: ?Node,
   secondaryActions?: React.Node[],
   selectFromNode?: (node: NodeID) => void,
@@ -38,6 +39,7 @@ function NodeItem({
   selectFromNode,
   selectToNode,
   selectNode,
+  hidePackage,
   style,
   children,
   classes,
@@ -58,7 +60,7 @@ function NodeItem({
         className={classNames(className, classes.root)}
       >
         <ListItemText
-          primary={<NodeName node={node} hidePackage tooltip />}
+          primary={<NodeName node={node} hidePackage={hidePackage} tooltip />}
           primaryTypographyProps={{noWrap: true, color: checked ? 'secondary' : 'default'}}
           secondary={
             <NodeSize
