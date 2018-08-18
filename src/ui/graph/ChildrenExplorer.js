@@ -4,13 +4,18 @@ import type {Node, NodeID, Graph} from '../../analysis/graph'
 
 import * as React from 'react'
 import classNames from 'classnames'
+import {without} from 'lodash'
 import {createSelector} from 'reselect'
 import {withStyles} from '@material-ui/core'
 
 import {getNodes, getAllNodes} from '../../analysis/graph'
 import GraphExplorer from './GraphExplorer'
 import NodeName from './NodeName'
-import {keepOnlyLeafModules, getDeepNodeChildren} from '../../analysis/dependencies'
+import {
+  keepOnlyLeafModules,
+  getDeepNodeChildren,
+  getRetainedNodes,
+} from '../../analysis/dependencies'
 
 type Props = {|
   baseGraph: Graph,
@@ -48,6 +53,20 @@ class ChildrenExplorer extends React.PureComponent<Props> {
   )
   getDirectChildrenNodes = () => this.directChildrenNodesSelector(this.state, this.props)
 
+  retainedChildrenNodesSelector = createSelector(
+    (_, p) => p.graph,
+    (_, p) => p.fromNode,
+    (_, p) => p.toNode,
+    (graph, fromNode, toNode) => {
+      if (!fromNode || !toNode) return []
+      if (fromNode === toNode) return this.getChildrenNodes()
+      return getRetainedNodes(graph, fromNode, toNode).then(ids =>
+        getNodes(graph, without(ids, toNode.id)),
+      )
+    },
+  )
+  getRetainedChildrenNodes = () => this.retainedChildrenNodesSelector(this.state, this.props)
+
   childrenNodesSelector = createSelector(
     (_, p) => p.graph,
     (_, p) => p.fromNode,
@@ -74,20 +93,6 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       renderInfo: () => 'Select node to start from',
       renderEmpty: () => 'Nothing found',
     },
-    directChildren: {
-      getNodes: this.getDirectChildrenNodes,
-      renderTitle: () => 'Direct Children',
-      renderInfo: () => {
-        const {toNode} = this.props
-        if (!toNode) return null
-        return (
-          <>
-            Move down to direct children of <NodeName node={toNode} />
-          </>
-        )
-      },
-      renderEmpty: () => 'No children found',
-    },
     children: {
       getNodes: this.getChildrenNodes,
       renderTitle: () => 'All Children',
@@ -97,6 +102,34 @@ class ChildrenExplorer extends React.PureComponent<Props> {
         return (
           <>
             Move down to children of <NodeName node={fromNode} />
+          </>
+        )
+      },
+      renderEmpty: () => 'No children found',
+    },
+    retainedChildren: {
+      getNodes: this.getRetainedChildrenNodes,
+      renderTitle: () => 'Retained Children',
+      renderInfo: () => {
+        const {toNode} = this.props
+        if (!toNode) return null
+        return (
+          <>
+            Move down to children retained by <NodeName node={toNode} />
+          </>
+        )
+      },
+      renderEmpty: () => 'No children found',
+    },
+    directChildren: {
+      getNodes: this.getDirectChildrenNodes,
+      renderTitle: () => 'Direct Children',
+      renderInfo: () => {
+        const {toNode} = this.props
+        if (!toNode) return null
+        return (
+          <>
+            Move down to direct children of <NodeName node={toNode} />
           </>
         )
       },

@@ -9,7 +9,6 @@ import red from '@material-ui/core/colors/red'
 import green from '@material-ui/core/colors/green'
 
 import {calculateTreeSize, calculateRetainedTreeSize} from '../../analysis/size'
-import {getNode} from '../../analysis/graph'
 
 type Props = {|
   baseGraph: Graph,
