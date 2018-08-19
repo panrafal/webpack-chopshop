@@ -193,7 +193,8 @@ class App extends React.Component<{}, AppState> {
   }
 
   selectFromNode = (fromNodeId: NodeID) => {
-    const {graph, toNodeId} = this.state
+    const {graph} = this.state
+    const toNodeId = this.state.fromNodeId !== this.state.toNodeId ? this.state.toNodeId : null
     if (graph) console.log('Selected FROM node', getNode(graph, fromNodeId))
     this.setNodesSelection(fromNodeId, toNodeId || fromNodeId)
   }
