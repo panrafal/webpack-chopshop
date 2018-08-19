@@ -16,6 +16,7 @@ import {
   MenuItem,
   ListItem,
   ListItemText,
+  ListItemSecondaryAction,
 } from '@material-ui/core'
 
 import EmptyBox from '../EmptyBox'
@@ -117,7 +118,15 @@ class GraphExplorer extends React.Component<Props, State> {
             retainerRootNode={retainerRootNode}
             onClick={() => onNodeSelect(itemProps.node.id)}
             checked={selected ? selected.id === itemProps.node.id : false}
-          />
+          >
+            {pinned.indexOf(itemProps.node.id) >= 0 ? (
+              <ListItemSecondaryAction>
+                <Icon color="disabled" fontSize="inherit">
+                  star
+                </Icon>
+              </ListItemSecondaryAction>
+            ) : null}
+          </NodeItem>
         )}
         renderEmpty={() => <EmptyBox icon={<Icon>block</Icon>}>{mode.renderEmpty()}</EmptyBox>}
         {...listProps}

@@ -15,6 +15,7 @@ import {
   keepOnlyEntryModules,
   keepOnlyLeafModules,
 } from '../../analysis/dependencies'
+import {calculateTreeSize} from '../../analysis/size'
 
 type Props = {|
   baseGraph: Graph,
@@ -32,13 +33,24 @@ const styles = {
   root: {},
 }
 
+const prepareEntryNodes = async (graph, nodes) => {
+  nodes = keepOnlyEntryModules(graph, nodes)
+  nodes = await Promise.all(
+    nodes.map(async node => ({
+      ...node,
+      treeSize: await calculateTreeSize(graph, node),
+    })),
+  )
+  return nodes
+}
+
 class ParentsExplorer extends React.PureComponent<Props> {
   allNodesSelector = createSelector((_, p) => p.graph, graph => getAllNodes(graph))
   getAllNodes = () => this.allNodesSelector(this.state, this.props)
 
   entryNodesSelector = createSelector(
     (_, p) => p.graph,
-    graph => keepOnlyEntryModules(graph, getAllNodes(graph)),
+    graph => prepareEntryNodes(graph, getAllNodes(graph)),
   )
   getEntryNodes = () => this.entryNodesSelector(this.state, this.props)
 
@@ -72,7 +84,7 @@ class ParentsExplorer extends React.PureComponent<Props> {
     (_, p) => p.graph,
     this.parentNodesSelector,
     async (graph, nodes) => {
-      return keepOnlyEntryModules(graph, await nodes)
+      return prepareEntryNodes(graph, await nodes)
     },
   )
   getParentEntryNodes = () => this.parentEntryNodesSelector(this.state, this.props)
@@ -125,12 +137,20 @@ class ParentsExplorer extends React.PureComponent<Props> {
         )
       },
       renderEmpty: () => 'No entries found',
+      listProps: () => ({
+        groupNodesBy: '',
+        orderNodesBy: [['treeSize'], ['desc']],
+      }),
     },
     entries: {
       getNodes: this.getEntryNodes,
       renderTitle: () => 'Entry Modules',
       renderInfo: () => 'Select entry module to start from',
       renderEmpty: () => 'No modules found',
+      listProps: () => ({
+        groupNodesBy: '',
+        orderNodesBy: [['treeSize'], ['desc']],
+      }),
     },
   }
 

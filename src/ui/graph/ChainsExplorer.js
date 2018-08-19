@@ -89,7 +89,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
   }
 
   _waitingForChainsPromise: any
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     const baseGraphChanged = this.props.baseGraph !== prevProps.baseGraph
     const {fromNode: currentFrom, toNode: currentTo} = this.props
     const {fromNode: prevFrom, toNode: prevTo} = prevProps
@@ -105,10 +105,9 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
       })
       this._waitingForChainsPromise = chainsPromise
       if (currentFrom && currentTo && chainsPromise) {
-        chainsPromise.then(chains => {
-          if (this._waitingForChainsPromise !== chainsPromise) return
-          this.setState({selectedChain: chains[0] || [currentFrom.id, currentTo.id]})
-        })
+        const chains = await chainsPromise
+        if (this._waitingForChainsPromise !== chainsPromise) return
+        this.setState({selectedChain: chains[0] || [currentFrom.id, currentTo.id]})
       }
     }
   }

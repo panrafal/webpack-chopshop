@@ -3,7 +3,7 @@ import type {Graph, Node, NodeID} from '../../analysis/graph'
 
 import * as React from 'react'
 import classNames from 'classnames'
-import {withStyles, ListItem, ListItemText, ListItemSecondaryAction} from '@material-ui/core'
+import {withStyles, ListItem, ListItemText} from '@material-ui/core'
 import NodeSize from './NodeSize'
 import NodeName from './NodeName'
 
@@ -14,7 +14,7 @@ type Props = {|
   node: Node,
   hidePackage?: boolean,
   retainerRootNode?: ?Node,
-  secondaryActions?: React.Node[],
+  children?: React.Node,
   selectFromNode?: (node: NodeID) => void,
   selectToNode?: (node: NodeID) => void,
   onClick?: () => void,
@@ -44,7 +44,6 @@ function NodeItem({
   children,
   classes,
   className,
-  secondaryActions = [],
 }: Props) {
   // {selectFromNode && <a onClick={() => selectFromNode(node.id)}>From</a>}
   // {selectToNode && <a onClick={() => selectToNode(node.id)}>To</a>}
@@ -71,9 +70,7 @@ function NodeItem({
             />
           }
         />
-        {secondaryActions.map((action, index) => (
-          <ListItemSecondaryAction key={index}>{action}</ListItemSecondaryAction>
-        ))}
+        {children}
       </ListItem>
     </div>
   )
