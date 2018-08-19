@@ -177,7 +177,7 @@ class NodeList extends React.PureComponent<Props, State> {
                 }
                 return renderItem({
                   node,
-                  key: node.id,
+                  key: index,
                   baseGraph,
                   graph,
                   hidePackage: Boolean(groupNodesBy),

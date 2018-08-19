@@ -63,8 +63,8 @@ class ChangesView extends React.PureComponent<Props> {
             const toName = edge.name || toNode.name || toNode.id
             textsToCopy.push(
               edge.enabled
-                ? `Add "${toName}" to "${fromName}"`
-                : `Remove "${toName}" from "${fromName}"`,
+                ? `In "${fromName}" add "${toName}"`
+                : `In "${fromName}" remove "${toName}"`,
             )
             return (
               <ListItem key={index} graph={graph} change={change}>
@@ -79,11 +79,11 @@ class ChangesView extends React.PureComponent<Props> {
                   primary={
                     edge.enabled ? (
                       <>
-                        Add "<b>{toName}</b>" to "<b>{fromName}</b>"
+                        In "<b>{fromName}</b>" add "<b>{toName}</b>"
                       </>
                     ) : (
                       <>
-                        Remove "<b>{toName}</b>" from "<b>{fromName}</b>"
+                        In "<b>{fromName}</b>" remove "<b>{toName}</b>"
                       </>
                     )
                   }
