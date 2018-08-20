@@ -102,7 +102,7 @@ class App extends React.Component<{}, AppState> {
   pushHistory = () => {
     const {fromNodeId, toNodeId} = this.state
     const encodedState = encodeUrlStateHash({fromNodeId, toNodeId})
-    window.history.pushState(null, null, `/#${encodedState}`)
+    window.history.pushState(null, null, `#${encodedState}`)
   }
 
   openFile = async callback => {

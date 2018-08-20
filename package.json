@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://panrafal.github.io/webpack-chopshop",
+  "license": "MIT",
   "dependencies": {
     "@material-ui/core": "^1.4.3",
     "classnames": "^2.2.6",
@@ -31,6 +32,7 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "start": "react-app-rewired start",
+    "start:production": "PUBLIC_URL=/ yarn build && serve -s build",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-app-rewired eject",
