@@ -7,12 +7,13 @@ import {getNode} from './graph'
 async function walkGraph(
   graph: Graph,
   node: Node,
-  options: {visited: {[NodeID]: boolean}, nodesKey: string},
+  options: {visited: {[NodeID]: Node}, nodesKey: string},
 ) {
-  options.visited[node.id] = true
+  const {nodesKey, visited} = options
+  visited[node.id] = node
 
-  for (const childId of node[options.nodesKey]) {
-    if (options.visited[childId]) continue
+  for (const childId of node[nodesKey]) {
+    if (visited[childId]) continue
     await walkGraph(graph, getNode(graph, childId), options)
     await graph.idle()
   }
@@ -44,6 +45,32 @@ export function getDeepNodeParents(graph: Graph, node: Node): Promise<$ReadOnlyA
   return graph.cache[key]
 }
 
+// Returns all children nodes, whose edge is disabled. It doesn't go into the disabled
+// nodes, so it's useful to find first nodes where dependency chain was broken apart.
+export function getDisabledLeafChildren(graph: Graph, node: Node): Promise<$ReadOnlyArray<NodeID>> {
+  const key = `getDisabledLeafChildren:${node.id}`
+  if (!graph.cache[key]) {
+    const visited = {}
+
+    // Get all accessible children
+    graph.cache[key] = walkGraph(graph, node, {visited, nodesKey: 'children'}).then(() => {
+      const children: Node[] = (Object.values(visited): any)
+      const found = {}
+      // Gather all children. If they were not visited in the first pass,
+      // then they HAVE to be disabled
+      for (const child of children) {
+        for (const deepChildId of child.allChildren) {
+          if (!visited[deepChildId]) {
+            found[deepChildId] = true
+          }
+        }
+      }
+      return Object.keys(found)
+    })
+  }
+  return graph.cache[key]
+}
+
 // Returns all nodes introduced to the dependency tree of rootNode by adding the node to it.
 // In another word - how many modules are retained in the dependency tree because of the `node`
 // Does not include the node itself
@@ -55,7 +82,7 @@ export function getRetainedNodes(
   const key = `getRetainedNodes:${rootNode.id}:${node.id}`
   if (!graph.cache[key]) {
     const visited = {
-      [node.id]: true,
+      [node.id]: node,
     }
     const allChildrenPromise = getDeepNodeChildren(graph, rootNode)
     const rootsChildrenPromise = walkGraph(graph, rootNode, {visited, nodesKey: 'children'}).then(

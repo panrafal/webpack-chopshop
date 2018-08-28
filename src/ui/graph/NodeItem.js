@@ -7,7 +7,7 @@ import {withStyles, ListItem, ListItemText} from '@material-ui/core'
 import NodeSize from './NodeSize'
 import NodeName from './NodeName'
 
-type Props = {|
+export type Props = {|
   baseGraph: Graph,
   graph: Graph,
   checked?: boolean,

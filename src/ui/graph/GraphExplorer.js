@@ -2,6 +2,7 @@
 
 import type {Graph, Node, NodeID} from '../../analysis/graph'
 import type {Props as NodeListProps} from './NodeList'
+import type {Props as NodeItemProps} from './NodeItem'
 
 import * as React from 'react'
 import classNames from 'classnames'
@@ -29,6 +30,7 @@ type Mode = {
   renderInfo: () => React.Node,
   renderEmpty: () => string,
   listProps?: () => $Shape<NodeListProps>,
+  itemProps?: Object => $Shape<NodeItemProps>,
 }
 
 export type Props = {|
@@ -118,6 +120,7 @@ class GraphExplorer extends React.Component<Props, State> {
             retainerRootNode={retainerRootNode}
             onClick={() => onNodeSelect(itemProps.node.id)}
             checked={selected ? selected.id === itemProps.node.id : false}
+            {...mode.itemProps && mode.itemProps(itemProps)}
           >
             {pinned.indexOf(itemProps.node.id) >= 0 ? (
               <ListItemSecondaryAction>

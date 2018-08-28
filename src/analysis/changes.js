@@ -21,7 +21,7 @@ export function addChange(graph: Graph, changes: $ReadOnlyArray<Change>, change:
   const newChanges = reject(changes, pick(change, ['change', 'from', 'to']))
   if (change.change === 'edge') {
     const edge = resolveEdgeForNodes(graph, change.from, change.to)
-    const wasOriginallyEnabled = edge ? edge.kind !== MOCKED_EDGE_KIND : false
+    const wasOriginallyEnabled = edge ? edge.kind !== MOCKED_EDGE_KIND && !edge.async : false
     // Add to queue only if it's a different state than originally
     if (change.enabled !== wasOriginallyEnabled) {
       newChanges.push(change)

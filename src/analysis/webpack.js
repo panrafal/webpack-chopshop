@@ -7,12 +7,12 @@ import type {Graph} from './graph'
 export async function readWebpackStats(
   stats: Object,
   options?: {
-    includeAsyncImports?: boolean,
+    enableAllAsyncImports?: boolean,
     includeChunks?: boolean,
   } = {},
 ): Promise<Graph> {
   const graph = createGraph()
-  const {includeAsyncImports = false, includeChunks = false} = options
+  const {enableAllAsyncImports = false, includeChunks = false} = options
 
   const {chunks = [], modules = []} = stats
 
@@ -71,15 +71,13 @@ export async function readWebpackStats(
         continue
       }
       const async = type.indexOf('import()') >= 0 && type.indexOf('eager') < 0
-      if (async && includeAsyncImports === false) {
-        continue
-      }
       addEdge(graph, {
         from: getNodeId('module', reason.moduleIdentifier),
         to: getNodeId('module', module.identifier),
         kind: type,
         name: reason.userRequest,
         async,
+        enabled: !async || enableAllAsyncImports ? true : false,
         original: reason,
       })
     }

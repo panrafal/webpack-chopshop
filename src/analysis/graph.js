@@ -38,8 +38,10 @@ export type NodeSpec = {|
 export type Node = {
   ...NodeSpec,
   parents: Array<NodeID>,
+  // Enabled children of this Node
   children: Array<NodeID>,
-  //
+  // All children of this Node (enabled or not)
+  allChildren: Array<NodeID>,
   treeSize?: number,
 }
 
@@ -116,7 +118,7 @@ export function getParents(graph: Graph, node: Node): $ReadOnlyArray<Edge> {
 }
 
 export function addNode(graph: Graph, _node: NodeSpec): Node {
-  const node = {parents: [], children: [], ..._node}
+  const node = {parents: [], children: [], allChildren: [], ..._node}
   if (graph.nodes[node.id]) throw new Error(`Node ${node.id} already in graph`)
   graph.nodes[node.id] = node
   return node
@@ -136,6 +138,7 @@ export function addEdge(graph: Graph, _edge: EdgeSpec): Edge {
   graph.edges[id] = edge
   const from = getNode(graph, edge.from)
   const to = getNode(graph, edge.to)
+  from.allChildren.push(edge.to)
   if (edge.enabled) {
     from.children.push(edge.to)
     to.parents.push(edge.from)
@@ -167,6 +170,7 @@ export function cloneGraph(graph: Graph): Graph {
       ...node,
       parents: [...node.parents],
       children: [...node.children],
+      allChildren: [...node.allChildren],
     })),
     edges: mapValues(graph.edges, edge => ({...edge})),
     errors: [...graph.errors],

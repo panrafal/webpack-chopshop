@@ -9,7 +9,7 @@ import {createSelector} from 'reselect'
 import Async from 'react-promise'
 import {withStyles, Typography, LinearProgress, IconButton, Icon, Tooltip} from '@material-ui/core'
 
-import {findChains} from '../../analysis/chains'
+import {findChains, findAllChains} from '../../analysis/chains'
 import ErrorBox from '../ErrorBox'
 import NodeCard from './NodeCard'
 import {getNodes, resolveEdgeForNodes} from '../../analysis/graph'
@@ -105,7 +105,11 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
       })
       this._waitingForChainsPromise = chainsPromise
       if (currentFrom && currentTo && chainsPromise) {
-        const chains = await chainsPromise
+        let chains = await chainsPromise
+        if (chains.length === 0) {
+          // if no chains are found, search for chains with disabled edges
+          chains = await findAllChains(this.props.graph, currentFrom, currentTo)
+        }
         if (this._waitingForChainsPromise !== chainsPromise) return
         this.setState({selectedChain: chains[0] || [currentFrom.id, currentTo.id]})
       }
