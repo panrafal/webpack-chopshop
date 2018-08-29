@@ -54,44 +54,46 @@ class ChangesView extends React.PureComponent<Props> {
     return (
       <div>
         <List className={classes.list}>
-          {changes.map((change, index) => {
-            const edge = resolveEdgeForNodes(graph, change.from, change.to)
-            if (!edge) return null
-            const fromNode = getNode(graph, edge.from)
-            const toNode = getNode(graph, edge.to)
-            const fromName = fromNode.file || fromNode.name || fromNode.id
-            const toName = edge.name || toNode.name || toNode.id
-            textsToCopy.push(
-              edge.enabled
-                ? `In "${fromName}" add "${toName}"`
-                : `In "${fromName}" remove "${toName}"`,
-            )
-            return (
-              <ListItem key={index} graph={graph} change={change}>
-                <IconButton
-                  aria-label="Delete"
-                  className={classes.delete}
-                  onClick={() => onChangesUpdate(without(changes, change))}
-                >
-                  <Icon>delete</Icon>
-                </IconButton>
-                <ListItemText
-                  primary={
-                    edge.enabled ? (
-                      <>
-                        In "<b>{fromName}</b>" add "<b>{toName}</b>"
-                      </>
-                    ) : (
-                      <>
-                        In "<b>{fromName}</b>" remove "<b>{toName}</b>"
-                      </>
-                    )
-                  }
-                />
-                <ListItemSecondaryAction />
-              </ListItem>
-            )
-          })}
+          {changes
+            .map((change, index) => {
+              const edge = resolveEdgeForNodes(graph, change.from, change.to)
+              if (!edge) return null
+              const fromNode = getNode(graph, edge.from)
+              const toNode = getNode(graph, edge.to)
+              const fromName = fromNode.file || fromNode.name || fromNode.id
+              const toName = edge.name || toNode.name || toNode.id
+              textsToCopy.push(
+                edge.enabled
+                  ? `In "${fromName}" add "${toName}"`
+                  : `In "${fromName}" remove "${toName}"`,
+              )
+              return (
+                <ListItem key={index} graph={graph} change={change}>
+                  <IconButton
+                    aria-label="Delete"
+                    className={classes.delete}
+                    onClick={() => onChangesUpdate(without(changes, change))}
+                  >
+                    <Icon>delete</Icon>
+                  </IconButton>
+                  <ListItemText
+                    primary={
+                      edge.enabled ? (
+                        <>
+                          In "<b>{fromName}</b>" add "<b>{toName}</b>"
+                        </>
+                      ) : (
+                        <>
+                          In "<b>{fromName}</b>" remove "<b>{toName}</b>"
+                        </>
+                      )
+                    }
+                  />
+                  <ListItemSecondaryAction />
+                </ListItem>
+              )
+            })
+            .reverse()}
           {changes.length === 0 && (
             <EmptyBox icon={<Icon>block</Icon>}>
               No changes applied. Try breaking links between dependencies

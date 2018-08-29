@@ -74,6 +74,8 @@ class NodeList extends React.PureComponent<Props, State> {
     nodes => {
       return new Fuse(nodes, {
         keys: ['name', 'id', 'kind'],
+        tokenize: true,
+        matchAllTokens: true,
       })
     },
   )
