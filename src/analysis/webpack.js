@@ -9,12 +9,13 @@ export async function readWebpackStats(
   options?: {
     enableAllAsyncImports?: boolean,
     includeChunks?: boolean,
+    includeAssets?: boolean,
   } = {},
 ): Promise<Graph> {
   const graph = createGraph()
-  const {enableAllAsyncImports = false, includeChunks = false} = options
+  const {enableAllAsyncImports = false, includeChunks = false, includeAssets = true} = options
 
-  const {chunks = [], modules = []} = stats
+  const {chunks = [], assets = [], modules = []} = stats
 
   // create chunks
   if (includeChunks) {
@@ -26,6 +27,21 @@ export async function readWebpackStats(
         name: chunk.names[0],
         size: 0,
         original: chunk,
+      })
+      await graph.idle()
+    }
+  }
+
+  // create chunks
+  if (includeAssets) {
+    for (const asset of assets) {
+      addNode(graph, {
+        id: getNodeId('asset', asset.name),
+        originalId: asset.name,
+        kind: 'asset',
+        name: asset.name,
+        size: asset.size,
+        original: asset,
       })
       await graph.idle()
     }
@@ -54,12 +70,26 @@ export async function readWebpackStats(
 
   // create edges
   for (const module of modules) {
+    if (module.id == null) {
+      // module has been removed at optimization phase (concatenated, tree-shaken, etc)
+      continue
+    }
     if (includeChunks) {
       for (const chunkId of module.chunks) {
         addEdge(graph, {
           from: getNodeId('chunk', chunkId),
-          to: getNodeId('module', module.id),
+          to: getNodeId('module', module.identifier),
           kind: 'chunk child',
+          original: module,
+        })
+      }
+    }
+    if (includeAssets) {
+      for (const assetId of module.assets) {
+        addEdge(graph, {
+          from: getNodeId('module', module.identifier),
+          to: getNodeId('asset', assetId),
+          kind: 'asset child',
           original: module,
         })
       }
