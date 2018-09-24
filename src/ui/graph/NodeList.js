@@ -85,7 +85,7 @@ class NodeList extends React.PureComponent<Props, State> {
     (_, p) => p.orderNodesBy,
     (fuse, search, orderNodesBy) => {
       const nodes = search ? fuse.search(search) : fuse.list
-      if (orderNodesBy) {
+      if (orderNodesBy && !search) {
         return orderBy(nodes, ...orderNodesBy)
       }
       return nodes
@@ -136,8 +136,10 @@ class NodeList extends React.PureComponent<Props, State> {
 
   renderList() {
     const {classes, baseGraph, graph, groupNodesBy, renderItem, renderEmpty} = this.props
-    // $FlowFixMe
-    const nodes = this.nodesSelector(this.state, this.props)
+    const nodes = this.state.search
+      ? // $FlowFixMe
+        this.searchSelector(this.state, this.props)
+      : this.nodesSelector(this.state, this.props)
 
     return (
       <div className={classes.listContainer}>
