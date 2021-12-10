@@ -187,8 +187,8 @@ class GraphExplorer extends React.Component<Props, State> {
           onClick={this.handleModeMenuOpen}
         >
           <ListItemText>
-            <Typography variant="headline">{mode.renderTitle()}</Typography>
-            <Typography variant="subheading" gutterBottom>
+            <Typography variant="h5">{mode.renderTitle()}</Typography>
+            <Typography variant="subtitle1" gutterBottom>
               {mode.renderInfo()}
             </Typography>
           </ListItemText>

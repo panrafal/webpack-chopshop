@@ -53,7 +53,7 @@ function NodeItem({
         disableGutters
         // @ts-expect-error mui
         ContainerComponent="div"
-        button={!!onClick}
+        button={true}
         onClick={onClick}
         className={classNames(className, classes.root)}
       >
@@ -61,7 +61,7 @@ function NodeItem({
           primary={<NodeName node={node} hidePackage={hidePackage} tooltip />}
           primaryTypographyProps={{
             noWrap: true,
-            color: checked ? "secondary" : "default",
+            color: checked ? "secondary" : "initial",
           }}
           secondary={
             <NodeSize

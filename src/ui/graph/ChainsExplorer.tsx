@@ -244,8 +244,8 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
     return (
       <div className={classNames(className, classes.root)}>
         <div className={classes.chains}>
-          <Typography variant="headline">Dependency chains</Typography>
-          <Typography variant="subheading" gutterBottom>
+          <Typography variant="h5">Dependency chains</Typography>
+          <Typography variant="subtitle1" gutterBottom>
             Select one of the dependency chains between these two nodes. Try
             breaking the links between them to see the impact of your changes.
           </Typography>

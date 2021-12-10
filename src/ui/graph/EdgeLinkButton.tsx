@@ -6,7 +6,7 @@ import { withStyles, Icon, IconButton, Tooltip } from "@material-ui/core";
 
 type Props = {
   edge: Edge;
-  onClick: React.MouseEventHandler;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
   classes: any;
   className?: string;
 };

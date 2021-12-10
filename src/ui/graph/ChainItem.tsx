@@ -11,7 +11,7 @@ type Props = {
   chain: ReadonlyArray<NodeID>;
   through: ReadonlyArray<NodeID>;
   checked?: boolean;
-  onClick: React.MouseEventHandler;
+  onClick: React.MouseEventHandler<HTMLDivElement>;
   style: any;
   classes: any;
 };
@@ -64,7 +64,7 @@ function ChainItem({
           secondary={`${chain.length - 1} nodes deep`}
           primaryTypographyProps={{
             noWrap: true,
-            color: checked ? "secondary" : "default",
+            color: checked ? "secondary" : "initial",
           }}
         />
       </ListItem>

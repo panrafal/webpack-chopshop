@@ -234,6 +234,7 @@ class App extends React.Component<{}, AppState> {
       pinned,
     } = this.state;
     return (
+      // @ts-expect-error TODO: WTF?
       <AppUI
         baseGraph={baseGraph}
         graph={graph}

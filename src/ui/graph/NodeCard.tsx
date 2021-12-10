@@ -85,10 +85,10 @@ class NodeCard extends React.PureComponent<Props, State> {
       <div className={classNames(className, classes.root)}>
         <Card className={classes.card}>
           <CardContent>
-            <Typography variant="headline" noWrap>
+            <Typography variant="h5" noWrap>
               <NodeName node={node} hidePackage tooltip />
             </Typography>
-            <Typography variant="subheading">
+            <Typography variant="subtitle1">
               <NodeName node={node} onlyPackage />
             </Typography>
             <Typography color="textSecondary">
@@ -100,7 +100,7 @@ class NodeCard extends React.PureComponent<Props, State> {
               />
             </Typography>
           </CardContent>
-          <CardActions className={classes.actions} disableActionSpacing>
+          <CardActions className={classes.actions} disableSpacing>
             {actions}
             <IconButton
               className={classNames(

@@ -210,7 +210,7 @@ class AppUI extends React.Component<Props> {
                 </Button>
               )}
               <Typography
-                variant="title"
+                variant="h6"
                 color="inherit"
                 className={classes.title}
               >
