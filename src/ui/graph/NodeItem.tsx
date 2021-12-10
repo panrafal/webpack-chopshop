@@ -37,7 +37,6 @@ function NodeItem({
   retainerRootNode,
   selectFromNode,
   selectToNode,
-  selectNode,
   hidePackage,
   style,
   children,
@@ -52,6 +51,7 @@ function NodeItem({
       <ListItem
         dense
         disableGutters
+        // @ts-expect-error mui
         ContainerComponent="div"
         button={!!onClick}
         onClick={onClick}

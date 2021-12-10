@@ -1,5 +1,5 @@
 import { mapValues } from "lodash";
-import { backgroundProcessor } from "./utils";
+import { BackgroundProcessor, backgroundProcessor } from "./utils";
 
 export type NodeID = string;
 export type EdgeID = string;
@@ -50,7 +50,7 @@ export type Graph = {
   };
   errors: Array<any>;
   cache: any;
-  idle: ReturnType<typeof backgroundProcessor>;
+  idle: BackgroundProcessor;
 };
 
 export function createGraph(): Graph {

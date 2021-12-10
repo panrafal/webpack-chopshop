@@ -25,4 +25,5 @@ const Dot = ({ classes, children }: Props) => (
   <div className={classes.root}>{children}</div>
 );
 
+// @ts-expect-error mui
 export default withStyles(styles)(Dot);

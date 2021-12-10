@@ -14,7 +14,7 @@ async function gatherChains(
     };
     nodesKey: string;
   }
-) {
+): Promise<NodeID[][]> {
   const { nodesKey, visited } = options;
 
   const currentPath = [...path, node.id];

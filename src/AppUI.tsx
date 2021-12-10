@@ -273,4 +273,5 @@ class AppUI extends React.Component<Props> {
   }
 }
 
+// @ts-expect-error mui
 export default withStyles(styles)(AppUI);

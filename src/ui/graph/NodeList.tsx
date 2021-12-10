@@ -82,7 +82,9 @@ class NodeList extends React.PureComponent<Props, State> {
     (s) => s.search,
     (_, p) => p.orderNodesBy,
     (fuse, search, orderNodesBy) => {
-      const nodes = search ? fuse.search(search) : fuse.list;
+      const nodes = search ? fuse.search(search) : 
+      // @ts-expect-error Fuse
+      fuse.list;
       if (orderNodesBy && !search) {
         return orderBy(nodes, ...orderNodesBy);
       }
@@ -156,6 +158,7 @@ class NodeList extends React.PureComponent<Props, State> {
                   return (
                     <ListItem
                       dense
+                      // @ts-expect-error mui
                       ContainerComponent="div"
                       button
                       onClick={() =>
@@ -233,4 +236,5 @@ class NodeList extends React.PureComponent<Props, State> {
   }
 }
 //scrollToIndex={scrollToIndex >= 0 ? scrollToIndex : null}
+// @ts-expect-error mui
 export default withStyles(styles)(NodeList);

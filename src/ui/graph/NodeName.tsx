@@ -96,4 +96,6 @@ function NodeName({
 
   return text;
 }
+
+// @ts-expect-error mui
 export default withStyles(styles)(NodeName);

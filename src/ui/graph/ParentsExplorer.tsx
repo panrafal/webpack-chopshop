@@ -6,7 +6,7 @@ import { createSelector } from "reselect";
 import { withStyles } from "@material-ui/core";
 
 import { getNodes, getAllNodes } from "../../analysis/graph";
-import GraphExplorer from "./GraphExplorer";
+import GraphExplorer, { Modes } from "./GraphExplorer";
 import NodeName from "./NodeName";
 import {
   getDeepNodeParents,
@@ -93,7 +93,7 @@ class ParentsExplorer extends React.PureComponent<Props> {
   getParentEntryNodes = () =>
     this.parentEntryNodesSelector(this.state, this.props);
 
-  modes = {
+  modes: Modes = {
     all: {
       getNodes: this.getAllNodes,
       renderTitle: () => "All Nodes",
@@ -158,7 +158,7 @@ class ParentsExplorer extends React.PureComponent<Props> {
     },
   };
 
-  initialModes = {
+  initialModes: Modes = {
     initialAll: this.modes.all,
     initialEntries: this.modes.entries,
     initialLeafs: {

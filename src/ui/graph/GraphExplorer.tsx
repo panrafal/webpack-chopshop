@@ -22,7 +22,7 @@ import EmptyBox from "../EmptyBox";
 import NodeItem from "./NodeItem";
 import NodeList from "./NodeList";
 
-type Mode = {
+export type Mode = {
   getNodes: () => ReadonlyArray<Node> | Promise<ReadonlyArray<Node>>;
   renderTitle: () => React.ReactNode;
   renderInfo: () => React.ReactNode;
@@ -31,15 +31,17 @@ type Mode = {
   itemProps?: (a: any) => Partial<NodeItemProps>;
 };
 
+export type Modes = {
+  [x: string]: Mode;
+}
+
 export type Props = {
   baseGraph: Graph;
   graph: Graph;
   pinned: ReadonlyArray<NodeID>;
   selected: Node | undefined | null;
   retainerRootNode?: Node | null;
-  modes: {
-    [x: string]: Mode;
-  };
+  modes: Modes;
   defaultMode: string;
   onNodeSelect: (a: NodeID) => void;
   classes: any;
@@ -81,7 +83,7 @@ class GraphExplorer extends React.Component<Props, State> {
     (nodes) => Promise.resolve(nodes)
   );
 
-  static getDerivedStateFromProps({ modes = {} }, state = {}) {
+  static getDerivedStateFromProps({ modes = {} }, state: State) {
     if (!modes[state.modeId]) {
       // If selected mode is not available anymore, switch to default
       return { modeId: null };
@@ -205,4 +207,5 @@ class GraphExplorer extends React.Component<Props, State> {
   }
 }
 
+// @ts-expect-error mui
 export default withStyles(styles)(GraphExplorer);

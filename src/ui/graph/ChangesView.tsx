@@ -66,7 +66,7 @@ class ChangesView extends React.PureComponent<Props> {
                   : `In "${fromName}" remove "${toName}"`
               );
               return (
-                <ListItem key={index} graph={graph} change={change}>
+                <ListItem key={index}>
                   <IconButton
                     aria-label="Delete"
                     className={classes.delete}
@@ -114,4 +114,5 @@ class ChangesView extends React.PureComponent<Props> {
   }
 }
 
+// @ts-expect-error mui
 export default withStyles(styles)(ChangesView);

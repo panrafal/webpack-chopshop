@@ -7,7 +7,7 @@ import { createSelector } from "reselect";
 import { withStyles } from "@material-ui/core";
 
 import { getNodes, getAllNodes } from "../../analysis/graph";
-import GraphExplorer from "./GraphExplorer";
+import GraphExplorer, { Mode } from "./GraphExplorer";
 import NodeName from "./NodeName";
 import {
   keepOnlyLeafModules,
@@ -113,7 +113,7 @@ class ChildrenExplorer extends React.PureComponent<Props> {
   );
   getChildLeafNodes = () => this.childLeafNodesSelector(this.state, this.props);
 
-  modes = {
+  modes: {[key: string]: Mode} = {
     all: {
       getNodes: this.getAllNodes,
       renderTitle: () => "All Nodes",

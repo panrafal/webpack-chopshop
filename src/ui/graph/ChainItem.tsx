@@ -11,7 +11,7 @@ type Props = {
   chain: ReadonlyArray<NodeID>;
   through: ReadonlyArray<NodeID>;
   checked?: boolean;
-  onClick: Function;
+  onClick: React.MouseEventHandler;
   style: any;
   classes: any;
 };
@@ -47,6 +47,7 @@ function ChainItem({
     <div style={style}>
       <ListItem
         dense
+        // @ts-expect-error mui
         ContainerComponent="div"
         button
         onClick={onClick}
@@ -71,4 +72,5 @@ function ChainItem({
   );
 }
 
+// @ts-expect-error mui
 export default withStyles(styles)(ChainItem);

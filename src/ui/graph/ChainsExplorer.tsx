@@ -80,9 +80,9 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
   };
 
   chainsPromiseSelector = createSelector(
-    (p) => p.graph,
-    (p) => p.fromNode,
-    (p) => p.toNode,
+    (p: Props) => p.graph,
+    (p: Props) => p.fromNode,
+    (p: Props) => p.toNode,
     (graph, fromNode, toNode) => {
       if (!fromNode || !toNode) return null;
       return findChains(graph, fromNode, toNode);
@@ -253,7 +253,7 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
             promise={chainsPromise}
             then={(chains) => this.renderChains(chains)}
             catch={(error) => <ErrorBox>{error}</ErrorBox>}
-            pending={<LinearProgress className={classes.listProgress} />}
+            pending={() => <LinearProgress className={classes.listProgress} />}
           />
         </div>
         <div className={classes.selectedChain}>
@@ -296,4 +296,5 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
   }
 }
 
+// @ts-expect-error mui
 export default withStyles(styles)(ChainsExplorer);

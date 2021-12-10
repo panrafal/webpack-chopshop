@@ -30,4 +30,5 @@ const EmptyBox = ({ classes, children, icon }: Props) => (
   </div>
 );
 
+// @ts-expect-error mui
 export default withStyles(styles)(EmptyBox);

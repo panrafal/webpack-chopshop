@@ -156,4 +156,5 @@ class NodeCard extends React.PureComponent<Props, State> {
   }
 }
 
+// @ts-expect-error mui
 export default withStyles(styles)(NodeCard);

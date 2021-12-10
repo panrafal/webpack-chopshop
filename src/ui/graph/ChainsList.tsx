@@ -85,4 +85,5 @@ function ChainsList(props: Props) {
   );
 }
 
+// @ts-expect-error mui
 export default withStyles(styles)(ChainsList);
