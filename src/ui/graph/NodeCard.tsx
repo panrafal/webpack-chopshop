@@ -1,9 +1,7 @@
-// @flow
+import type { Graph, Node, Edge } from "../../analysis/graph";
 
-import type {Graph, Node, Edge} from '../../analysis/graph'
-
-import * as React from 'react'
-import classNames from 'classnames'
+import * as React from "react";
+import classNames from "classnames";
 import {
   withStyles,
   Typography,
@@ -13,66 +11,75 @@ import {
   CardContent,
   Collapse,
   CardActions,
-} from '@material-ui/core'
+} from "@material-ui/core";
 
-import NodeSize from './NodeSize'
-import NodeName from './NodeName'
+import NodeSize from "./NodeSize";
+import NodeName from "./NodeName";
 
-type Props = {|
-  baseGraph: Graph,
-  graph: Graph,
-  node: Node,
-  retainerRootNode?: ?Node,
-  edge?: ?Edge,
-  actions?: React.Node,
-  classes: Object,
-  className?: string,
-|}
+type Props = {
+  baseGraph: Graph;
+  graph: Graph;
+  node: Node;
+  retainerRootNode?: Node | null;
+  edge?: Edge | null;
+  actions?: React.ReactNode;
+  classes: any;
+  className?: string;
+};
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    display: 'flex',
-    position: 'relative',
-    flexDirection: 'column',
+    display: "flex",
+    position: "relative",
+    flexDirection: "column",
     flexShrink: 0,
     flexGrow: 0,
-    justifyContent: 'stretch',
+    justifyContent: "stretch",
   },
   card: {
     marginBottom: 24,
-    position: 'relative',
+    position: "relative",
   },
   edgeButton: {
-    position: 'absolute',
+    position: "absolute",
     left: -32,
     top: 12,
   },
   expand: {
-    transform: 'rotate(0deg)',
-    transition: theme.transitions.create('transform', {
+    transform: "rotate(0deg)",
+    transition: theme.transitions.create("transform", {
       duration: theme.transitions.duration.shortest,
     }),
-    marginLeft: 'auto',
-    [theme.breakpoints.up('sm')]: {
+    marginLeft: "auto",
+    [theme.breakpoints.up("sm")]: {
       marginRight: -8,
     },
   },
   expandOpen: {
-    transform: 'rotate(180deg)',
+    transform: "rotate(180deg)",
   },
-})
+});
 
 type State = {
-  expanded: boolean,
-}
+  expanded: boolean;
+};
 
 class NodeCard extends React.PureComponent<Props, State> {
   state = {
     expanded: false,
-  }
+  };
   render() {
-    const {classes, className, baseGraph, graph, node, retainerRootNode, edge, actions} = this.props
-    const {expanded} = this.state
+    const {
+      classes,
+      className,
+      baseGraph,
+      graph,
+      node,
+      retainerRootNode,
+      edge,
+      actions,
+    } = this.props;
+    const { expanded } = this.state;
 
     return (
       <div className={classNames(className, classes.root)}>
@@ -96,8 +103,11 @@ class NodeCard extends React.PureComponent<Props, State> {
           <CardActions className={classes.actions} disableActionSpacing>
             {actions}
             <IconButton
-              className={classNames(classes.expand, expanded && classes.expandOpen)}
-              onClick={() => this.setState({expanded: !expanded})}
+              className={classNames(
+                classes.expand,
+                expanded && classes.expandOpen
+              )}
+              onClick={() => this.setState({ expanded: !expanded })}
             >
               <Icon>expand_more</Icon>
             </IconButton>
@@ -134,7 +144,7 @@ class NodeCard extends React.PureComponent<Props, State> {
                     Edge name
                   </Typography>
                   <Typography variant="body2" gutterBottom>
-                    {edge.name || ''}
+                    {edge.name || ""}
                   </Typography>
                 </>
               )}
@@ -142,8 +152,8 @@ class NodeCard extends React.PureComponent<Props, State> {
           </Collapse>
         </Card>
       </div>
-    )
+    );
   }
 }
 
-export default withStyles(styles)(NodeCard)
+export default withStyles(styles)(NodeCard);

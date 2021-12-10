@@ -1,12 +1,10 @@
-// @flow
+import type { NodeID, Node, Graph } from "./analysis/graph";
+import type { Change } from "./analysis/changes";
 
-import type {NodeID, Node, Graph} from './analysis/graph'
-import type {Change} from './analysis/changes'
-
-import * as React from 'react'
-import classNames from 'classnames'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import Dropzone from 'react-dropzone'
+import * as React from "react";
+import classNames from "classnames";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import Dropzone from "react-dropzone";
 import {
   AppBar,
   Typography,
@@ -16,61 +14,59 @@ import {
   Button,
   Drawer,
   Icon,
-} from '@material-ui/core'
+} from "@material-ui/core";
 
-import ChainsExplorer from './ui/graph/ChainsExplorer'
-import WarningBar from './ui/WarningBar'
-import ErrorBar from './ui/ErrorBar'
-import ChangesView from './ui/graph/ChangesView'
-import EmptyBox from './ui/EmptyBox'
-import ParentsExplorer from './ui/graph/ParentsExplorer'
-import ChildrenExplorer from './ui/graph/ChildrenExplorer'
+import ChainsExplorer from "./ui/graph/ChainsExplorer";
+import WarningBar from "./ui/WarningBar";
+import ErrorBar from "./ui/ErrorBar";
+import ChangesView from "./ui/graph/ChangesView";
+import EmptyBox from "./ui/EmptyBox";
+import ParentsExplorer from "./ui/graph/ParentsExplorer";
+import ChildrenExplorer from "./ui/graph/ChildrenExplorer";
 
-type Props = {|
-  loading: boolean,
-  baseGraph: ?Graph,
-  graph: ?Graph,
-  error: any,
+type Props = {
+  loading: boolean;
+  baseGraph: Graph | undefined | null;
+  graph: Graph | undefined | null;
+  error: any;
+  fromNode: Node | undefined | null;
+  toNode: Node | undefined | null;
+  changes: ReadonlyArray<Change>;
+  showChanges: boolean;
+  pinned: ReadonlyArray<NodeID>;
+  onAddChange: (a: Change) => any;
+  onFromNodeSelect: (a: NodeID) => any;
+  onToNodeSelect: (a: NodeID) => any;
+  onNodesSelectionReset: () => any;
+  onChangesUpdate: (a: ReadonlyArray<Change>) => any;
+  onFileDrop: (files: File[], rejectedFiles: File[]) => any;
+  onShowChangesToggle: () => any;
+  onPinnedToggle: (a: NodeID) => any;
+  classes: any;
+};
 
-  fromNode: ?Node,
-  toNode: ?Node,
-  changes: $ReadOnlyArray<Change>,
-  showChanges: boolean,
-  pinned: $ReadOnlyArray<NodeID>,
-
-  onAddChange: Change => any,
-  onFromNodeSelect: NodeID => any,
-  onToNodeSelect: NodeID => any,
-  onNodesSelectionReset: () => any,
-  onChangesUpdate: ($ReadOnlyArray<Change>) => any,
-  onFileDrop: (files: File[], rejectedFiles: File[]) => any,
-  onShowChangesToggle: () => any,
-  onPinnedToggle: NodeID => any,
-  classes: Object,
-|}
-
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    display: 'flex',
-    height: '100vh',
+    display: "flex",
+    height: "100vh",
     minWidth: 1200,
-    flexDirection: 'column',
-    justifyContent: 'stretch',
-    fontFamily: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+    flexDirection: "column",
+    justifyContent: "stretch",
+    fontFamily: ["Roboto", "Helvetica", "Arial", "sans-serif"],
   },
   container: {
     maxWidth: 2000,
     minWidth: 1200,
-    width: '100vw',
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    width: "100vw",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   panes: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
     flexGrow: 1,
-    justifyContent: 'space-between',
-    padding: '24px 24px 0 24px',
+    justifyContent: "space-between",
+    padding: "24px 24px 0 24px",
   },
   parentsExplorer: {
     width: 250,
@@ -89,27 +85,27 @@ const styles = theme => ({
     flexGrow: 0.2,
   },
   title: {
-    marginLeft: 'auto',
-    textTransform: 'uppercase',
+    marginLeft: "auto",
+    textTransform: "uppercase",
   },
   search: {
-    color: '#fff',
-    borderBottom: '2px solid #fff',
+    color: "#fff",
+    borderBottom: "2px solid #fff",
     width: 300,
   },
   dropzone: {},
   openButton: {},
   openFileMessage: {
-    textAlign: 'center',
-    width: '30em',
-    alignSelf: 'center',
-    margin: 'auto',
-    cursor: 'pointer',
+    textAlign: "center",
+    width: "30em",
+    alignSelf: "center",
+    margin: "auto",
+    cursor: "pointer",
   },
-})
+});
 
 class AppUI extends React.Component<Props> {
-  dropzone: any
+  dropzone: any;
 
   renderGraph() {
     const {
@@ -123,8 +119,8 @@ class AppUI extends React.Component<Props> {
       onToNodeSelect,
       onAddChange,
       onPinnedToggle,
-    } = this.props
-    if (!graph || !baseGraph) return null
+    } = this.props;
+    if (!graph || !baseGraph) return null;
     return (
       <div className={classNames(classes.container, classes.panes)}>
         <ParentsExplorer
@@ -162,7 +158,7 @@ class AppUI extends React.Component<Props> {
           />
         ) : null}
       </div>
-    )
+    );
   }
 
   render() {
@@ -179,7 +175,7 @@ class AppUI extends React.Component<Props> {
       onChangesUpdate,
       onFileDrop,
       onShowChangesToggle,
-    } = this.props
+    } = this.props;
     return (
       <Dropzone
         multiple={false}
@@ -189,8 +185,8 @@ class AppUI extends React.Component<Props> {
         onDrop={onFileDrop}
         className={classes.dropzone}
         disableClick
-        ref={node => {
-          this.dropzone = node
+        ref={(node) => {
+          this.dropzone = node;
         }}
       >
         <div className={classes.root}>
@@ -213,44 +209,54 @@ class AppUI extends React.Component<Props> {
                   Choose root node
                 </Button>
               )}
-              <Typography variant="title" color="inherit" className={classes.title}>
+              <Typography
+                variant="title"
+                color="inherit"
+                className={classes.title}
+              >
                 Webpack Chop Shop
               </Typography>
             </Toolbar>
           </AppBar>
           {loading && <LinearProgress className={classes.progress} />}
-          {graph &&
-            graph.errors.length > 0 && (
-              <WarningBar>
-                There where {graph.errors.length} errors found. Check the console for more
-              </WarningBar>
-            )}
+          {graph && graph.errors.length > 0 && (
+            <WarningBar>
+              There where {graph.errors.length} errors found. Check the console
+              for more
+            </WarningBar>
+          )}
           {error && <ErrorBar>{String(error)}</ErrorBar>}
           {this.renderGraph()}
-          {!graph &&
-            !loading && (
-              <div onClick={() => this.dropzone.open()} className={classes.openFileMessage}>
-                <EmptyBox
-                  icon={
-                    <Icon color="inherit" fontSize="default">
-                      open_in_browser
-                    </Icon>
-                  }
+          {!graph && !loading && (
+            <div
+              onClick={() => this.dropzone.open()}
+              className={classes.openFileMessage}
+            >
+              <EmptyBox
+                icon={
+                  <Icon color="inherit" fontSize="default">
+                    open_in_browser
+                  </Icon>
+                }
+              >
+                First,{" "}
+                <a
+                  href="https://webpack.js.org/api/cli/#stats-options"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  First,{' '}
-                  <a
-                    href="https://webpack.js.org/api/cli/#stats-options"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    generate the stats file in webpack
-                  </a>
-                  , then click here or drop it anywhere on the page to start
-                </EmptyBox>
-              </div>
-            )}
+                  generate the stats file in webpack
+                </a>
+                , then click here or drop it anywhere on the page to start
+              </EmptyBox>
+            </div>
+          )}
           {graph && (
-            <Drawer anchor="top" open={showChanges} onClose={onShowChangesToggle}>
+            <Drawer
+              anchor="top"
+              open={showChanges}
+              onClose={onShowChangesToggle}
+            >
               <div className={classes.container}>
                 <ChangesView
                   graph={graph}
@@ -263,8 +269,8 @@ class AppUI extends React.Component<Props> {
           )}
         </div>
       </Dropzone>
-    )
+    );
   }
 }
 
-export default withStyles(styles)(AppUI)
+export default withStyles(styles)(AppUI);

@@ -1,29 +1,27 @@
-// @flow
+import type { Edge } from "../../analysis/graph";
 
-import type {Edge} from '../../analysis/graph'
+import * as React from "react";
+import classNames from "classnames";
+import { withStyles, Icon, IconButton, Tooltip } from "@material-ui/core";
 
-import * as React from 'react'
-import classNames from 'classnames'
-import {withStyles, Icon, IconButton, Tooltip} from '@material-ui/core'
+type Props = {
+  edge: Edge;
+  onClick: Function;
+  classes: any;
+  className?: string;
+};
 
-type Props = {|
-  edge: Edge,
-  onClick: Function,
-  classes: Object,
-  className?: string,
-|}
-
-const styles = theme => ({
+const styles = (theme) => ({
   root: {},
-})
+});
 
 class EdgeLinkButton extends React.PureComponent<Props> {
   render() {
-    const {classes, className, edge, onClick} = this.props
+    const { classes, className, edge, onClick } = this.props;
 
     return (
       <Tooltip
-        title={`${edge.enabled ? 'Unlink' : 'Link'} this node with above one`}
+        title={`${edge.enabled ? "Unlink" : "Link"} this node with above one`}
         disableFocusListener
         placement="top"
         enterDelay={500}
@@ -31,14 +29,14 @@ class EdgeLinkButton extends React.PureComponent<Props> {
         <IconButton
           className={classNames(className, classes.root)}
           aria-label="Unlink"
-          color={edge.enabled ? 'secondary' : 'default'}
+          color={edge.enabled ? "secondary" : "default"}
           onClick={onClick}
         >
-          <Icon>{edge.enabled ? 'link_off' : 'link'}</Icon>
+          <Icon>{edge.enabled ? "link_off" : "link"}</Icon>
         </IconButton>
       </Tooltip>
-    )
+    );
   }
 }
 
-export default withStyles(styles)(EdgeLinkButton)
+export default withStyles(styles)(EdgeLinkButton);

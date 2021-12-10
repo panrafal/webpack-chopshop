@@ -2,88 +2,89 @@
 // flow-typed version: 6f07eebf2a/lodash_v4.x.x/flow_>=v0.63.x
 
 declare module "lodash" {
-  declare type __CurriedFunction1<A, R, AA: A> = (...r: [AA]) => R;
-  declare type CurriedFunction1<A, R> = __CurriedFunction1<A, R, *>;
-
-  declare type __CurriedFunction2<A, B, R, AA: A, BB: B> = ((
+  type __CurriedFunction1<A, R, AA extends A> = (...r: [AA]) => R;
+  type CurriedFunction1<A, R> = __CurriedFunction1<A, R, any>;
+  type __CurriedFunction2<A, B, R, AA extends A, BB extends B> = ((
     ...r: [AA]
   ) => CurriedFunction1<BB, R>) &
     ((...r: [AA, BB]) => R);
-  declare type CurriedFunction2<A, B, R> = __CurriedFunction2<A, B, R, *, *>;
-
-  declare type __CurriedFunction3<A, B, C, R, AA: A, BB: B, CC: C> = ((
-    ...r: [AA]
-  ) => CurriedFunction2<BB, CC, R>) &
-    ((...r: [AA, BB]) => CurriedFunction1<CC, R>) &
-    ((...r: [AA, BB, CC]) => R);
-  declare type CurriedFunction3<A, B, C, R> = __CurriedFunction3<
+  type CurriedFunction2<A, B, R> = __CurriedFunction2<A, B, R, any, any>;
+  type __CurriedFunction3<
     A,
     B,
     C,
     R,
-    *,
-    *,
-    *
+    AA extends A,
+    BB extends B,
+    CC extends C
+  > = ((...r: [AA]) => CurriedFunction2<BB, CC, R>) &
+    ((...r: [AA, BB]) => CurriedFunction1<CC, R>) &
+    ((...r: [AA, BB, CC]) => R);
+  type CurriedFunction3<A, B, C, R> = __CurriedFunction3<
+    A,
+    B,
+    C,
+    R,
+    any,
+    any,
+    any
   >;
-
-  declare type __CurriedFunction4<
+  type __CurriedFunction4<
     A,
     B,
     C,
     D,
     R,
-    AA: A,
-    BB: B,
-    CC: C,
-    DD: D
+    AA extends A,
+    BB extends B,
+    CC extends C,
+    DD extends D
   > = ((...r: [AA]) => CurriedFunction3<BB, CC, DD, R>) &
     ((...r: [AA, BB]) => CurriedFunction2<CC, DD, R>) &
     ((...r: [AA, BB, CC]) => CurriedFunction1<DD, R>) &
     ((...r: [AA, BB, CC, DD]) => R);
-  declare type CurriedFunction4<A, B, C, D, R> = __CurriedFunction4<
+  type CurriedFunction4<A, B, C, D, R> = __CurriedFunction4<
     A,
     B,
     C,
     D,
     R,
-    *,
-    *,
-    *,
-    *
+    any,
+    any,
+    any,
+    any
   >;
-
-  declare type __CurriedFunction5<
+  type __CurriedFunction5<
     A,
     B,
     C,
     D,
     E,
     R,
-    AA: A,
-    BB: B,
-    CC: C,
-    DD: D,
-    EE: E
+    AA extends A,
+    BB extends B,
+    CC extends C,
+    DD extends D,
+    EE extends E
   > = ((...r: [AA]) => CurriedFunction4<BB, CC, DD, EE, R>) &
     ((...r: [AA, BB]) => CurriedFunction3<CC, DD, EE, R>) &
     ((...r: [AA, BB, CC]) => CurriedFunction2<DD, EE, R>) &
     ((...r: [AA, BB, CC, DD]) => CurriedFunction1<EE, R>) &
     ((...r: [AA, BB, CC, DD, EE]) => R);
-  declare type CurriedFunction5<A, B, C, D, E, R> = __CurriedFunction5<
+  type CurriedFunction5<A, B, C, D, E, R> = __CurriedFunction5<
     A,
     B,
     C,
     D,
     E,
     R,
-    *,
-    *,
-    *,
-    *,
-    *
+    any,
+    any,
+    any,
+    any,
+    any
   >;
-
-  declare type __CurriedFunction6<
+  type __CurriedFunction6<
     A,
     B,
     C,
@@ -91,19 +92,19 @@ declare module "lodash" {
     E,
     F,
     R,
-    AA: A,
-    BB: B,
-    CC: C,
-    DD: D,
-    EE: E,
-    FF: F
+    AA extends A,
+    BB extends B,
+    CC extends C,
+    DD extends D,
+    EE extends E,
+    FF extends F
   > = ((...r: [AA]) => CurriedFunction5<BB, CC, DD, EE, FF, R>) &
     ((...r: [AA, BB]) => CurriedFunction4<CC, DD, EE, FF, R>) &
     ((...r: [AA, BB, CC]) => CurriedFunction3<DD, EE, FF, R>) &
     ((...r: [AA, BB, CC, DD]) => CurriedFunction2<EE, FF, R>) &
     ((...r: [AA, BB, CC, DD, EE]) => CurriedFunction1<FF, R>) &
     ((...r: [AA, BB, CC, DD, EE, FF]) => R);
-  declare type CurriedFunction6<A, B, C, D, E, F, R> = __CurriedFunction6<
+  type CurriedFunction6<A, B, C, D, E, F, R> = __CurriedFunction6<
     A,
     B,
     C,
@@ -111,267 +112,354 @@ declare module "lodash" {
     E,
     F,
     R,
-    *,
-    *,
-    *,
-    *,
-    *,
-    *
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
   >;
-
-  declare type Curry = (<A, R>((...r: [A]) => R) => CurriedFunction1<A, R>) &
-    (<A, B, R>((...r: [A, B]) => R) => CurriedFunction2<A, B, R>) &
-    (<A, B, C, R>((...r: [A, B, C]) => R) => CurriedFunction3<A, B, C, R>) &
+  type Curry = (<A, R>(a: (...r: [A]) => R) => CurriedFunction1<A, R>) &
+    (<A, B, R>(a: (...r: [A, B]) => R) => CurriedFunction2<A, B, R>) &
+    (<A, B, C, R>(a: (...r: [A, B, C]) => R) => CurriedFunction3<A, B, C, R>) &
     (<A, B, C, D, R>(
-      (...r: [A, B, C, D]) => R
+      a: (...r: [A, B, C, D]) => R
     ) => CurriedFunction4<A, B, C, D, R>) &
     (<A, B, C, D, E, R>(
-      (...r: [A, B, C, D, E]) => R
+      a: (...r: [A, B, C, D, E]) => R
     ) => CurriedFunction5<A, B, C, D, E, R>) &
     (<A, B, C, D, E, F, R>(
-      (...r: [A, B, C, D, E, F]) => R
+      a: (...r: [A, B, C, D, E, F]) => R
     ) => CurriedFunction6<A, B, C, D, E, F, R>);
+  type UnaryFn<A, R> = (a: A) => R;
 
-  declare type UnaryFn<A, R> = (a: A) => R;
-
-  declare type TemplateSettings = {
-    escape?: RegExp,
-    evaluate?: RegExp,
-    imports?: Object,
-    interpolate?: RegExp,
-    variable?: string
+  type TemplateSettings = {
+    escape?: RegExp;
+    evaluate?: RegExp;
+    imports?: any;
+    interpolate?: RegExp;
+    variable?: string;
   };
 
-  declare type TruncateOptions = {
-    length?: number,
-    omission?: string,
-    separator?: RegExp | string
+  type TruncateOptions = {
+    length?: number;
+    omission?: string;
+    separator?: RegExp | string;
   };
 
-  declare type DebounceOptions = {
-    leading?: boolean,
-    maxWait?: number,
-    trailing?: boolean
+  type DebounceOptions = {
+    leading?: boolean;
+    maxWait?: number;
+    trailing?: boolean;
   };
 
-  declare type ThrottleOptions = {
-    leading?: boolean,
-    trailing?: boolean
+  type ThrottleOptions = {
+    leading?: boolean;
+    trailing?: boolean;
   };
 
-  declare type NestedArray<T> = Array<Array<T>>;
-
-  declare type matchesIterateeShorthand = Object;
-  declare type matchesPropertyIterateeShorthand = [string, any];
-  declare type propertyIterateeShorthand = string;
-
-  declare type OPredicate<A, O> =
+  type NestedArray<T> = Array<Array<T>>;
+  type matchesIterateeShorthand = any;
+  type matchesPropertyIterateeShorthand = [string, any];
+  type propertyIterateeShorthand = string;
+  type OPredicate<A, O> =
     | ((value: A, key: string, object: O) => any)
     | matchesIterateeShorthand
     | matchesPropertyIterateeShorthand
     | propertyIterateeShorthand;
-
-  declare type OIterateeWithResult<V, O, R> =
-    | Object
+  type OIterateeWithResult<V, O, R> =
+    | any
     | string
     | ((value: V, key: string, object: O) => R);
-  declare type OIteratee<O> = OIterateeWithResult<any, O, any>;
-  declare type OFlatMapIteratee<T, U> = OIterateeWithResult<any, T, Array<U>>;
-
-  declare type Predicate<T> =
+  type OIteratee<O> = OIterateeWithResult<any, O, any>;
+  type OFlatMapIteratee<T, U> = OIterateeWithResult<any, T, Array<U>>;
+  type Predicate<T> =
     | ((value: T, index: number, array: Array<T>) => any)
     | matchesIterateeShorthand
     | matchesPropertyIterateeShorthand
     | propertyIterateeShorthand;
-
-  declare type _ValueOnlyIteratee<T> = (value: T) => mixed;
-  declare type ValueOnlyIteratee<T> = _ValueOnlyIteratee<T> | string;
-  declare type _Iteratee<T> = (
+  type _ValueOnlyIteratee<T> = (value: T) => unknown;
+  type ValueOnlyIteratee<T> = _ValueOnlyIteratee<T> | string;
+  type _Iteratee<T> = (
     item: T,
     index: number,
-    array: ?Array<T>
-  ) => mixed;
-  declare type Iteratee<T> = _Iteratee<T> | Object | string;
-  declare type FlatMapIteratee<T, U> =
-    | ((item: T, index: number, array: ?$ReadOnlyArray<T>) => Array<U>)
-    | Object
+    array?: Array<T> | null
+  ) => unknown;
+  type Iteratee<T> = _Iteratee<T> | any | string;
+  type FlatMapIteratee<T, U> =
+    | ((item: T, index: number, array?: ReadonlyArray<T> | null) => Array<U>)
+    | any
     | string;
-  declare type Comparator<T> = (item: T, item2: T) => boolean;
-
-  declare type MapIterator<T, U> =
+  type Comparator<T> = (item: T, item2: T) => boolean;
+  type MapIterator<T, U> =
     | ((item: T, index: number, array: Array<T>) => U)
     | propertyIterateeShorthand;
-
-  declare type ReadOnlyMapIterator<T, U> =
-    | ((item: T, index: number, array: $ReadOnlyArray<T>) => U)
+  type ReadOnlyMapIterator<T, U> =
+    | ((item: T, index: number, array: ReadonlyArray<T>) => U)
     | propertyIterateeShorthand;
-
-  declare type OMapIterator<T, O, U> =
+  type OMapIterator<T, O, U> =
     | ((item: T, key: string, object: O) => U)
     | propertyIterateeShorthand;
 
-  declare class Lodash {
-    // Array
-    chunk<T>(array?: ?Array<T>, size?: ?number): Array<Array<T>>;
-    compact<T, N: ?T>(array?: ?Array<N>): Array<T>;
-    concat<T>(base?: ?$ReadOnlyArray<T>, ...elements: Array<any>): Array<T | any>;
-    difference<T>(array?: ?$ReadOnlyArray<T>, ...values: Array<?$ReadOnlyArray<T>>): Array<T>;
+  class Lodash {
+    chunk<T>(array?: Array<T> | null, size?: number | null): Array<Array<T>>;
+    compact<T, N extends T | undefined | null>(
+      array?: Array<N> | null
+    ): Array<T>;
+    concat<T>(
+      base?: ReadonlyArray<T> | null,
+      ...elements: Array<any>
+    ): Array<T | any>;
+
+    difference<T>(
+      array?: ReadonlyArray<T> | null,
+      ...values: Array<ReadonlyArray<T> | undefined | null>
+    ): Array<T>;
+
     differenceBy<T>(
-      array?: ?$ReadOnlyArray<T>,
-      values?: ?$ReadOnlyArray<T>,
-      iteratee?: ?ValueOnlyIteratee<T>
+      array?: ReadonlyArray<T> | null,
+      values?: ReadonlyArray<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
     ): T[];
-    differenceWith<T>(array?: ?$ReadOnlyArray<T>, values?: ?$ReadOnlyArray<T>, comparator?: ?Comparator<T>): T[];
-    drop<T>(array?: ?Array<T>, n?: ?number): Array<T>;
-    dropRight<T>(array?: ?Array<T>, n?: ?number): Array<T>;
-    dropRightWhile<T>(array?: ?Array<T>, predicate?: ?Predicate<T>): Array<T>;
-    dropWhile<T>(array?: ?Array<T>, predicate?: ?Predicate<T>): Array<T>;
+
+    differenceWith<T>(
+      array?: ReadonlyArray<T> | null,
+      values?: ReadonlyArray<T> | null,
+      comparator?: Comparator<T> | null
+    ): T[];
+
+    drop<T>(array?: Array<T> | null, n?: number | null): Array<T>;
+    dropRight<T>(array?: Array<T> | null, n?: number | null): Array<T>;
+    dropRightWhile<T>(
+      array?: Array<T> | null,
+      predicate?: Predicate<T> | null
+    ): Array<T>;
+    dropWhile<T>(
+      array?: Array<T> | null,
+      predicate?: Predicate<T> | null
+    ): Array<T>;
+
     fill<T, U>(
-      array?: ?Array<T>,
-      value?: ?U,
-      start?: ?number,
-      end?: ?number
+      array?: Array<T> | null,
+      value?: U | null,
+      start?: number | null,
+      end?: number | null
     ): Array<T | U>;
+
     findIndex<T>(
-      array: $ReadOnlyArray<T>,
-      predicate?: ?Predicate<T>,
-      fromIndex?: ?number
+      array: ReadonlyArray<T>,
+      predicate?: Predicate<T> | null,
+      fromIndex?: number | null
     ): number;
+
     findIndex<T>(
-      array: void | null,
-      predicate?: ?Predicate<T>,
-      fromIndex?: ?number
+      array: void | null,
+      predicate?: Predicate<T> | null,
+      fromIndex?: number | null
     ): -1;
+
     findLastIndex<T>(
-      array: $ReadOnlyArray<T>,
-      predicate?: ?Predicate<T>,
-      fromIndex?: ?number
+      array: ReadonlyArray<T>,
+      predicate?: Predicate<T> | null,
+      fromIndex?: number | null
     ): number;
+
     findLastIndex<T>(
       array: void | null,
-      predicate?: ?Predicate<T>,
-      fromIndex?: ?number
+      predicate?: Predicate<T> | null,
+      fromIndex?: number | null
     ): -1;
-    // alias of _.head
-    first<T>(array: ?$ReadOnlyArray<T>): T;
-    flatten<T, X>(array?: ?Array<Array<T> | X>): Array<T | X>;
-    flattenDeep<T>(array?: ?any[]): Array<T>;
-    flattenDepth(array?: ?any[], depth?: ?number): any[];
-    fromPairs<A, B>(pairs?: ?Array<[A, B]>): { [key: A]: B };
-    head<T>(array: ?$ReadOnlyArray<T>): T;
+
+    first<T>(array?: ReadonlyArray<T> | null): T;
+    flatten<T, X>(array?: Array<Array<T> | X> | null): Array<T | X>;
+    flattenDeep<T>(array?: any[] | null): Array<T>;
+    flattenDepth(array?: any[] | null, depth?: number | null): any[];
+
+    fromPairs<A, B>(
+      pairs?: Array<[A, B]> | null
+    ): {
+      [key in A]: B;
+    };
+
+    head<T>(array?: ReadonlyArray<T> | null): T;
     indexOf<T>(array: Array<T>, value: T, fromIndex?: number): number;
-    indexOf<T>(array: void | null, value?: ?T, fromIndex?: ?number): -1;
-    initial<T>(array: ?Array<T>): Array<T>;
-    intersection<T>(...arrays?: Array<Array<T>>): Array<T>;
-    //Workaround until (...parameter: T, parameter2: U) works
-    intersectionBy<T>(a1?: ?Array<T>, iteratee?: ?ValueOnlyIteratee<T>): Array<T>;
+    indexOf<T>(
+      array: void | null,
+      value?: T | null,
+      fromIndex?: number | null
+    ): -1;
+    initial<T>(array?: Array<T> | null): Array<T>;
+    intersection<T>(...arrays: Array<Array<T>>): Array<T>;
     intersectionBy<T>(
-      a1?: ?Array<T>,
-      a2?: ?Array<T>,
-      iteratee?: ?ValueOnlyIteratee<T>
+      a1?: Array<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
     ): Array<T>;
+
     intersectionBy<T>(
-      a1?: ?Array<T>,
-      a2?: ?Array<T>,
-      a3?: ?Array<T>,
-      iteratee?: ?ValueOnlyIteratee<T>
+      a1?: Array<T> | null,
+      a2?: Array<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
     ): Array<T>;
+
     intersectionBy<T>(
-      a1?: ?Array<T>,
-      a2?: ?Array<T>,
-      a3?: ?Array<T>,
-      a4?: ?Array<T>,
-      iteratee?: ?ValueOnlyIteratee<T>
+      a1?: Array<T> | null,
+      a2?: Array<T> | null,
+      a3?: Array<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
     ): Array<T>;
-    //Workaround until (...parameter: T, parameter2: U) works
-    intersectionWith<T>(a1?: ?Array<T>, comparator?: ?Comparator<T>): Array<T>;
+
+    intersectionBy<T>(
+      a1?: Array<T> | null,
+      a2?: Array<T> | null,
+      a3?: Array<T> | null,
+      a4?: Array<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
+    ): Array<T>;
+
     intersectionWith<T>(
-      a1?: ?Array<T>,
-      a2?: ?Array<T>,
-      comparator?: ?Comparator<T>
+      a1?: Array<T> | null,
+      comparator?: Comparator<T> | null
     ): Array<T>;
+
     intersectionWith<T>(
-      a1?: ?Array<T>,
-      a2?: ?Array<T>,
-      a3?: ?Array<T>,
-      comparator?: ?Comparator<T>
+      a1?: Array<T> | null,
+      a2?: Array<T> | null,
+      comparator?: Comparator<T> | null
     ): Array<T>;
+
     intersectionWith<T>(
-      a1?: ?Array<T>,
-      a2?: ?Array<T>,
-      a3?: ?Array<T>,
-      a4?: ?Array<T>,
-      comparator?: ?Comparator<T>
+      a1?: Array<T> | null,
+      a2?: Array<T> | null,
+      a3?: Array<T> | null,
+      comparator?: Comparator<T> | null
     ): Array<T>;
-    join<T>(array: Array<T>, separator?: ?string): string;
-    join<T>(array: void | null, separator?: ?string): '';
-    last<T>(array: ?$ReadOnlyArray<T>): T;
-    lastIndexOf<T>(array: Array<T>, value?: ?T, fromIndex?: ?number): number;
-    lastIndexOf<T>(array: void | null, value?: ?T, fromIndex?: ?number): -1;
-    nth<T>(array: T[], n?: ?number): T;
-    nth(array: void | null, n?: ?number): void;
-    pull<T>(array: Array<T>, ...values?: Array<?T>): Array<T>;
-    pull<T: void | null>(array: T, ...values?: Array<?any>): T;
-    pullAll<T>(array: Array<T>, values?: ?Array<T>): Array<T>;
-    pullAll<T: void | null>(array: T, values?: ?Array<any>): T;
+
+    intersectionWith<T>(
+      a1?: Array<T> | null,
+      a2?: Array<T> | null,
+      a3?: Array<T> | null,
+      a4?: Array<T> | null,
+      comparator?: Comparator<T> | null
+    ): Array<T>;
+
+    join<T>(array: Array<T>, separator?: string | null): string;
+    join<T>(array: void | null, separator?: string | null): "";
+    last<T>(array?: ReadonlyArray<T> | null): T;
+    lastIndexOf<T>(
+      array: Array<T>,
+      value?: T | null,
+      fromIndex?: number | null
+    ): number;
+    lastIndexOf<T>(
+      array: void | null,
+      value?: T | null,
+      fromIndex?: number | null
+    ): -1;
+    nth<T>(array: T[], n?: number | null): T;
+    nth(array: void | null, n?: number | null): void;
+    pull<T>(array: Array<T>, ...values: Array<T | undefined | null>): Array<T>;
+    pull<T extends void | null>(array: T, ...values: Array<any>): T;
+    pullAll<T>(array: Array<T>, values?: Array<T> | null): Array<T>;
+    pullAll<T extends void | null>(array: T, values?: Array<any> | null): T;
+
     pullAllBy<T>(
       array: Array<T>,
-      values?: ?Array<T>,
-      iteratee?: ?ValueOnlyIteratee<T>
+      values?: Array<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
     ): Array<T>;
-    pullAllBy<T: void | null>(
+
+    pullAllBy<T extends void | null>(
       array: T,
-      values?: ?Array<any>,
-      iteratee?: ?ValueOnlyIteratee<any>
+      values?: Array<any> | null,
+      iteratee?: ValueOnlyIteratee<any> | null
     ): T;
-    pullAllWith<T>(array: T[], values?: ?T[], comparator?: ?Function): T[];
-    pullAllWith<T: void | null>(array: T, values?: ?Array<any>, comparator?: ?Function): T;
-    pullAt<T>(array?: ?Array<T>, ...indexed?: Array<?number>): Array<T>;
-    pullAt<T>(array?: ?Array<T>, indexed?: ?Array<number>): Array<T>;
-    remove<T>(array?: ?Array<T>, predicate?: ?Predicate<T>): Array<T>;
+
+    pullAllWith<T>(
+      array: T[],
+      values?: T[] | null,
+      comparator?: Function | null
+    ): T[];
+    pullAllWith<T extends void | null>(
+      array: T,
+      values?: Array<any> | null,
+      comparator?: Function | null
+    ): T;
+    pullAt<T>(
+      array?: Array<T> | null,
+      ...indexed: Array<number | undefined | null>
+    ): Array<T>;
+    pullAt<T>(
+      array?: Array<T> | null,
+      indexed?: Array<number> | null
+    ): Array<T>;
+    remove<T>(
+      array?: Array<T> | null,
+      predicate?: Predicate<T> | null
+    ): Array<T>;
     reverse<T>(array: Array<T>): Array<T>;
-    reverse<T: void | null>(array: T): T;
-    slice<T>(array?: ?$ReadOnlyArray<T>, start?: ?number, end?: ?number): Array<T>;
+    reverse<T extends void | null>(array: T): T;
+
+    slice<T>(
+      array?: ReadonlyArray<T> | null,
+      start?: number | null,
+      end?: number | null
+    ): Array<T>;
+
     sortedIndex<T>(array: Array<T>, value: T): number;
-    sortedIndex<T>(array: void | null, value: ?T): 0;
+    sortedIndex<T>(array: void | null, value?: T | null): 0;
     sortedIndexBy<T>(
       array: Array<T>,
-      value?: ?T,
-      iteratee?: ?ValueOnlyIteratee<T>
+      value?: T | null,
+      iteratee?: ValueOnlyIteratee<T> | null
     ): number;
+
     sortedIndexBy<T>(
-      array: void | null,
-      value?: ?T,
-      iteratee?: ?ValueOnlyIteratee<T>
+      array: void | null,
+      value?: T | null,
+      iteratee?: ValueOnlyIteratee<T> | null
     ): 0;
+
     sortedIndexOf<T>(array: Array<T>, value: T): number;
-    sortedIndexOf<T>(array: void | null, value?: ?T): -1;
+    sortedIndexOf<T>(array: void | null, value?: T | null): -1;
     sortedLastIndex<T>(array: Array<T>, value: T): number;
-    sortedLastIndex<T>(array: void | null, value?: ?T): 0;
+    sortedLastIndex<T>(array: void | null, value?: T | null): 0;
     sortedLastIndexBy<T>(
       array: Array<T>,
       value: T,
       iteratee?: ValueOnlyIteratee<T>
     ): number;
+
     sortedLastIndexBy<T>(
-      array: void | null,
-      value?: ?T,
-      iteratee?: ?ValueOnlyIteratee<T>
+      array: void | null,
+      value?: T | null,
+      iteratee?: ValueOnlyIteratee<T> | null
     ): 0;
+
     sortedLastIndexOf<T>(array: Array<T>, value: T): number;
-    sortedLastIndexOf<T>(array: void | null, value?: ?T): -1;
-    sortedUniq<T>(array?: ?Array<T>): Array<T>;
-    sortedUniqBy<T>(array?: ?Array<T>, iteratee?: ?(value: T) => mixed): Array<T>;
-    tail<T>(array?: ?Array<T>): Array<T>;
-    take<T>(array?: ?Array<T>, n?: ?number): Array<T>;
-    takeRight<T>(array?: ?Array<T>, n?: ?number): Array<T>;
-    takeRightWhile<T>(array?: ?Array<T>, predicate?: ?Predicate<T>): Array<T>;
-    takeWhile<T>(array?: ?Array<T>, predicate?: ?Predicate<T>): Array<T>;
-    union<T>(...arrays?: Array<Array<T>>): Array<T>;
-    //Workaround until (...parameter: T, parameter2: U) works
-    unionBy<T>(a1?: ?Array<T>, iteratee?: ?ValueOnlyIteratee<T>): Array<T>;
+    sortedLastIndexOf<T>(array: void | null, value?: T | null): -1;
+    sortedUniq<T>(array?: Array<T> | null): Array<T>;
+    sortedUniqBy<T>(
+      array?: Array<T> | null,
+      iteratee?: ((value: T) => unknown) | null
+    ): Array<T>;
+    tail<T>(array?: Array<T> | null): Array<T>;
+    take<T>(array?: Array<T> | null, n?: number | null): Array<T>;
+    takeRight<T>(array?: Array<T> | null, n?: number | null): Array<T>;
+    takeRightWhile<T>(
+      array?: Array<T> | null,
+      predicate?: Predicate<T> | null
+    ): Array<T>;
+    takeWhile<T>(
+      array?: Array<T> | null,
+      predicate?: Predicate<T> | null
+    ): Array<T>;
+    union<T>(...arrays: Array<Array<T>>): Array<T>;
     unionBy<T>(
-      a1?: ?Array<T>,
+      a1?: Array<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
+    ): Array<T>;
+    unionBy<T>(
+      a1?: Array<T> | null,
       a2: Array<T>,
       iteratee?: ValueOnlyIteratee<T>
     ): Array<T>;
@@ -381,6 +469,7 @@ declare module "lodash" {
       a3: Array<T>,
       iteratee?: ValueOnlyIteratee<T>
     ): Array<T>;
+
     unionBy<T>(
       a1: Array<T>,
       a2: Array<T>,
@@ -388,8 +477,11 @@ declare module "lodash" {
       a4: Array<T>,
       iteratee?: ValueOnlyIteratee<T>
     ): Array<T>;
-    //Workaround until (...parameter: T, parameter2: U) works
-    unionWith<T>(a1?: ?Array<T>, comparator?: ?Comparator<T>): Array<T>;
+
+    unionWith<T>(
+      a1?: Array<T> | null,
+      comparator?: Comparator<T> | null
+    ): Array<T>;
     unionWith<T>(
       a1: Array<T>,
       a2: Array<T>,
@@ -401,6 +493,7 @@ declare module "lodash" {
       a3: Array<T>,
       comparator?: Comparator<T>
     ): Array<T>;
+
     unionWith<T>(
       a1: Array<T>,
       a2: Array<T>,
@@ -408,15 +501,30 @@ declare module "lodash" {
       a4: Array<T>,
       comparator?: Comparator<T>
     ): Array<T>;
-    uniq<T>(array?: ?Array<T>): Array<T>;
-    uniqBy<T>(array?: ?Array<T>, iteratee?: ?ValueOnlyIteratee<T>): Array<T>;
-    uniqWith<T>(array?: ?Array<T>, comparator?: ?Comparator<T>): Array<T>;
-    unzip<T>(array?: ?Array<T>): Array<T>;
-    unzipWith<T>(array: ?Array<T>, iteratee?: ?Iteratee<T>): Array<T>;
-    without<T>(array?: ?$ReadOnlyArray<T>, ...values?: Array<?T>): Array<T>;
+
+    uniq<T>(array?: Array<T> | null): Array<T>;
+    uniqBy<T>(
+      array?: Array<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
+    ): Array<T>;
+    uniqWith<T>(
+      array?: Array<T> | null,
+      comparator?: Comparator<T> | null
+    ): Array<T>;
+    unzip<T>(array?: Array<T> | null): Array<T>;
+    unzipWith<T>(
+      array?: Array<T> | null,
+      iteratee?: Iteratee<T> | null
+    ): Array<T>;
+    without<T>(
+      array?: ReadonlyArray<T> | null,
+      ...values: Array<T | undefined | null>
+    ): Array<T>;
     xor<T>(...array: Array<Array<T>>): Array<T>;
-    //Workaround until (...parameter: T, parameter2: U) works
-    xorBy<T>(a1?: ?Array<T>, iteratee?: ?ValueOnlyIteratee<T>): Array<T>;
+    xorBy<T>(
+      a1?: Array<T> | null,
+      iteratee?: ValueOnlyIteratee<T> | null
+    ): Array<T>;
     xorBy<T>(
       a1: Array<T>,
       a2: Array<T>,
@@ -428,6 +536,7 @@ declare module "lodash" {
       a3: Array<T>,
       iteratee?: ValueOnlyIteratee<T>
     ): Array<T>;
+
     xorBy<T>(
       a1: Array<T>,
       a2: Array<T>,
@@ -435,8 +544,11 @@ declare module "lodash" {
       a4: Array<T>,
       iteratee?: ValueOnlyIteratee<T>
     ): Array<T>;
-    //Workaround until (...parameter: T, parameter2: U) works
-    xorWith<T>(a1?: ?Array<T>, comparator?: ?Comparator<T>): Array<T>;
+
+    xorWith<T>(
+      a1?: Array<T> | null,
+      comparator?: Comparator<T> | null
+    ): Array<T>;
     xorWith<T>(
       a1: Array<T>,
       a2: Array<T>,
@@ -448,6 +560,7 @@ declare module "lodash" {
       a3: Array<T>,
       comparator?: Comparator<T>
     ): Array<T>;
+
     xorWith<T>(
       a1: Array<T>,
       a2: Array<T>,
@@ -455,7 +568,8 @@ declare module "lodash" {
       a4: Array<T>,
       comparator?: Comparator<T>
     ): Array<T>;
-    zip<A, B>(a1?: ?A[], a2?: ?B[]): Array<[A, B]>;
+
+    zip<A, B>(a1?: A[] | null, a2?: B[] | null): Array<[A, B]>;
     zip<A, B, C>(a1: A[], a2: B[], a3: C[]): Array<[A, B, C]>;
     zip<A, B, C, D>(a1: A[], a2: B[], a3: C[], a4: D[]): Array<[A, B, C, D]>;
     zip<A, B, C, D, E>(
@@ -466,31 +580,35 @@ declare module "lodash" {
       a5: E[]
     ): Array<[A, B, C, D, E]>;
 
-    zipObject<K, V>(props: Array<K>, values?: ?Array<V>): { [key: K]: V };
-    zipObject<K, V>(props: void | null, values?: ?Array<V>): {};
-    zipObjectDeep(props: any[], values?: ?any): Object;
-    zipObjectDeep(props: void | null, values?: ?any): {};
+    zipObject<K, V>(
+      props: Array<K>,
+      values?: Array<V> | null
+    ): {
+      [key in K]: V;
+    };
 
-    zipWith<A>(a1?: ?Array<A>): Array<[A]>;
-    zipWith<T, A>(a1: Array<A>, iteratee: (A) => T): Array<T>;
-
+    zipObject<K, V>(props: void | null, values?: Array<V> | null): {};
+    zipObjectDeep(props: any[], values?: any | null): any;
+    zipObjectDeep(props: void | null, values?: any | null): {};
+    zipWith<A>(a1?: Array<A> | null): Array<[A]>;
+    zipWith<T, A>(a1: Array<A>, iteratee: (a: A) => T): Array<T>;
     zipWith<A, B>(a1: Array<A>, a2: Array<B>): Array<[A, B]>;
     zipWith<T, A, B>(
       a1: Array<A>,
       a2: Array<B>,
-      iteratee: (A, B) => T
+      iteratee: (b: A, a: B) => T
     ): Array<T>;
-
     zipWith<A, B, C>(
       a1: Array<A>,
       a2: Array<B>,
       a3: Array<C>
     ): Array<[A, B, C]>;
+
     zipWith<T, A, B, C>(
       a1: Array<A>,
       a2: Array<B>,
       a3: Array<C>,
-      iteratee: (A, B, C) => T
+      iteratee: (c: A, b: B, a: C) => T
     ): Array<T>;
 
     zipWith<A, B, C, D>(
@@ -499,269 +617,425 @@ declare module "lodash" {
       a3: Array<C>,
       a4: Array<D>
     ): Array<[A, B, C, D]>;
+
     zipWith<T, A, B, C, D>(
       a1: Array<A>,
       a2: Array<B>,
       a3: Array<C>,
       a4: Array<D>,
-      iteratee: (A, B, C, D) => T
+      iteratee: (d: A, c: B, b: C, a: D) => T
     ): Array<T>;
 
-    // Collection
-    countBy<T>(array: Array<T>, iteratee?: ?ValueOnlyIteratee<T>): Object;
-    countBy<T>(array: void | null, iteratee?: ?ValueOnlyIteratee<T>): {};
-    countBy<T: Object>(object: T, iteratee?: ?ValueOnlyIteratee<T>): Object;
-    // alias of _.forEach
-    each<T>(array: $ReadOnlyArray<T>, iteratee?: ?Iteratee<T>): Array<T>;
-    each<T: void | null>(array: T, iteratee?: ?Iteratee<any>): T;
-    each<T: Object>(object: T, iteratee?: ?OIteratee<T>): T;
-    // alias of _.forEachRight
-    eachRight<T>(array: $ReadOnlyArray<T>, iteratee?: ?Iteratee<T>): Array<T>;
-    eachRight<T: void | null>(array: T, iteratee?: ?Iteratee<any>): T;
-    eachRight<T: Object>(object: T, iteratee?: OIteratee<T>): T;
-    every<T>(array?: ?$ReadOnlyArray<T>, iteratee?: ?Iteratee<T>): boolean;
-    every<T: Object>(object: T, iteratee?: OIteratee<T>): boolean;
-    filter<T>(array?: ?$ReadOnlyArray<T>, predicate?: ?Predicate<T>): Array<T>;
-    filter<A, T: { [id: string]: A }>(
+    countBy<T>(array: Array<T>, iteratee?: ValueOnlyIteratee<T> | null): any;
+    countBy<T>(array: void | null, iteratee?: ValueOnlyIteratee<T> | null): {};
+    countBy<T extends any>(
       object: T,
-      predicate?: OPredicate<A, T>
-    ): Array<A>;
+      iteratee?: ValueOnlyIteratee<T> | null
+    ): any;
+    each<T>(array: ReadonlyArray<T>, iteratee?: Iteratee<T> | null): Array<T>;
+    each<T extends void | null>(array: T, iteratee?: Iteratee<any> | null): T;
+    each<T extends any>(object: T, iteratee?: OIteratee<T> | null): T;
+    eachRight<T>(
+      array: ReadonlyArray<T>,
+      iteratee?: Iteratee<T> | null
+    ): Array<T>;
+    eachRight<T extends void | null>(
+      array: T,
+      iteratee?: Iteratee<any> | null
+    ): T;
+    eachRight<T extends any>(object: T, iteratee?: OIteratee<T>): T;
+    every<T>(
+      array?: ReadonlyArray<T> | null,
+      iteratee?: Iteratee<T> | null
+    ): boolean;
+    every<T extends any>(object: T, iteratee?: OIteratee<T>): boolean;
+    filter<T>(
+      array?: ReadonlyArray<T> | null,
+      predicate?: Predicate<T> | null
+    ): Array<T>;
+
+    filter<
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: T, predicate?: OPredicate<A, T>): Array<A>;
+
     find<T>(
-      array: $ReadOnlyArray<T>,
-      predicate?: ?Predicate<T>,
-      fromIndex?: ?number
+      array: ReadonlyArray<T>,
+      predicate?: Predicate<T> | null,
+      fromIndex?: number | null
     ): T | void;
+
     find<T>(
-      array: void | null,
-      predicate?: ?Predicate<T>,
-      fromIndex?: ?number
+      array: void | null,
+      predicate?: Predicate<T> | null,
+      fromIndex?: number | null
     ): void;
-    find<V, A, T: { [id: string]: A }>(
-      object: T,
-      predicate?: OPredicate<A, T>,
-      fromIndex?: number
-    ): V;
+
+    find<
+      V,
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: T, predicate?: OPredicate<A, T>, fromIndex?: number): V;
+
     findLast<T>(
-      array: ?$ReadOnlyArray<T>,
-      predicate?: ?Predicate<T>,
-      fromIndex?: ?number
+      array?: ReadonlyArray<T> | null,
+      predicate?: Predicate<T> | null,
+      fromIndex?: number | null
     ): T | void;
-    findLast<V, A, T: { [id: string]: A }>(
-      object: T,
-      predicate?: ?OPredicate<A, T>
-    ): V;
+
+    findLast<
+      V,
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: T, predicate?: OPredicate<A, T> | null): V;
+
     flatMap<T, U>(
-      array?: ?$ReadOnlyArray<T>,
-      iteratee?: ?FlatMapIteratee<T, U>
+      array?: ReadonlyArray<T> | null,
+      iteratee?: FlatMapIteratee<T, U> | null
     ): Array<U>;
-    flatMap<T: Object, U>(
+    flatMap<T extends any, U>(
       object: T,
       iteratee?: OFlatMapIteratee<T, U>
     ): Array<U>;
     flatMapDeep<T, U>(
-      array?: ?$ReadOnlyArray<T>,
-      iteratee?: ?FlatMapIteratee<T, U>
+      array?: ReadonlyArray<T> | null,
+      iteratee?: FlatMapIteratee<T, U> | null
     ): Array<U>;
-    flatMapDeep<T: Object, U>(
+    flatMapDeep<T extends any, U>(
       object: T,
-      iteratee?: ?OFlatMapIteratee<T, U>
+      iteratee?: OFlatMapIteratee<T, U> | null
     ): Array<U>;
+
     flatMapDepth<T, U>(
-      array?: ?Array<T>,
-      iteratee?: ?FlatMapIteratee<T, U>,
-      depth?: ?number
+      array?: Array<T> | null,
+      iteratee?: FlatMapIteratee<T, U> | null,
+      depth?: number | null
     ): Array<U>;
-    flatMapDepth<T: Object, U>(
+
+    flatMapDepth<T extends any, U>(
       object: T,
       iteratee?: OFlatMapIteratee<T, U>,
       depth?: number
     ): Array<U>;
-    forEach<T>(array: $ReadOnlyArray<T>, iteratee?: ?Iteratee<T>): Array<T>;
-    forEach<T: void | null>(array: T, iteratee?: ?Iteratee<any>): T;
-    forEach<T: Object>(object: T, iteratee?: ?OIteratee<T>): T;
-    forEachRight<T>(array: $ReadOnlyArray<T>, iteratee?: ?Iteratee<T>): Array<T>;
-    forEachRight<T: void | null>(array: T, iteratee?: ?Iteratee<any>): T;
-    forEachRight<T: Object>(object: T, iteratee?: ?OIteratee<T>): T;
+    forEach<T>(
+      array: ReadonlyArray<T>,
+      iteratee?: Iteratee<T> | null
+    ): Array<T>;
+    forEach<T extends void | null>(
+      array: T,
+      iteratee?: Iteratee<any> | null
+    ): T;
+    forEach<T extends any>(object: T, iteratee?: OIteratee<T> | null): T;
+    forEachRight<T>(
+      array: ReadonlyArray<T>,
+      iteratee?: Iteratee<T> | null
+    ): Array<T>;
+    forEachRight<T extends void | null>(
+      array: T,
+      iteratee?: Iteratee<any> | null
+    ): T;
+    forEachRight<T extends any>(object: T, iteratee?: OIteratee<T> | null): T;
+
     groupBy<V, T>(
-      array: $ReadOnlyArray<T>,
-      iteratee?: ?ValueOnlyIteratee<T>
-    ): { [key: V]: Array<T> };
-    groupBy(
-      array: void | null,
-      iteratee?: ?ValueOnlyIteratee<any>
-    ): {};
-    groupBy<V, A, T: { [id: string]: A }>(
+      array: ReadonlyArray<T>,
+      iteratee?: ValueOnlyIteratee<T> | null
+    ): {
+      [key in V]: Array<T>;
+    };
+
+    groupBy(array: void | null, iteratee?: ValueOnlyIteratee<any> | null): {};
+
+    groupBy<
+      V,
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(
       object: T,
       iteratee?: ValueOnlyIteratee<A>
-    ): { [key: V]: Array<A> };
-    includes<T>(array: $ReadOnlyArray<T>, value: T, fromIndex?: ?number): boolean;
-    includes<T>(array: void | null, value?: ?T, fromIndex?: ?number): false;
-    includes<T: Object>(object: T, value: any, fromIndex?: number): boolean;
+    ): {
+      [key in V]: Array<A>;
+    };
+
+    includes<T>(
+      array: ReadonlyArray<T>,
+      value: T,
+      fromIndex?: number | null
+    ): boolean;
+    includes<T>(
+      array: void | null,
+      value?: T | null,
+      fromIndex?: number | null
+    ): false;
+    includes<T extends any>(object: T, value: any, fromIndex?: number): boolean;
     includes(str: string, value: string, fromIndex?: number): boolean;
+
     invokeMap<T>(
-      array?: ?Array<T>,
-      path?: ?((value: T) => Array<string> | string) | Array<string> | string,
-      ...args?: Array<any>
+      array?: Array<T> | null,
+      path?:
+        | ((value: T) => Array<string> | string)
+        | undefined
+        | null
+        | Array<string>
+        | string,
+      ...args: Array<any>
     ): Array<any>;
-    invokeMap<T: Object>(
+
+    invokeMap<T extends any>(
       object: T,
       path: ((value: any) => Array<string> | string) | Array<string> | string,
-      ...args?: Array<any>
+      ...args: Array<any>
     ): Array<any>;
+
     keyBy<T, V>(
-      array: $ReadOnlyArray<T>,
-      iteratee?: ?ValueOnlyIteratee<T>
-    ): { [key: V]: ?T };
-    keyBy(
-      array: void | null,
-      iteratee?: ?ValueOnlyIteratee<*>
-    ): {};
-    keyBy<V, A, I, T: { [id: I]: A }>(
+      array: ReadonlyArray<T>,
+      iteratee?: ValueOnlyIteratee<T> | null
+    ): {
+      [key in V]: T | undefined | null;
+    };
+
+    keyBy(array: void | null, iteratee?: ValueOnlyIteratee<any> | null): {};
+
+    keyBy<
+      V,
+      A,
+      I,
+      T extends {
+        [id in I]: A;
+      }
+    >(
       object: T,
-      iteratee?: ?ValueOnlyIteratee<A>
-    ): { [key: V]: ?A };
-    map<T, U>(array?: ?Array<T>, iteratee?: ?MapIterator<T, U>): Array<U>;
+      iteratee?: ValueOnlyIteratee<A> | null
+    ): {
+      [key in V]: A | undefined | null;
+    };
+
     map<T, U>(
-      array: ?$ReadOnlyArray<T>,
+      array?: Array<T> | null,
+      iteratee?: MapIterator<T, U> | null
+    ): Array<U>;
+
+    map<T, U>(
+      array: ReadonlyArray<T> | undefined | null,
       iteratee?: ReadOnlyMapIterator<T, U>
-    ): Array<U>,
-    map<V, T: Object, U>(
-      object: ?T,
+    ): Array<U>;
+
+    map<V, T extends any, U>(
+      object: T | undefined | null,
       iteratee?: OMapIterator<V, T, U>
     ): Array<U>;
+
     map(
-      str: ?string,
+      str: string | undefined | null,
       iteratee?: (char: string, index: number, str: string) => any
     ): string;
+
     orderBy<T>(
-      array: $ReadOnlyArray<T>,
-      iteratees?: ?$ReadOnlyArray<Iteratee<T>> | ?string,
-      orders?: ?$ReadOnlyArray<"asc" | "desc"> | ?string
+      array: ReadonlyArray<T>,
+      iteratees?:
+        | ReadonlyArray<Iteratee<T>>
+        | undefined
+        | null
+        | string
+        | undefined
+        | null,
+      orders?:
+        | ReadonlyArray<"asc" | "desc">
+        | undefined
+        | null
+        | string
+        | undefined
+        | null
     ): Array<T>;
+
     orderBy<T>(
       array: null | void,
-      iteratees?: ?$ReadOnlyArray<Iteratee<T>> | ?string,
-      orders?: ?$ReadOnlyArray<"asc" | "desc"> | ?string
+      iteratees?:
+        | ReadonlyArray<Iteratee<T>>
+        | undefined
+        | null
+        | string
+        | undefined
+        | null,
+      orders?:
+        | ReadonlyArray<"asc" | "desc">
+        | undefined
+        | null
+        | string
+        | undefined
+        | null
     ): Array<T>;
-    orderBy<V, T: Object>(
+
+    orderBy<V, T extends any>(
       object: T,
-      iteratees?: $ReadOnlyArray<OIteratee<*>> | string,
-      orders?: $ReadOnlyArray<"asc" | "desc"> | string
+      iteratees?: ReadonlyArray<OIteratee<any>> | string,
+      orders?: ReadonlyArray<"asc" | "desc"> | string
     ): Array<V>;
+
     partition<T>(
-      array?: ?Array<T>,
-      predicate?: ?Predicate<T>
+      array?: Array<T> | null,
+      predicate?: Predicate<T> | null
     ): [Array<T>, Array<T>];
-    partition<V, A, T: { [id: string]: A }>(
-      object: T,
-      predicate?: OPredicate<A, T>
-    ): [Array<V>, Array<V>];
+
+    partition<
+      V,
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: T, predicate?: OPredicate<A, T>): [Array<V>, Array<V>];
+
     reduce<T, U>(
       array: Array<T>,
       iteratee?: (
         accumulator: U,
         value: T,
         index: number,
-        array: ?Array<T>
+        array?: Array<T> | null
       ) => U,
       accumulator?: U
     ): U;
+
     reduce<T, U>(
-      array: void | null,
-      iteratee?: ?(
-        accumulator: U,
-        value: T,
-        index: number,
-        array: ?Array<T>
-      ) => U,
-      accumulator?: ?U
-    ): void | null;
-    reduce<T: Object, U>(
+      array: void | null,
+      iteratee?:
+        | ((
+            accumulator: U,
+            value: T,
+            index: number,
+            array?: Array<T> | null
+          ) => U)
+        | null,
+      accumulator?: U | null
+    ): void | null;
+
+    reduce<T extends any, U>(
       object: T,
       iteratee?: (accumulator: U, value: any, key: string, object: T) => U,
       accumulator?: U
     ): U;
+
     reduceRight<T, U>(
-      array: void | null,
-      iteratee?: ?(
-        accumulator: U,
-        value: T,
-        index: number,
-        array: ?Array<T>
-      ) => U,
-      accumulator?: ?U
-    ): void | null;
+      array: void | null,
+      iteratee?:
+        | ((
+            accumulator: U,
+            value: T,
+            index: number,
+            array?: Array<T> | null
+          ) => U)
+        | null,
+      accumulator?: U | null
+    ): void | null;
+
     reduceRight<T, U>(
       array: Array<T>,
-      iteratee?: ?(
-        accumulator: U,
-        value: T,
-        index: number,
-        array: ?Array<T>
-      ) => U,
-      accumulator?: ?U
+      iteratee?:
+        | ((
+            accumulator: U,
+            value: T,
+            index: number,
+            array?: Array<T> | null
+          ) => U)
+        | null,
+      accumulator?: U | null
     ): U;
-    reduceRight<T: Object, U>(
+
+    reduceRight<T extends any, U>(
       object: T,
-      iteratee?: ?(accumulator: U, value: any, key: string, object: T) => U,
-      accumulator?: ?U
+      iteratee?:
+        | ((accumulator: U, value: any, key: string, object: T) => U)
+        | null,
+      accumulator?: U | null
     ): U;
-    reject<T>(array: ?$ReadOnlyArray<T>, predicate?: Predicate<T>): Array<T>;
-    reject<V: Object, A, T: { [id: string]: A }>(
-      object?: ?T,
-      predicate?: ?OPredicate<A, T>
-    ): Array<V>;
-    sample<T>(array: ?Array<T>): T;
-    sample<V, T: Object>(object: T): V;
-    sampleSize<T>(array?: ?Array<T>, n?: ?number): Array<T>;
-    sampleSize<V, T: Object>(object: T, n?: number): Array<V>;
-    shuffle<T>(array: ?Array<T>): Array<T>;
-    shuffle<V, T: Object>(object: T): Array<V>;
-    size(collection: $ReadOnlyArray<any> | Object | string): number;
-    some<T>(array: ?$ReadOnlyArray<T>, predicate?: Predicate<T>): boolean;
-    some<T>(array: void | null, predicate?: ?Predicate<T>): false;
-    some<A, T: { [id: string]: A }>(
-      object?: ?T,
-      predicate?: OPredicate<A, T>
+
+    reject<T>(
+      array: ReadonlyArray<T> | undefined | null,
+      predicate?: Predicate<T>
+    ): Array<T>;
+
+    reject<
+      V extends any,
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object?: T | null, predicate?: OPredicate<A, T> | null): Array<V>;
+
+    sample<T>(array?: Array<T> | null): T;
+    sample<V, T extends any>(object: T): V;
+    sampleSize<T>(array?: Array<T> | null, n?: number | null): Array<T>;
+    sampleSize<V, T extends any>(object: T, n?: number): Array<V>;
+    shuffle<T>(array?: Array<T> | null): Array<T>;
+    shuffle<V, T extends any>(object: T): Array<V>;
+    size(collection: ReadonlyArray<any> | any | string): number;
+    some<T>(
+      array: ReadonlyArray<T> | undefined | null,
+      predicate?: Predicate<T>
     ): boolean;
-    sortBy<T>(
-      array: ?$ReadOnlyArray<T>,
-      ...iteratees?: $ReadOnlyArray<Iteratee<T>>
-    ): Array<T>;
-    sortBy<T>(
-      array: ?$ReadOnlyArray<T>,
-      iteratees?: $ReadOnlyArray<Iteratee<T>>
-    ): Array<T>;
-    sortBy<V, T: Object>(
-      object: T,
-      ...iteratees?: Array<OIteratee<T>>
-    ): Array<V>;
-    sortBy<V, T: Object>(
-      object: T,
-      iteratees?: $ReadOnlyArray<OIteratee<T>>
-    ): Array<V>;
+    some<T>(array: void | null, predicate?: Predicate<T> | null): false;
 
-    // Date
+    some<
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object?: T | null, predicate?: OPredicate<A, T>): boolean;
+
+    sortBy<T>(
+      array?: ReadonlyArray<T> | null,
+      ...iteratees: ReadonlyArray<Iteratee<T>>
+    ): Array<T>;
+
+    sortBy<T>(
+      array: ReadonlyArray<T> | undefined | null,
+      iteratees?: ReadonlyArray<Iteratee<T>>
+    ): Array<T>;
+
+    sortBy<V, T extends any>(
+      object: T,
+      ...iteratees: Array<OIteratee<T>>
+    ): Array<V>;
+    sortBy<V, T extends any>(
+      object: T,
+      iteratees?: ReadonlyArray<OIteratee<T>>
+    ): Array<V>;
     now(): number;
-
-    // Function
     after(n: number, fn: Function): Function;
     ary(func: Function, n?: number): Function;
     before(n: number, fn: Function): Function;
     bind(func: Function, thisArg: any, ...partials: Array<any>): Function;
-    bindKey(obj?: ?Object, key?: ?string, ...partials?: Array<?any>): Function;
+    bindKey(
+      obj?: any | null,
+      key?: string | null,
+      ...partials: Array<any>
+    ): Function;
     curry: Curry;
     curry(func: Function, arity?: number): Function;
     curryRight(func: Function, arity?: number): Function;
-    debounce<F: Function>(func: F, wait?: number, options?: DebounceOptions): F;
-    defer(func: Function, ...args?: Array<any>): TimeoutID;
-    delay(func: Function, wait: number, ...args?: Array<any>): TimeoutID;
+    debounce<F extends Function>(
+      func: F,
+      wait?: number,
+      options?: DebounceOptions
+    ): F;
+    defer(func: Function, ...args: Array<any>): TimeoutID;
+    delay(func: Function, wait: number, ...args: Array<any>): TimeoutID;
     flip(func: Function): Function;
-    memoize<F: Function>(func: F, resolver?: Function): F;
+    memoize<F extends Function>(func: F, resolver?: Function): F;
     negate(predicate: Function): Function;
     once(func: Function): Function;
-    overArgs(func?: ?Function, ...transforms?: Array<Function>): Function;
-    overArgs(func?: ?Function, transforms?: ?Array<Function>): Function;
+    overArgs(func?: Function | null, ...transforms: Array<Function>): Function;
+    overArgs(
+      func?: Function | null,
+      transforms?: Array<Function> | null
+    ): Function;
     partial(func: Function, ...partials: any[]): Function;
     partialRight(func: Function, ...partials: Array<any>): Function;
     partialRight(func: Function, partials: Array<any>): Function;
@@ -775,36 +1049,65 @@ declare module "lodash" {
       options?: ThrottleOptions
     ): Function;
     unary(func: Function): Function;
-    wrap(value?: any, wrapper?: ?Function): Function;
-
-    // Lang
-    castArray(value: *): any[];
+    wrap(value?: any, wrapper?: Function | null): Function;
+    castArray(value: any): any[];
     clone<T>(value: T): T;
     cloneDeep<T>(value: T): T;
+
     cloneDeepWith<T, U>(
       value: T,
-      customizer?: ?(value: T, key: number | string, object: T, stack: any) => U
+      customizer?:
+        | ((value: T, key: number | string, object: T, stack: any) => U)
+        | null
     ): U;
+
     cloneWith<T, U>(
       value: T,
-      customizer?: ?(value: T, key: number | string, object: T, stack: any) => U
+      customizer?:
+        | ((value: T, key: number | string, object: T, stack: any) => U)
+        | null
     ): U;
-    conformsTo<T: { [key: string]: mixed }>(
+
+    conformsTo<
+      T extends {
+        [key: string]: unknown;
+      }
+    >(
       source: T,
-      predicates: T & { [key: string]: (x: any) => boolean }
+      predicates: T & {
+        [key: string]: (x: any) => boolean;
+      }
     ): boolean;
+
     eq(value: any, other: any): boolean;
     gt(value: any, other: any): boolean;
     gte(value: any, other: any): boolean;
-    isArguments(value: void | null): false;
+    isArguments(value: void | null): false;
     isArguments(value: any): boolean;
     isArray(value: Array<any>): true;
     isArray(value: any): false;
     isArrayBuffer(value: ArrayBuffer): true;
     isArrayBuffer(value: any): false;
-    isArrayLike(value: Array<any> | string | {length: number}): true;
+
+    isArrayLike(
+      value:
+        | Array<any>
+        | string
+        | {
+            length: number;
+          }
+    ): true;
+
     isArrayLike(value: any): false;
-    isArrayLikeObject(value: {length: number} | Array<any>): true;
+
+    isArrayLikeObject(
+      value:
+        | {
+            length: number;
+          }
+        | Array<any>
+    ): true;
+
     isArrayLikeObject(value: any): false;
     isBoolean(value: boolean): true;
     isBoolean(value: any): false;
@@ -814,21 +1117,25 @@ declare module "lodash" {
     isDate(value: any): false;
     isElement(value: Element): true;
     isElement(value: any): false;
-    isEmpty(value: void | null | '' | {} | [] | number | boolean): true;
+    isEmpty(value: void | null | "" | {} | [] | number | boolean): true;
     isEmpty(value: any): boolean;
     isEqual(value: any, other: any): boolean;
+
     isEqualWith<T, U>(
-      value?: ?T,
-      other?: ?U,
-      customizer?: ?(
-        objValue: any,
-        otherValue: any,
-        key: number | string,
-        object: T,
-        other: U,
-        stack: any
-      ) => boolean | void
+      value?: T | null,
+      other?: U | null,
+      customizer?:
+        | ((
+            objValue: any,
+            otherValue: any,
+            key: number | string,
+            object: T,
+            other: U,
+            stack: any
+          ) => boolean | void)
+        | null
     ): boolean;
+
     isError(value: Error): true;
     isError(value: any): false;
     isFinite(value: number): boolean;
@@ -837,37 +1144,41 @@ declare module "lodash" {
     isFunction(value: any): false;
     isInteger(value: number): boolean;
     isInteger(value: any): false;
-    isLength(value: void | null): false;
+    isLength(value: void | null): false;
     isLength(value: any): boolean;
     isMap(value: Map<any, any>): true;
     isMap(value: any): false;
-    isMatch(object?: ?Object, source?: ?Object): boolean;
-    isMatchWith<T: Object, U: Object>(
-      object?: ?T,
-      source?: ?U,
-      customizer?: ?(
-        objValue: any,
-        srcValue: any,
-        key: number | string,
-        object: T,
-        source: U
-      ) => boolean | void
+    isMatch(object?: any | null, source?: any | null): boolean;
+
+    isMatchWith<T extends any, U extends any>(
+      object?: T | null,
+      source?: U | null,
+      customizer?:
+        | ((
+            objValue: any,
+            srcValue: any,
+            key: number | string,
+            object: T,
+            source: U
+          ) => boolean | void)
+        | null
     ): boolean;
+
     isNaN(value: number): boolean;
     isNaN(value: any): false;
-    isNative(value: number | string | void | null | Object): false;
+    isNative(value: number | string | void | null | any): false;
     isNative(value: any): boolean;
-    isNil(value: void | null): true;
+    isNil(value: void | null): true;
     isNil(value: any): false;
     isNull(value: null): true;
     isNull(value: any): false;
     isNumber(value: number): true;
     isNumber(value: any): false;
-    isObject(value: Object): true;
+    isObject(value: any): true;
     isObject(value: any): false;
-    isObjectLike(value: void | null): false;
+    isObjectLike(value: void | null): false;
     isObjectLike(value: any): boolean;
-    isPlainObject(value: Object): true;
+    isPlainObject(value: any): true;
     isPlainObject(value: any): false;
     isRegExp(value: RegExp): true;
     isRegExp(value: any): false;
@@ -890,52 +1201,61 @@ declare module "lodash" {
     lt(value: any, other: any): boolean;
     lte(value: any, other: any): boolean;
     toArray(value: any): Array<any>;
-    toFinite(value: void | null): 0;
+    toFinite(value: void | null): 0;
     toFinite(value: any): number;
-    toInteger(value: void | null): 0;
+    toInteger(value: void | null): 0;
     toInteger(value: any): number;
-    toLength(value: void | null): 0;
+    toLength(value: void | null): 0;
     toLength(value: any): number;
-    toNumber(value: void | null): 0;
+    toNumber(value: void | null): 0;
     toNumber(value: any): number;
-    toPlainObject(value: any): Object;
-    toSafeInteger(value: void | null): 0;
+    toPlainObject(value: any): any;
+    toSafeInteger(value: void | null): 0;
     toSafeInteger(value: any): number;
-    toString(value: void | null): '';
+    toString(value: void | null): "";
     toString(value: any): string;
-
-    // Math
     add(augend: number, addend: number): number;
     ceil(number: number, precision?: number): number;
     divide(dividend: number, divisor: number): number;
     floor(number: number, precision?: number): number;
-    max<T>(array: ?Array<T>): T;
-    maxBy<T>(array: ?$ReadOnlyArray<T>, iteratee?: Iteratee<T>): T;
-    mean(array: Array<*>): number;
+    max<T>(array?: Array<T> | null): T;
+    maxBy<T>(
+      array: ReadonlyArray<T> | undefined | null,
+      iteratee?: Iteratee<T>
+    ): T;
+    mean(array: Array<any>): number;
     meanBy<T>(array: Array<T>, iteratee?: Iteratee<T>): number;
-    min<T>(array: ?Array<T>): T;
-    minBy<T>(array: ?$ReadOnlyArray<T>, iteratee?: Iteratee<T>): T;
+    min<T>(array?: Array<T> | null): T;
+    minBy<T>(
+      array: ReadonlyArray<T> | undefined | null,
+      iteratee?: Iteratee<T>
+    ): T;
     multiply(multiplier: number, multiplicand: number): number;
     round(number: number, precision?: number): number;
     subtract(minuend: number, subtrahend: number): number;
-    sum(array: Array<*>): number;
+    sum(array: Array<any>): number;
     sumBy<T>(array: Array<T>, iteratee?: Iteratee<T>): number;
-
-    // number
-    clamp(number?: number, lower?: ?number, upper?: ?number): number;
-    clamp(number: ?number, lower?: ?number, upper?: ?number): 0;
+    clamp(
+      number?: number,
+      lower?: number | null,
+      upper?: number | null
+    ): number;
+    clamp(
+      number?: number | null,
+      lower?: number | null,
+      upper?: number | null
+    ): 0;
     inRange(number: number, start?: number, end: number): boolean;
     random(lower?: number, upper?: number, floating?: boolean): number;
-
-    // Object
-    assign(object?: ?Object, ...sources?: Array<?Object>): Object;
+    assign(object?: any | null, ...sources: Array<any>): any;
     assignIn(): {};
     assignIn<A, B>(a: A, b: B): A & B;
     assignIn<A, B, C>(a: A, b: B, c: C): A & B & C;
     assignIn<A, B, C, D>(a: A, b: B, c: C, d: D): A & B & C & D;
     assignIn<A, B, C, D, E>(a: A, b: B, c: C, d: D, e: E): A & B & C & D & E;
     assignInWith(): {};
-    assignInWith<T: Object, A: Object>(
+
+    assignInWith<T extends any, A extends any>(
       object: T,
       s1: A,
       customizer?: (
@@ -945,8 +1265,9 @@ declare module "lodash" {
         object: T,
         source: A
       ) => any | void
-    ): Object;
-    assignInWith<T: Object, A: Object, B: Object>(
+    ): any;
+
+    assignInWith<T extends any, A extends any, B extends any>(
       object: T,
       s1: A,
       s2: B,
@@ -957,8 +1278,9 @@ declare module "lodash" {
         object: T,
         source: A | B
       ) => any | void
-    ): Object;
-    assignInWith<T: Object, A: Object, B: Object, C: Object>(
+    ): any;
+
+    assignInWith<T extends any, A extends any, B extends any, C extends any>(
       object: T,
       s1: A,
       s2: B,
@@ -970,8 +1292,15 @@ declare module "lodash" {
         object: T,
         source: A | B | C
       ) => any | void
-    ): Object;
-    assignInWith<T: Object, A: Object, B: Object, C: Object, D: Object>(
+    ): any;
+
+    assignInWith<
+      T extends any,
+      A extends any,
+      B extends any,
+      C extends any,
+      D extends any
+    >(
       object: T,
       s1: A,
       s2: B,
@@ -984,9 +1313,11 @@ declare module "lodash" {
         object: T,
         source: A | B | C | D
       ) => any | void
-    ): Object;
+    ): any;
+
     assignWith(): {};
-    assignWith<T: Object, A: Object>(
+
+    assignWith<T extends any, A extends any>(
       object: T,
       s1: A,
       customizer?: (
@@ -996,8 +1327,9 @@ declare module "lodash" {
         object: T,
         source: A
       ) => any | void
-    ): Object;
-    assignWith<T: Object, A: Object, B: Object>(
+    ): any;
+
+    assignWith<T extends any, A extends any, B extends any>(
       object: T,
       s1: A,
       s2: B,
@@ -1008,8 +1340,9 @@ declare module "lodash" {
         object: T,
         source: A | B
       ) => any | void
-    ): Object;
-    assignWith<T: Object, A: Object, B: Object, C: Object>(
+    ): any;
+
+    assignWith<T extends any, A extends any, B extends any, C extends any>(
       object: T,
       s1: A,
       s2: B,
@@ -1021,8 +1354,15 @@ declare module "lodash" {
         object: T,
         source: A | B | C
       ) => any | void
-    ): Object;
-    assignWith<T: Object, A: Object, B: Object, C: Object, D: Object>(
+    ): any;
+
+    assignWith<
+      T extends any,
+      A extends any,
+      B extends any,
+      C extends any,
+      D extends any
+    >(
       object: T,
       s1: A,
       s2: B,
@@ -1035,35 +1375,36 @@ declare module "lodash" {
         object: T,
         source: A | B | C | D
       ) => any | void
-    ): Object;
-    at(object?: ?Object, ...paths: Array<string>): Array<any>;
-    at(object?: ?Object, paths: Array<string>): Array<any>;
-    create<T>(prototype: T, properties: Object): $Supertype<T>;
-    create(prototype: any, properties: void | null): {};
-    defaults(object?: ?Object, ...sources?: Array<?Object>): Object;
-    defaultsDeep(object?: ?Object, ...sources?: Array<?Object>): Object;
-    // alias for _.toPairs
-    entries(object?: ?Object): Array<[string, any]>;
-    // alias for _.toPairsIn
-    entriesIn(object?: ?Object): Array<[string, any]>;
-    // alias for _.assignIn
-    extend<A, B>(a?: ?A, b?: ?B): A & B;
+    ): any;
+
+    at(object?: any | null, ...paths: Array<string>): Array<any>;
+    at(object?: any | null, paths: Array<string>): Array<any>;
+    create<T>(prototype: T, properties: any): $Supertype<T>;
+    create(prototype: any, properties: void | null): {};
+    defaults(object?: any | null, ...sources: Array<any>): any;
+    defaultsDeep(object?: any | null, ...sources: Array<any>): any;
+    entries(object?: any | null): Array<[string, any]>;
+    entriesIn(object?: any | null): Array<[string, any]>;
+    extend<A, B>(a?: A | null, b?: B | null): A & B;
     extend<A, B, C>(a: A, b: B, c: C): A & B & C;
     extend<A, B, C, D>(a: A, b: B, c: C, d: D): A & B & C & D;
     extend<A, B, C, D, E>(a: A, b: B, c: C, d: D, e: E): A & B & C & D & E;
-    // alias for _.assignInWith
-    extendWith<T: Object, A: Object>(
-      object?: ?T,
-      s1?: ?A,
-      customizer?: ?(
-        objValue: any,
-        srcValue: any,
-        key: string,
-        object: T,
-        source: A
-      ) => any | void
-    ): Object;
-    extendWith<T: Object, A: Object, B: Object>(
+
+    extendWith<T extends any, A extends any>(
+      object?: T | null,
+      s1?: A | null,
+      customizer?:
+        | ((
+            objValue: any,
+            srcValue: any,
+            key: string,
+            object: T,
+            source: A
+          ) => any | void)
+        | null
+    ): any;
+
+    extendWith<T extends any, A extends any, B extends any>(
       object: T,
       s1: A,
       s2: B,
@@ -1074,8 +1415,9 @@ declare module "lodash" {
         object: T,
         source: A | B
       ) => any | void
-    ): Object;
-    extendWith<T: Object, A: Object, B: Object, C: Object>(
+    ): any;
+
+    extendWith<T extends any, A extends any, B extends any, C extends any>(
       object: T,
       s1: A,
       s2: B,
@@ -1087,8 +1429,15 @@ declare module "lodash" {
         object: T,
         source: A | B | C
       ) => any | void
-    ): Object;
-    extendWith<T: Object, A: Object, B: Object, C: Object, D: Object>(
+    ): any;
+
+    extendWith<
+      T extends any,
+      A extends any,
+      B extends any,
+      C extends any,
+      D extends any
+    >(
       object: T,
       s1: A,
       s2: B,
@@ -1101,63 +1450,103 @@ declare module "lodash" {
         object: T,
         source: A | B | C | D
       ) => any | void
-    ): Object;
-    findKey<A, T: { [id: string]: A }>(
-      object: T,
-      predicate?: ?OPredicate<A, T>
-    ): string | void;
-    findKey<A, T: { [id: string]: A }>(
-      object: void | null,
-      predicate?: ?OPredicate<A, T>
-    ): void;
-    findLastKey<A, T: { [id: string]: A }>(
-      object: T,
-      predicate?: ?OPredicate<A, T>
-    ): string | void;
-    findLastKey<A, T: { [id: string]: A }>(
-      object: void | null,
-      predicate?: ?OPredicate<A, T>
-    ): void;
-    forIn(object: Object, iteratee?: ?OIteratee<*>): Object;
-    forIn(object: void | null, iteratee?: ?OIteratee<*>): null;
-    forInRight(object: Object, iteratee?: ?OIteratee<*>): Object;
-    forInRight(object: void | null, iteratee?: ?OIteratee<*>): null;
-    forOwn(object: Object, iteratee?: ?OIteratee<*>): Object;
-    forOwn(object: void | null, iteratee?: ?OIteratee<*>): null;
-    forOwnRight(object: Object, iteratee?: ?OIteratee<*>): Object;
-    forOwnRight(object: void | null, iteratee?: ?OIteratee<*>): null;
-    functions(object?: ?Object): Array<string>;
-    functionsIn(object?: ?Object): Array<string>;
+    ): any;
+
+    findKey<
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: T, predicate?: OPredicate<A, T> | null): string | void;
+
+    findKey<
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: void | null, predicate?: OPredicate<A, T> | null): void;
+
+    findLastKey<
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: T, predicate?: OPredicate<A, T> | null): string | void;
+
+    findLastKey<
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: void | null, predicate?: OPredicate<A, T> | null): void;
+
+    forIn(object: any, iteratee?: OIteratee<any> | null): any;
+    forIn(object: void | null, iteratee?: OIteratee<any> | null): null;
+    forInRight(object: any, iteratee?: OIteratee<any> | null): any;
+    forInRight(object: void | null, iteratee?: OIteratee<any> | null): null;
+    forOwn(object: any, iteratee?: OIteratee<any> | null): any;
+    forOwn(object: void | null, iteratee?: OIteratee<any> | null): null;
+    forOwnRight(object: any, iteratee?: OIteratee<any> | null): any;
+    forOwnRight(object: void | null, iteratee?: OIteratee<any> | null): null;
+    functions(object?: any | null): Array<string>;
+    functionsIn(object?: any | null): Array<string>;
+
     get(
-      object?: ?Object | ?$ReadOnlyArray<any> | void | null,
-      path?: ?$ReadOnlyArray<string | number> | string | number,
+      object?: any | ReadonlyArray<any> | undefined | null | void | null,
+      path?:
+        | ReadonlyArray<string | number>
+        | undefined
+        | null
+        | string
+        | number,
       defaultValue?: any
     ): any;
-    has(object: Object, path: Array<string> | string): boolean;
-    has(object: Object, path: void | null): false;
-    has(object: void | null, path?: ?Array<string> | ?string): false;
-    hasIn(object: Object, path: Array<string> | string): boolean;
-    hasIn(object: Object, path: void | null): false;
-    hasIn(object: void | null, path?: ?Array<string> | ?string): false;
-    invert(object: Object, multiVal?: ?boolean): Object;
-    invert(object: void | null, multiVal?: ?boolean): {};
-    invertBy(object: Object, iteratee?: ?Function): Object;
-    invertBy(object: void | null, iteratee?: ?Function): {};
+
+    has(object: any, path: Array<string> | string): boolean;
+    has(object: any, path: void | null): false;
+
+    has(
+      object: void | null,
+      path?: Array<string> | undefined | null | string | undefined | null
+    ): false;
+
+    hasIn(object: any, path: Array<string> | string): boolean;
+    hasIn(object: any, path: void | null): false;
+
+    hasIn(
+      object: void | null,
+      path?: Array<string> | undefined | null | string | undefined | null
+    ): false;
+
+    invert(object: any, multiVal?: boolean | null): any;
+    invert(object: void | null, multiVal?: boolean | null): {};
+    invertBy(object: any, iteratee?: Function | null): any;
+    invertBy(object: void | null, iteratee?: Function | null): {};
+
     invoke(
-      object?: ?Object,
-      path?: ?Array<string> | string,
-      ...args?: Array<any>
+      object?: any | null,
+      path?: Array<string> | undefined | null | string,
+      ...args: Array<any>
     ): any;
-    keys<K>(object?: ?{ [key: K]: any }): Array<K>;
-    keys(object?: ?Object): Array<string>;
-    keysIn(object?: ?Object): Array<string>;
-    mapKeys(object: Object, iteratee?: ?OIteratee<*>): Object;
-    mapKeys(object: void | null, iteratee?: ?OIteratee<*>): {};
-    mapValues(object: Object, iteratee?: ?OIteratee<*>): Object;
-    mapValues(object: void | null, iteratee?: ?OIteratee<*>): {};
-    merge(object?: ?Object, ...sources?: Array<?Object>): Object;
+
+    keys<K>(
+      object?:
+        | {
+            [key in K]: any;
+          }
+        | null
+    ): Array<K>;
+
+    keys(object?: any | null): Array<string>;
+    keysIn(object?: any | null): Array<string>;
+    mapKeys(object: any, iteratee?: OIteratee<any> | null): any;
+    mapKeys(object: void | null, iteratee?: OIteratee<any> | null): {};
+    mapValues(object: any, iteratee?: OIteratee<any> | null): any;
+    mapValues(object: void | null, iteratee?: OIteratee<any> | null): {};
+    merge(object?: any | null, ...sources: Array<any>): any;
     mergeWith(): {};
-    mergeWith<T: Object, A: Object>(
+
+    mergeWith<T extends any, A extends any>(
       object: T,
       customizer?: (
         objValue: any,
@@ -1166,8 +1555,9 @@ declare module "lodash" {
         object: T,
         source: A
       ) => any | void
-    ): Object;
-    mergeWith<T: Object, A: Object, B: Object>(
+    ): any;
+
+    mergeWith<T extends any, A extends any, B extends any>(
       object: T,
       s1: A,
       s2: B,
@@ -1178,8 +1568,9 @@ declare module "lodash" {
         object: T,
         source: A | B
       ) => any | void
-    ): Object;
-    mergeWith<T: Object, A: Object, B: Object, C: Object>(
+    ): any;
+
+    mergeWith<T extends any, A extends any, B extends any, C extends any>(
       object: T,
       s1: A,
       s2: B,
@@ -1191,8 +1582,15 @@ declare module "lodash" {
         object: T,
         source: A | B | C
       ) => any | void
-    ): Object;
-    mergeWith<T: Object, A: Object, B: Object, C: Object, D: Object>(
+    ): any;
+
+    mergeWith<
+      T extends any,
+      A extends any,
+      B extends any,
+      C extends any,
+      D extends any
+    >(
       object: T,
       s1: A,
       s2: B,
@@ -1205,304 +1603,385 @@ declare module "lodash" {
         object: T,
         source: A | B | C | D
       ) => any | void
-    ): Object;
-    omit(object?: ?Object, ...props: Array<string>): Object;
-    omit(object?: ?Object, props: Array<string>): Object;
-    omitBy<A, T: { [id: string]: A }>(
-      object: T,
-      predicate?: ?OPredicate<A, T>
-    ): Object;
-    omitBy<A, T>(
-      object: void | null,
-      predicate?: ?OPredicate<A, T>
-    ): {};
-    pick(object?: ?Object, ...props: Array<string>): Object;
-    pick(object?: ?Object, props: Array<string>): Object;
-    pickBy<A, T: { [id: string]: A }>(
-      object: T,
-      predicate?: ?OPredicate<A, T>
-    ): Object;
-    pickBy<A, T>(
-      object: void | null,
-      predicate?: ?OPredicate<A, T>
-    ): {};
+    ): any;
+
+    omit(object?: any | null, ...props: Array<string>): any;
+    omit(object?: any | null, props: Array<string>): any;
+
+    omitBy<
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: T, predicate?: OPredicate<A, T> | null): any;
+
+    omitBy<A, T>(object: void | null, predicate?: OPredicate<A, T> | null): {};
+    pick(object?: any | null, ...props: Array<string>): any;
+    pick(object?: any | null, props: Array<string>): any;
+
+    pickBy<
+      A,
+      T extends {
+        [id: string]: A;
+      }
+    >(object: T, predicate?: OPredicate<A, T> | null): any;
+
+    pickBy<A, T>(object: void | null, predicate?: OPredicate<A, T> | null): {};
+
     result(
-      object?: ?Object,
-      path?: ?Array<string> | string,
+      object?: any | null,
+      path?: Array<string> | undefined | null | string,
       defaultValue?: any
     ): any;
-    set(object: Object, path?: ?Array<string> | string, value: any): Object;
-    set<T: void | null>(
+
+    set(
+      object: any,
+      path?: Array<string> | undefined | null | string,
+      value: any
+    ): any;
+
+    set<T extends void | null>(
       object: T,
-      path?: ?Array<string> | string,
-      value?: ?any): T;
+      path?: Array<string> | undefined | null | string,
+      value?: any | null
+    ): T;
+
     setWith<T>(
       object: T,
-      path?: ?Array<string> | string,
+      path?: Array<string> | undefined | null | string,
       value: any,
       customizer?: (nsValue: any, key: string, nsObject: T) => any
-    ): Object;
-    setWith<T: void | null>(
+    ): any;
+
+    setWith<T extends void | null>(
       object: T,
-      path?: ?Array<string> | string,
-      value?: ?any,
-      customizer?: ?(nsValue: any, key: string, nsObject: T) => any
+      path?: Array<string> | undefined | null | string,
+      value?: any | null,
+      customizer?: ((nsValue: any, key: string, nsObject: T) => any) | null
     ): T;
-    toPairs(object?: ?Object | Array<*>): Array<[string, any]>;
-    toPairsIn(object?: ?Object): Array<[string, any]>;
+
+    toPairs(object?: any | Array<any>): Array<[string, any]>;
+    toPairsIn(object?: any | null): Array<[string, any]>;
+
     transform(
-      collection: Object | $ReadOnlyArray<any>,
-      iteratee?: ?OIteratee<*>,
+      collection: any | ReadonlyArray<any>,
+      iteratee?: OIteratee<any> | null,
       accumulator?: any
     ): any;
-    transform(
-      collection: void | null,
-      iteratee?: ?OIteratee<*>,
-      accumulator?: ?any
-    ): {};
-    unset(object: Object, path?: ?Array<string> | ?string): boolean;
-    unset(object: void | null, path?: ?Array<string> | ?string): true;
-    update(object: Object, path: string[] | string, updater: Function): Object;
-    update<T: void | null>(
-      object: T,
-      path?: ?string[] | ?string,
-      updater?: ?Function): T;
-    updateWith(
-      object: Object,
-      path?: ?string[] | ?string,
-      updater?: ?Function,
-      customizer?: ?Function
-    ): Object;
-    updateWith<T: void | null>(
-      object: T,
-      path?: ?string[] | ?string,
-      updater?: ?Function,
-      customizer?: ?Function
-    ): T;
-    values(object?: ?Object): Array<any>;
-    valuesIn(object?: ?Object): Array<any>;
 
-    // Seq
-    // harder to read, but this is _()
-    (value: any): any;
+    transform(
+      collection: void | null,
+      iteratee?: OIteratee<any> | null,
+      accumulator?: any | null
+    ): {};
+
+    unset(
+      object: any,
+      path?: Array<string> | undefined | null | string | undefined | null
+    ): boolean;
+
+    unset(
+      object: void | null,
+      path?: Array<string> | undefined | null | string | undefined | null
+    ): true;
+
+    update(object: any, path: string[] | string, updater: Function): any;
+
+    update<T extends void | null>(
+      object: T,
+      path?: string[] | undefined | null | string | undefined | null,
+      updater?: Function | null
+    ): T;
+
+    updateWith(
+      object: any,
+      path?: string[] | undefined | null | string | undefined | null,
+      updater?: Function | null,
+      customizer?: Function | null
+    ): any;
+
+    updateWith<T extends void | null>(
+      object: T,
+      path?: string[] | undefined | null | string | undefined | null,
+      updater?: Function | null,
+      customizer?: Function | null
+    ): T;
+
+    values(object?: any | null): Array<any>;
+    valuesIn(object?: any | null): Array<any>;
     chain<T>(value: T): any;
     tap<T>(value: T, interceptor: (value: T) => any): T;
     thru<T1, T2>(value: T1, interceptor: (value: T1) => T2): T2;
-    // TODO: _.prototype.*
-
-    // String
     camelCase(string: string): string;
-    camelCase(string: void | null): '';
+    camelCase(string: void | null): "";
     capitalize(string: string): string;
-    capitalize(string: void | null): '';
+    capitalize(string: void | null): "";
     deburr(string: string): string;
-    deburr(string: void | null): '';
-    endsWith(string: string, target?: string, position?: ?number): boolean;
-    endsWith(string: void | null, target?: ?string, position?: ?number): false;
+    deburr(string: void | null): "";
+    endsWith(
+      string: string,
+      target?: string,
+      position?: number | null
+    ): boolean;
+    endsWith(
+      string: void | null,
+      target?: string | null,
+      position?: number | null
+    ): false;
     escape(string: string): string;
-    escape(string: void | null): '';
+    escape(string: void | null): "";
     escapeRegExp(string: string): string;
-    escapeRegExp(string: void | null): '';
+    escapeRegExp(string: void | null): "";
     kebabCase(string: string): string;
-    kebabCase(string: void | null): '';
+    kebabCase(string: void | null): "";
     lowerCase(string: string): string;
-    lowerCase(string: void | null): '';
+    lowerCase(string: void | null): "";
     lowerFirst(string: string): string;
-    lowerFirst(string: void | null): '';
-    pad(string?: ?string, length?: ?number, chars?: ?string): string;
-    padEnd(string?: ?string, length?: ?number, chars?: ?string): string;
-    padStart(string?: ?string, length?: ?number, chars?: ?string): string;
-    parseInt(string: string, radix?: ?number): number;
-    repeat(string: string, n?: ?number): string;
-    repeat(string: void | null, n?: ?number): '';
+    lowerFirst(string: void | null): "";
+    pad(
+      string?: string | null,
+      length?: number | null,
+      chars?: string | null
+    ): string;
+    padEnd(
+      string?: string | null,
+      length?: number | null,
+      chars?: string | null
+    ): string;
+    padStart(
+      string?: string | null,
+      length?: number | null,
+      chars?: string | null
+    ): string;
+    parseInt(string: string, radix?: number | null): number;
+    repeat(string: string, n?: number | null): string;
+    repeat(string: void | null, n?: number | null): "";
+
     replace(
       string: string,
       pattern: RegExp | string,
       replacement: ((string: string) => string) | string
     ): string;
-    replace(
-      string: void | null,
-      pattern?: ?RegExp | ?string,
-      replacement: ?((string: string) => string) | ?string
-    ): '';
-    snakeCase(string: string): string;
-    snakeCase(string: void | null): '';
-    split(
-      string?: ?string,
-      separator?: ?RegExp | ?string,
-      limit?: ?number
-    ): Array<string>;
-    startCase(string: string): string;
-    startCase(string: void | null): '';
-    startsWith(string: string, target?: string, position?: number): boolean;
-    startsWith(string: void | null, target?: ?string, position?: ?number): false;
-    template(string?: ?string, options?: ?TemplateSettings): Function;
-    toLower(string: string): string;
-    toLower(string: void | null): '';
-    toUpper(string: string): string;
-    toUpper(string: void | null): '';
-    trim(string: string, chars?: string): string;
-    trim(string: void | null, chars?: ?string): '';
-    trimEnd(string: string, chars?: ?string): string;
-    trimEnd(string: void | null, chars?: ?string): '';
-    trimStart(string: string, chars?: ?string): string;
-    trimStart(string: void | null, chars?: ?string): '';
-    truncate(string: string, options?: TruncateOptions): string;
-    truncate(string: void | null, options?: ?TruncateOptions): '';
-    unescape(string: string): string;
-    unescape(string: void | null): '';
-    upperCase(string: string): string;
-    upperCase(string: void | null): '';
-    upperFirst(string: string): string;
-    upperFirst(string: void | null): '';
-    words(string?: ?string, pattern?: ?RegExp | ?string): Array<string>;
 
-    // Util
+    replace(
+      string: void | null,
+      pattern?: RegExp | undefined | null | string | undefined | null,
+      replacement:
+        | ((string: string) => string)
+        | undefined
+        | null
+        | string
+        | undefined
+        | null
+    ): "";
+
+    snakeCase(string: string): string;
+    snakeCase(string: void | null): "";
+
+    split(
+      string?: string | null,
+      separator?: RegExp | undefined | null | string | undefined | null,
+      limit?: number | null
+    ): Array<string>;
+
+    startCase(string: string): string;
+    startCase(string: void | null): "";
+    startsWith(string: string, target?: string, position?: number): boolean;
+    startsWith(
+      string: void | null,
+      target?: string | null,
+      position?: number | null
+    ): false;
+    template(
+      string?: string | null,
+      options?: TemplateSettings | null
+    ): Function;
+    toLower(string: string): string;
+    toLower(string: void | null): "";
+    toUpper(string: string): string;
+    toUpper(string: void | null): "";
+    trim(string: string, chars?: string): string;
+    trim(string: void | null, chars?: string | null): "";
+    trimEnd(string: string, chars?: string | null): string;
+    trimEnd(string: void | null, chars?: string | null): "";
+    trimStart(string: string, chars?: string | null): string;
+    trimStart(string: void | null, chars?: string | null): "";
+    truncate(string: string, options?: TruncateOptions): string;
+    truncate(string: void | null, options?: TruncateOptions | null): "";
+    unescape(string: string): string;
+    unescape(string: void | null): "";
+    upperCase(string: string): string;
+    upperCase(string: void | null): "";
+    upperFirst(string: string): string;
+    upperFirst(string: void | null): "";
+
+    words(
+      string?: string | null,
+      pattern?: RegExp | undefined | null | string | undefined | null
+    ): Array<string>;
+
     attempt(func: Function, ...args: Array<any>): any;
-    bindAll(object: Object, methodNames?: ?Array<string>): Object;
-    bindAll<T: void | null>(object: T, methodNames?: ?Array<string>): T;
-    bindAll(object: Object, ...methodNames: Array<string>): Object;
-    cond(pairs?: ?NestedArray<Function>): Function;
-    conforms(source?: ?Object): Function;
+    bindAll(object: any, methodNames?: Array<string> | null): any;
+    bindAll<T extends void | null>(
+      object: T,
+      methodNames?: Array<string> | null
+    ): T;
+    bindAll(object: any, ...methodNames: Array<string>): any;
+    cond(pairs?: NestedArray<Function> | null): Function;
+    conforms(source?: any | null): Function;
     constant<T>(value: T): () => T;
-    defaultTo<T1: string | boolean | Object, T2>(
+    defaultTo<T1 extends string | boolean | any, T2>(
       value: T1,
       defaultValue: T2
     ): T1;
-    // NaN is a number instead of its own type, otherwise it would behave like null/void
-    defaultTo<T1: number, T2>(value: T1, defaultValue: T2): T1 | T2;
-    defaultTo<T1: void | null, T2>(value: T1, defaultValue: T2): T2;
-    flow: ($ComposeReverse & (funcs: Array<Function>) => Function);
-    flowRight: ($Compose & (funcs: Array<Function>) => Function);
+    defaultTo<T1 extends number, T2>(value: T1, defaultValue: T2): T1 | T2;
+    defaultTo<T1 extends void | null, T2>(value: T1, defaultValue: T2): T2;
+    flow: $ComposeReverse & ((funcs: Array<Function>) => Function);
+    flowRight: $Compose & ((funcs: Array<Function>) => Function);
     identity<T>(value: T): T;
     iteratee(func?: any): Function;
-    matches(source?: ?Object): Function;
-    matchesProperty(path?: ?Array<string> | string, srcValue: any): Function;
-    method(path?: ?Array<string> | string, ...args?: Array<any>): Function;
-    methodOf(object?: ?Object, ...args?: Array<any>): Function;
-    mixin<T: Function | Object>(
+    matches(source?: any | null): Function;
+    matchesProperty(
+      path?: Array<string> | undefined | null | string,
+      srcValue: any
+    ): Function;
+    method(
+      path?: Array<string> | undefined | null | string,
+      ...args: Array<any>
+    ): Function;
+    methodOf(object?: any | null, ...args: Array<any>): Function;
+
+    mixin<T extends Function | any>(
       object?: T,
-      source: Object,
-      options?: { chain: boolean }
+      source: any,
+      options?: {
+        chain: boolean;
+      }
     ): T;
+
     noConflict(): Lodash;
-    noop(...args: Array<mixed>): void;
-    nthArg(n?: ?number): Function;
+    noop(...args: Array<unknown>): void;
+    nthArg(n?: number | null): Function;
     over(...iteratees: Array<Function>): Function;
     over(iteratees: Array<Function>): Function;
     overEvery(...predicates: Array<Function>): Function;
     overEvery(predicates: Array<Function>): Function;
     overSome(...predicates: Array<Function>): Function;
     overSome(predicates: Array<Function>): Function;
-    property(path?: ?Array<string> | string): Function;
-    propertyOf(object?: ?Object): Function;
+    property(path?: Array<string> | undefined | null | string): Function;
+    propertyOf(object?: any | null): Function;
     range(start: number, end: number, step?: number): Array<number>;
     range(end: number, step?: number): Array<number>;
-    rangeRight(start?: ?number, end?: ?number, step?: ?number): Array<number>;
-    rangeRight(end?: ?number, step?: ?number): Array<number>;
-    runInContext(context?: ?Object): Function;
-
-    stubArray(): Array<*>;
+    rangeRight(
+      start?: number | null,
+      end?: number | null,
+      step?: number | null
+    ): Array<number>;
+    rangeRight(end?: number | null, step?: number | null): Array<number>;
+    runInContext(context?: any | null): Function;
+    stubArray(): Array<any>;
     stubFalse(): false;
     stubObject(): {};
     stubString(): "";
     stubTrue(): true;
-    times(n?: ?number, ...rest?: Array<void | null>): Array<number>;
+    times(n?: number | null, ...rest: Array<void | null>): Array<number>;
     times<T>(n: number, iteratee: (i: number) => T): Array<T>;
     toPath(value: any): Array<string>;
-    uniqueId(prefix?: ?string): string;
+    uniqueId(prefix?: string | null): string;
 
     // Properties
     VERSION: string;
     templateSettings: TemplateSettings;
   }
 
-  declare module.exports: Lodash;
+  let __exports: Lodash;
+  export = __exports;
 }
 
 declare module "lodash/fp" {
-  declare type __CurriedFunction1<A, R, AA: A> = (...r: [AA]) => R;
-  declare type CurriedFunction1<A, R> = __CurriedFunction1<A, R, *>;
-
-  declare type __CurriedFunction2<A, B, R, AA: A, BB: B> = ((
+  type __CurriedFunction1<A, R, AA extends A> = (...r: [AA]) => R;
+  type CurriedFunction1<A, R> = __CurriedFunction1<A, R, any>;
+  type __CurriedFunction2<A, B, R, AA extends A, BB extends B> = ((
     ...r: [AA]
   ) => CurriedFunction1<BB, R>) &
     ((...r: [AA, BB]) => R);
-  declare type CurriedFunction2<A, B, R> = __CurriedFunction2<A, B, R, *, *>;
-
-  declare type __CurriedFunction3<A, B, C, R, AA: A, BB: B, CC: C> = ((
-    ...r: [AA]
-  ) => CurriedFunction2<BB, CC, R>) &
-    ((...r: [AA, BB]) => CurriedFunction1<CC, R>) &
-    ((...r: [AA, BB, CC]) => R);
-  declare type CurriedFunction3<A, B, C, R> = __CurriedFunction3<
+  type CurriedFunction2<A, B, R> = __CurriedFunction2<A, B, R, any, any>;
+  type __CurriedFunction3<
     A,
     B,
     C,
     R,
-    *,
-    *,
-    *
+    AA extends A,
+    BB extends B,
+    CC extends C
+  > = ((...r: [AA]) => CurriedFunction2<BB, CC, R>) &
+    ((...r: [AA, BB]) => CurriedFunction1<CC, R>) &
+    ((...r: [AA, BB, CC]) => R);
+  type CurriedFunction3<A, B, C, R> = __CurriedFunction3<
+    A,
+    B,
+    C,
+    R,
+    any,
+    any,
+    any
   >;
-
-  declare type __CurriedFunction4<
+  type __CurriedFunction4<
     A,
     B,
     C,
     D,
     R,
-    AA: A,
-    BB: B,
-    CC: C,
-    DD: D
+    AA extends A,
+    BB extends B,
+    CC extends C,
+    DD extends D
   > = ((...r: [AA]) => CurriedFunction3<BB, CC, DD, R>) &
     ((...r: [AA, BB]) => CurriedFunction2<CC, DD, R>) &
     ((...r: [AA, BB, CC]) => CurriedFunction1<DD, R>) &
     ((...r: [AA, BB, CC, DD]) => R);
-  declare type CurriedFunction4<A, B, C, D, R> = __CurriedFunction4<
+  type CurriedFunction4<A, B, C, D, R> = __CurriedFunction4<
     A,
     B,
     C,
     D,
     R,
-    *,
-    *,
-    *,
-    *
+    any,
+    any,
+    any,
+    any
   >;
-
-  declare type __CurriedFunction5<
+  type __CurriedFunction5<
     A,
     B,
     C,
     D,
     E,
     R,
-    AA: A,
-    BB: B,
-    CC: C,
-    DD: D,
-    EE: E
+    AA extends A,
+    BB extends B,
+    CC extends C,
+    DD extends D,
+    EE extends E
   > = ((...r: [AA]) => CurriedFunction4<BB, CC, DD, EE, R>) &
     ((...r: [AA, BB]) => CurriedFunction3<CC, DD, EE, R>) &
     ((...r: [AA, BB, CC]) => CurriedFunction2<DD, EE, R>) &
     ((...r: [AA, BB, CC, DD]) => CurriedFunction1<EE, R>) &
     ((...r: [AA, BB, CC, DD, EE]) => R);
-  declare type CurriedFunction5<A, B, C, D, E, R> = __CurriedFunction5<
+  type CurriedFunction5<A, B, C, D, E, R> = __CurriedFunction5<
     A,
     B,
     C,
     D,
     E,
     R,
-    *,
-    *,
-    *,
-    *,
-    *
+    any,
+    any,
+    any,
+    any,
+    any
   >;
-
-  declare type __CurriedFunction6<
+  type __CurriedFunction6<
     A,
     B,
     C,
@@ -1510,19 +1989,19 @@ declare module "lodash/fp" {
     E,
     F,
     R,
-    AA: A,
-    BB: B,
-    CC: C,
-    DD: D,
-    EE: E,
-    FF: F
+    AA extends A,
+    BB extends B,
+    CC extends C,
+    DD extends D,
+    EE extends E,
+    FF extends F
   > = ((...r: [AA]) => CurriedFunction5<BB, CC, DD, EE, FF, R>) &
     ((...r: [AA, BB]) => CurriedFunction4<CC, DD, EE, FF, R>) &
     ((...r: [AA, BB, CC]) => CurriedFunction3<DD, EE, FF, R>) &
     ((...r: [AA, BB, CC, DD]) => CurriedFunction2<EE, FF, R>) &
     ((...r: [AA, BB, CC, DD, EE]) => CurriedFunction1<FF, R>) &
     ((...r: [AA, BB, CC, DD, EE, FF]) => R);
-  declare type CurriedFunction6<A, B, C, D, E, F, R> = __CurriedFunction6<
+  type CurriedFunction6<A, B, C, D, E, F, R> = __CurriedFunction6<
     A,
     B,
     C,
@@ -1530,131 +2009,120 @@ declare module "lodash/fp" {
     E,
     F,
     R,
-    *,
-    *,
-    *,
-    *,
-    *,
-    *
+    any,
+    any,
+    any,
+    any,
+    any,
+    any
   >;
-
-  declare type Curry = (<A, R>((...r: [A]) => R) => CurriedFunction1<A, R>) &
-    (<A, B, R>((...r: [A, B]) => R) => CurriedFunction2<A, B, R>) &
-    (<A, B, C, R>((...r: [A, B, C]) => R) => CurriedFunction3<A, B, C, R>) &
+  type Curry = (<A, R>(a: (...r: [A]) => R) => CurriedFunction1<A, R>) &
+    (<A, B, R>(a: (...r: [A, B]) => R) => CurriedFunction2<A, B, R>) &
+    (<A, B, C, R>(a: (...r: [A, B, C]) => R) => CurriedFunction3<A, B, C, R>) &
     (<A, B, C, D, R>(
-      (...r: [A, B, C, D]) => R
+      a: (...r: [A, B, C, D]) => R
     ) => CurriedFunction4<A, B, C, D, R>) &
     (<A, B, C, D, E, R>(
-      (...r: [A, B, C, D, E]) => R
+      a: (...r: [A, B, C, D, E]) => R
     ) => CurriedFunction5<A, B, C, D, E, R>) &
     (<A, B, C, D, E, F, R>(
-      (...r: [A, B, C, D, E, F]) => R
+      a: (...r: [A, B, C, D, E, F]) => R
     ) => CurriedFunction6<A, B, C, D, E, F, R>);
+  type UnaryFn<A, R> = (a: A) => R;
 
-  declare type UnaryFn<A, R> = (a: A) => R;
-
-  declare type TemplateSettings = {
-    escape?: RegExp,
-    evaluate?: RegExp,
-    imports?: Object,
-    interpolate?: RegExp,
-    variable?: string
+  type TemplateSettings = {
+    escape?: RegExp;
+    evaluate?: RegExp;
+    imports?: any;
+    interpolate?: RegExp;
+    variable?: string;
   };
 
-  declare type TruncateOptions = {
-    length?: number,
-    omission?: string,
-    separator?: RegExp | string
+  type TruncateOptions = {
+    length?: number;
+    omission?: string;
+    separator?: RegExp | string;
   };
 
-  declare type DebounceOptions = {
-    leading?: boolean,
-    maxWait?: number,
-    trailing?: boolean
+  type DebounceOptions = {
+    leading?: boolean;
+    maxWait?: number;
+    trailing?: boolean;
   };
 
-  declare type ThrottleOptions = {
-    leading?: boolean,
-    trailing?: boolean
+  type ThrottleOptions = {
+    leading?: boolean;
+    trailing?: boolean;
   };
 
-  declare type NestedArray<T> = Array<Array<T>>;
-
-  declare type matchesIterateeShorthand = Object;
-  declare type matchesPropertyIterateeShorthand = [string, any];
-  declare type propertyIterateeShorthand = string;
-
-  declare type OPredicate<A> =
+  type NestedArray<T> = Array<Array<T>>;
+  type matchesIterateeShorthand = any;
+  type matchesPropertyIterateeShorthand = [string, any];
+  type propertyIterateeShorthand = string;
+  type OPredicate<A> =
     | ((value: A) => any)
     | matchesIterateeShorthand
     | matchesPropertyIterateeShorthand
     | propertyIterateeShorthand;
-
-  declare type OIterateeWithResult<V, R> = Object | string | ((value: V) => R);
-  declare type OIteratee<O> = OIterateeWithResult<any, any>;
-  declare type OFlatMapIteratee<T, U> = OIterateeWithResult<any, Array<U>>;
-
-  declare type Predicate<T> =
+  type OIterateeWithResult<V, R> = any | string | ((value: V) => R);
+  type OIteratee<O> = OIterateeWithResult<any, any>;
+  type OFlatMapIteratee<T, U> = OIterateeWithResult<any, Array<U>>;
+  type Predicate<T> =
     | ((value: T) => any)
     | matchesIterateeShorthand
     | matchesPropertyIterateeShorthand
     | propertyIterateeShorthand;
+  type _ValueOnlyIteratee<T> = (value: T) => unknown;
+  type ValueOnlyIteratee<T> = _ValueOnlyIteratee<T> | string;
+  type _Iteratee<T> = (item: T) => unknown;
+  type Iteratee<T> = _Iteratee<T> | any | string;
+  type FlatMapIteratee<T, U> = ((item: T) => Array<U>) | any | string;
+  type Comparator<T> = (item: T, item2: T) => boolean;
+  type MapIterator<T, U> = ((item: T) => U) | propertyIterateeShorthand;
+  type OMapIterator<T, U> = ((item: T) => U) | propertyIterateeShorthand;
 
-  declare type _ValueOnlyIteratee<T> = (value: T) => mixed;
-  declare type ValueOnlyIteratee<T> = _ValueOnlyIteratee<T> | string;
-  declare type _Iteratee<T> = (item: T) => mixed;
-  declare type Iteratee<T> = _Iteratee<T> | Object | string;
-  declare type FlatMapIteratee<T, U> =
-    | ((item: T) => Array<U>)
-    | Object
-    | string;
-  declare type Comparator<T> = (item: T, item2: T) => boolean;
-
-  declare type MapIterator<T, U> = ((item: T) => U) | propertyIterateeShorthand;
-
-  declare type OMapIterator<T, U> =
-    | ((item: T) => U)
-    | propertyIterateeShorthand;
-
-  declare class Lodash {
-    // Array
+  class Lodash {
     chunk<T>(size: number): (array: Array<T>) => Array<Array<T>>;
     chunk<T>(size: number, array: Array<T>): Array<Array<T>>;
-    compact<T, N: ?T>(array?: ?$ReadOnlyArray<N>): Array<T>;
-    concat<T, U, A: Array<T> | T, B: Array<U> | U>(
+    compact<T, N extends T | undefined | null>(
+      array?: ReadonlyArray<N> | null
+    ): Array<T>;
+    concat<T, U, A extends Array<T> | T, B extends Array<U> | U>(
       base: A
     ): (elements: B) => Array<T | U>;
-    concat<T, U, A: Array<T> | T, B: Array<U> | U>(
+    concat<T, U, A extends Array<T> | T, B extends Array<U> | U>(
       base: A,
       elements: B
     ): Array<T | U>;
-    difference<T>(values: $ReadOnlyArray<T>): (array: $ReadOnlyArray<T>) => T[];
-    difference<T>(values: $ReadOnlyArray<T>, array: $ReadOnlyArray<T>): T[];
+    difference<T>(values: ReadonlyArray<T>): (array: ReadonlyArray<T>) => T[];
+    difference<T>(values: ReadonlyArray<T>, array: ReadonlyArray<T>): T[];
     differenceBy<T>(
       iteratee: ValueOnlyIteratee<T>
-    ): ((values: $ReadOnlyArray<T>) => (array: $ReadOnlyArray<T>) => T[]) &
-      ((values: $ReadOnlyArray<T>, array: $ReadOnlyArray<T>) => T[]);
+    ): ((values: ReadonlyArray<T>) => (array: ReadonlyArray<T>) => T[]) &
+      ((values: ReadonlyArray<T>, array: ReadonlyArray<T>) => T[]);
     differenceBy<T>(
       iteratee: ValueOnlyIteratee<T>,
-      values: $ReadOnlyArray<T>
-    ): (array: $ReadOnlyArray<T>) => T[];
+      values: ReadonlyArray<T>
+    ): (array: ReadonlyArray<T>) => T[];
+
     differenceBy<T>(
       iteratee: ValueOnlyIteratee<T>,
-      values: $ReadOnlyArray<T>,
-      array: $ReadOnlyArray<T>
+      values: ReadonlyArray<T>,
+      array: ReadonlyArray<T>
     ): T[];
+
+    differenceWith<T>(
+      comparator: Comparator<T>
+    ): ((first: Readonly<T>) => (second: Readonly<T>) => T[]) &
+      ((first: Readonly<T>, second: Readonly<T>) => T[]);
     differenceWith<T>(
       comparator: Comparator<T>,
-    ): ((first: $ReadOnly<T>) => (second: $ReadOnly<T>) => T[]) &
-      ((first: $ReadOnly<T>, second: $ReadOnly<T>) => T[]);
+      first: Readonly<T>
+    ): (second: Readonly<T>) => T[];
     differenceWith<T>(
       comparator: Comparator<T>,
-      first: $ReadOnly<T>,
-    ): (second: $ReadOnly<T>) => T[];
-    differenceWith<T>(
-      comparator: Comparator<T>,
-      first: $ReadOnly<T>,
-      second: $ReadOnly<T>
+      first: Readonly<T>,
+      second: Readonly<T>
     ): T[];
     drop<T>(n: number): (array: Array<T>) => Array<T>;
     drop<T>(n: number, array: Array<T>): Array<T>;
@@ -1692,47 +2160,52 @@ declare module "lodash/fp" {
       value: U,
       array: Array<T>
     ): Array<T | U>;
-    findIndex<T>(predicate: Predicate<T>): (array: $ReadOnlyArray<T>) => number;
-    findIndex<T>(predicate: Predicate<T>, array: $ReadOnlyArray<T>): number;
+    findIndex<T>(predicate: Predicate<T>): (array: ReadonlyArray<T>) => number;
+    findIndex<T>(predicate: Predicate<T>, array: ReadonlyArray<T>): number;
     findIndexFrom<T>(
       predicate: Predicate<T>
-    ): ((fromIndex: number) => (array: $ReadOnlyArray<T>) => number) &
-      ((fromIndex: number, array: $ReadOnlyArray<T>) => number);
+    ): ((fromIndex: number) => (array: ReadonlyArray<T>) => number) &
+      ((fromIndex: number, array: ReadonlyArray<T>) => number);
     findIndexFrom<T>(
       predicate: Predicate<T>,
       fromIndex: number
-    ): (array: $ReadOnlyArray<T>) => number;
+    ): (array: ReadonlyArray<T>) => number;
     findIndexFrom<T>(
       predicate: Predicate<T>,
       fromIndex: number,
-      array: $ReadOnlyArray<T>
+      array: ReadonlyArray<T>
     ): number;
     findLastIndex<T>(
       predicate: Predicate<T>
-    ): (array: $ReadOnlyArray<T>) => number;
-    findLastIndex<T>(predicate: Predicate<T>, array: $ReadOnlyArray<T>): number;
+    ): (array: ReadonlyArray<T>) => number;
+    findLastIndex<T>(predicate: Predicate<T>, array: ReadonlyArray<T>): number;
     findLastIndexFrom<T>(
       predicate: Predicate<T>
-    ): ((fromIndex: number) => (array: $ReadOnlyArray<T>) => number) &
-      ((fromIndex: number, array: $ReadOnlyArray<T>) => number);
+    ): ((fromIndex: number) => (array: ReadonlyArray<T>) => number) &
+      ((fromIndex: number, array: ReadonlyArray<T>) => number);
     findLastIndexFrom<T>(
       predicate: Predicate<T>,
       fromIndex: number
-    ): (array: $ReadOnlyArray<T>) => number;
+    ): (array: ReadonlyArray<T>) => number;
     findLastIndexFrom<T>(
       predicate: Predicate<T>,
       fromIndex: number,
-      array: $ReadOnlyArray<T>
+      array: ReadonlyArray<T>
     ): number;
-    // alias of _.head
-    first<T>(array: $ReadOnlyArray<T>): T;
+    first<T>(array: ReadonlyArray<T>): T;
     flatten<T, X>(array: Array<Array<T> | X>): Array<T | X>;
     unnest<T, X>(array: Array<Array<T> | X>): Array<T | X>;
     flattenDeep<T>(array: any[]): Array<T>;
     flattenDepth(depth: number): (array: any[]) => any[];
     flattenDepth(depth: number, array: any[]): any[];
-    fromPairs<A, B>(pairs: Array<[A, B]>): { [key: A]: B };
-    head<T>(array: $ReadOnlyArray<T>): T;
+
+    fromPairs<A, B>(
+      pairs: Array<[A, B]>
+    ): {
+      [key in A]: B;
+    };
+
+    head<T>(array: ReadonlyArray<T>): T;
     indexOf<T>(value: T): (array: Array<T>) => number;
     indexOf<T>(value: T, array: Array<T>): number;
     indexOfFrom<T>(
@@ -1857,9 +2330,9 @@ declare module "lodash/fp" {
     sortedLastIndexOf<T>(value: T, array: Array<T>): number;
     sortedUniq<T>(array: Array<T>): Array<T>;
     sortedUniqBy<T>(
-      iteratee: (value: T) => mixed
+      iteratee: (value: T) => unknown
     ): (array: Array<T>) => Array<T>;
-    sortedUniqBy<T>(iteratee: (value: T) => mixed, array: Array<T>): Array<T>;
+    sortedUniqBy<T>(iteratee: (value: T) => unknown, array: Array<T>): Array<T>;
     tail<T>(array: Array<T>): Array<T>;
     take<T>(n: number): (array: Array<T>) => Array<T>;
     take<T>(n: number, array: Array<T>): Array<T>;
@@ -1966,12 +2439,24 @@ declare module "lodash/fp" {
     zip<A, B>(a1: A[]): (a2: B[]) => Array<[A, B]>;
     zip<A, B>(a1: A[], a2: B[]): Array<[A, B]>;
     zipAll(arrays: Array<Array<any>>): Array<any>;
-    zipObject<K, V>(props?: Array<K>): (values?: Array<V>) => { [key: K]: V };
-    zipObject<K, V>(props?: Array<K>, values?: Array<V>): { [key: K]: V };
-    zipObj(props: Array<any>): (values: Array<any>) => Object;
-    zipObj(props: Array<any>, values: Array<any>): Object;
-    zipObjectDeep(props: any[]): (values: any) => Object;
-    zipObjectDeep(props: any[], values: any): Object;
+
+    zipObject<K, V>(
+      props?: Array<K>
+    ): (values?: Array<V>) => {
+      [key in K]: V;
+    };
+
+    zipObject<K, V>(
+      props?: Array<K>,
+      values?: Array<V>
+    ): {
+      [key in K]: V;
+    };
+
+    zipObj(props: Array<any>): (values: Array<any>) => any;
+    zipObj(props: Array<any>, values: Array<any>): any;
+    zipObjectDeep(props: any[]): (values: any) => any;
+    zipObjectDeep(props: any[], values: any): any;
     zipWith<T>(
       iteratee: Iteratee<T>
     ): ((a1: NestedArray<T>) => (a2: NestedArray<T>) => Array<T>) &
@@ -1985,161 +2470,398 @@ declare module "lodash/fp" {
       a1: NestedArray<T>,
       a2: NestedArray<T>
     ): Array<T>;
-    // Collection
-    countBy<T>(
-      iteratee: ValueOnlyIteratee<T>
-    ): (collection: Array<T> | { [id: any]: T }) => { [string]: number };
+
+    countBy<T>(iteratee: ValueOnlyIteratee<T>): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => {
+      [x: string]: number;
+    };
+
     countBy<T>(
       iteratee: ValueOnlyIteratee<T>,
-      collection: Array<T> | { [id: any]: T }
-    ): { [string]: number };
-    // alias of _.forEach
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ): {
+      [x: string]: number;
+    };
+
+    each<T>(iteratee: Iteratee<T> | OIteratee<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
     each<T>(
-      iteratee: Iteratee<T> | OIteratee<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<T>;
-    each<T>(
       iteratee: Iteratee<T> | OIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<T>;
-    // alias of _.forEachRight
-    eachRight<T>(
-      iteratee: Iteratee<T> | OIteratee<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<T>;
+
+    eachRight<T>(iteratee: Iteratee<T> | OIteratee<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
     eachRight<T>(
       iteratee: Iteratee<T> | OIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<T>;
-    every<T>(
-      iteratee: Iteratee<T> | OIteratee<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => boolean;
+
+    every<T>(iteratee: Iteratee<T> | OIteratee<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => boolean;
+
     every<T>(
       iteratee: Iteratee<T> | OIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): boolean;
-    all<T>(
-      iteratee: Iteratee<T> | OIteratee<T>
-    ): (collection: Array<T> | { [id: any]: T }) => boolean;
+
+    all<T>(iteratee: Iteratee<T> | OIteratee<T>): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => boolean;
+
     all<T>(
       iteratee: Iteratee<T> | OIteratee<T>,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): boolean;
-    filter<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<T>;
+
+    filter<T>(predicate: Predicate<T> | OPredicate<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
     filter<T>(
       predicate: Predicate<T> | OPredicate<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<T>;
-    find<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => T | void;
+
+    find<T>(predicate: Predicate<T> | OPredicate<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => T | void;
+
     find<T>(
       predicate: Predicate<T> | OPredicate<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): T | void;
-    findFrom<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): ((
+
+    findFrom<T>(predicate: Predicate<T> | OPredicate<T>): ((
       fromIndex: number
-    ) => (collection: $ReadOnlyArray<T> | { [id: any]: T }) => T | void) &
+    ) => (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => T | void) &
       ((
         fromIndex: number,
-        collection: $ReadOnlyArray<T> | { [id: any]: T }
+        collection:
+          | ReadonlyArray<T>
+          | {
+              [id in any]: T;
+            }
       ) => T | void);
+
     findFrom<T>(
       predicate: Predicate<T> | OPredicate<T>,
       fromIndex: number
-    ): (collection: Array<T> | { [id: any]: T }) => T | void;
+    ): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => T | void;
+
     findFrom<T>(
       predicate: Predicate<T> | OPredicate<T>,
       fromIndex: number,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): T | void;
-    findLast<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => T | void;
+
+    findLast<T>(predicate: Predicate<T> | OPredicate<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => T | void;
+
     findLast<T>(
       predicate: Predicate<T> | OPredicate<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): T | void;
-    findLastFrom<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): ((
+
+    findLastFrom<T>(predicate: Predicate<T> | OPredicate<T>): ((
       fromIndex: number
-    ) => (collection: $ReadOnlyArray<T> | { [id: any]: T }) => T | void) &
+    ) => (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => T | void) &
       ((
         fromIndex: number,
-        collection: $ReadOnlyArray<T> | { [id: any]: T }
+        collection:
+          | ReadonlyArray<T>
+          | {
+              [id in any]: T;
+            }
       ) => T | void);
+
     findLastFrom<T>(
       predicate: Predicate<T> | OPredicate<T>,
       fromIndex: number
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => T | void;
+    ): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => T | void;
+
     findLastFrom<T>(
       predicate: Predicate<T> | OPredicate<T>,
       fromIndex: number,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): T | void;
+
     flatMap<T, U>(
       iteratee: FlatMapIteratee<T, U> | OFlatMapIteratee<T, U>
-    ): (collection: Array<T> | { [id: any]: T }) => Array<U>;
+    ): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<U>;
+
     flatMap<T, U>(
       iteratee: FlatMapIteratee<T, U> | OFlatMapIteratee<T, U>,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<U>;
+
     flatMapDeep<T, U>(
       iteratee: FlatMapIteratee<T, U> | OFlatMapIteratee<T, U>
-    ): (collection: Array<T> | { [id: any]: T }) => Array<U>;
+    ): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<U>;
+
     flatMapDeep<T, U>(
       iteratee: FlatMapIteratee<T, U> | OFlatMapIteratee<T, U>,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<U>;
+
     flatMapDepth<T, U>(
       iteratee: FlatMapIteratee<T, U> | OFlatMapIteratee<T, U>
-    ): ((
-      depth: number
-    ) => (collection: Array<T> | { [id: any]: T }) => Array<U>) &
-      ((depth: number, collection: Array<T> | { [id: any]: T }) => Array<U>);
+    ): ((depth: number) => (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<U>) &
+      ((
+        depth: number,
+        collection:
+          | Array<T>
+          | {
+              [id in any]: T;
+            }
+      ) => Array<U>);
+
     flatMapDepth<T, U>(
       iteratee: FlatMapIteratee<T, U> | OFlatMapIteratee<T, U>,
       depth: number
-    ): (collection: Array<T> | { [id: any]: T }) => Array<U>;
+    ): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<U>;
+
     flatMapDepth<T, U>(
       iteratee: FlatMapIteratee<T, U> | OFlatMapIteratee<T, U>,
       depth: number,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<U>;
-    forEach<T>(
-      iteratee: Iteratee<T> | OIteratee<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<T>;
+
+    forEach<T>(iteratee: Iteratee<T> | OIteratee<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
     forEach<T>(
       iteratee: Iteratee<T> | OIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<T>;
-    forEachRight<T>(
-      iteratee: Iteratee<T> | OIteratee<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<T>;
+
+    forEachRight<T>(iteratee: Iteratee<T> | OIteratee<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
     forEachRight<T>(
       iteratee: Iteratee<T> | OIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<T>;
+
     groupBy<V, T>(
       iteratee: ValueOnlyIteratee<T>
     ): (
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
-    ) => { [key: V]: Array<T> };
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => {
+      [key in V]: Array<T>;
+    };
+
     groupBy<V, T>(
       iteratee: ValueOnlyIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
-    ): { [key: V]: Array<T> };
-    includes<T>(value: T): (collection: Array<T> | { [id: any]: T }) => boolean;
-    includes<T>(value: T, collection: Array<T> | { [id: any]: T }): boolean;
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ): {
+      [key in V]: Array<T>;
+    };
+
+    includes<T>(value: T): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => boolean;
+
+    includes<T>(
+      value: T,
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ): boolean;
+
     includes(value: string): (str: string) => boolean;
     includes(value: string, str: string): boolean;
     contains(value: string): (str: string) => boolean;
     contains(value: string, str: string): boolean;
-    contains<T>(value: T): (collection: Array<T> | { [id: any]: T }) => boolean;
-    contains<T>(value: T, collection: Array<T> | { [id: any]: T }): boolean;
+
+    contains<T>(value: T): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => boolean;
+
+    contains<T>(
+      value: T,
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ): boolean;
+
     includesFrom(
       value: string
     ): ((fromIndex: number) => (str: string) => boolean) &
@@ -2155,158 +2877,399 @@ declare module "lodash/fp" {
       fromIndex: number
     ): (collection: Array<T>) => boolean;
     includesFrom<T>(value: T, fromIndex: number, collection: Array<T>): boolean;
+
     invokeMap<T>(
       path: ((value: T) => Array<string> | string) | Array<string> | string
-    ): (collection: Array<T> | { [id: any]: T }) => Array<any>;
+    ): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<any>;
+
     invokeMap<T>(
       path: ((value: T) => Array<string> | string) | Array<string> | string,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<any>;
+
     invokeArgsMap<T>(
       path: ((value: T) => Array<string> | string) | Array<string> | string
     ): ((
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ) => (args: Array<any>) => Array<any>) &
       ((
-        collection: Array<T> | { [id: any]: T },
+        collection:
+          | Array<T>
+          | {
+              [id in any]: T;
+            },
         args: Array<any>
       ) => Array<any>);
+
     invokeArgsMap<T>(
       path: ((value: T) => Array<string> | string) | Array<string> | string,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): (args: Array<any>) => Array<any>;
+
     invokeArgsMap<T>(
       path: ((value: T) => Array<string> | string) | Array<string> | string,
-      collection: Array<T> | { [id: any]: T },
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          },
       args: Array<any>
     ): Array<any>;
+
     keyBy<T, V>(
       iteratee: ValueOnlyIteratee<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => { [key: V]: T };
+    ): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => {
+      [key in V]: T;
+    };
+
     keyBy<T, V>(
       iteratee: ValueOnlyIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
-    ): { [key: V]: T };
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ): {
+      [key in V]: T;
+    };
+
     indexBy<T, V>(
       iteratee: ValueOnlyIteratee<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => { [key: V]: T };
+    ): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => {
+      [key in V]: T;
+    };
+
     indexBy<T, V>(
       iteratee: ValueOnlyIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
-    ): { [key: V]: T };
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ): {
+      [key in V]: T;
+    };
+
     map<T, U>(
       iteratee: MapIterator<T, U> | OMapIterator<T, U>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<U>;
+    ): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<U>;
+
     map<T, U>(
       iteratee: MapIterator<T, U> | OMapIterator<T, U>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<U>;
+
     map(iteratee: (char: string) => any): (str: string) => string;
     map(iteratee: (char: string) => any, str: string): string;
+
     pluck<T, U>(
       iteratee: MapIterator<T, U> | OMapIterator<T, U>
-    ): (collection: Array<T> | { [id: any]: T }) => Array<U>;
+    ): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<U>;
+
     pluck<T, U>(
       iteratee: MapIterator<T, U> | OMapIterator<T, U>,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<U>;
+
     pluck(iteratee: (char: string) => any): (str: string) => string;
     pluck(iteratee: (char: string) => any, str: string): string;
+
     orderBy<T>(
-      iteratees: $ReadOnlyArray<Iteratee<T> | OIteratee<*>> | string
-    ): ((
-      orders: $ReadOnlyArray<"asc" | "desc"> | string
-    ) => (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<T>) &
+      iteratees: ReadonlyArray<Iteratee<T> | OIteratee<any>> | string
+    ): ((orders: ReadonlyArray<"asc" | "desc"> | string) => (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>) &
       ((
-        orders: $ReadOnlyArray<"asc" | "desc"> | string,
-        collection: $ReadOnlyArray<T> | { [id: any]: T }
+        orders: ReadonlyArray<"asc" | "desc"> | string,
+        collection:
+          | ReadonlyArray<T>
+          | {
+              [id in any]: T;
+            }
       ) => Array<T>);
+
     orderBy<T>(
-      iteratees: $ReadOnlyArray<Iteratee<T> | OIteratee<*>> | string,
-      orders: $ReadOnlyArray<"asc" | "desc"> | string
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<T>;
+      iteratees: ReadonlyArray<Iteratee<T> | OIteratee<any>> | string,
+      orders: ReadonlyArray<"asc" | "desc"> | string
+    ): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
     orderBy<T>(
-      iteratees: $ReadOnlyArray<Iteratee<T> | OIteratee<*>> | string,
-      orders: $ReadOnlyArray<"asc" | "desc"> | string,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
+      iteratees: ReadonlyArray<Iteratee<T> | OIteratee<any>> | string,
+      orders: ReadonlyArray<"asc" | "desc"> | string,
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<T>;
-    partition<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): (collection: Array<T> | { [id: any]: T }) => [Array<T>, Array<T>];
+
+    partition<T>(predicate: Predicate<T> | OPredicate<T>): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => [Array<T>, Array<T>];
+
     partition<T>(
       predicate: Predicate<T> | OPredicate<T>,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): [Array<T>, Array<T>];
+
     reduce<T, U>(
       iteratee: (accumulator: U, value: T) => U
-    ): ((accumulator: U) => (collection: Array<T> | { [id: any]: T }) => U) &
-      ((accumulator: U, collection: Array<T> | { [id: any]: T }) => U);
+    ): ((accumulator: U) => (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => U) &
+      ((
+        accumulator: U,
+        collection:
+          | Array<T>
+          | {
+              [id in any]: T;
+            }
+      ) => U);
+
     reduce<T, U>(
       iteratee: (accumulator: U, value: T) => U,
       accumulator: U
-    ): (collection: Array<T> | { [id: any]: T }) => U;
+    ): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => U;
+
     reduce<T, U>(
       iteratee: (accumulator: U, value: T) => U,
       accumulator: U,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): U;
+
     reduceRight<T, U>(
       iteratee: (value: T, accumulator: U) => U
-    ): ((accumulator: U) => (collection: Array<T> | { [id: any]: T }) => U) &
-      ((accumulator: U, collection: Array<T> | { [id: any]: T }) => U);
+    ): ((accumulator: U) => (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => U) &
+      ((
+        accumulator: U,
+        collection:
+          | Array<T>
+          | {
+              [id in any]: T;
+            }
+      ) => U);
+
     reduceRight<T, U>(
       iteratee: (value: T, accumulator: U) => U,
       accumulator: U
-    ): (collection: Array<T> | { [id: any]: T }) => U;
+    ): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => U;
+
     reduceRight<T, U>(
       iteratee: (value: T, accumulator: U) => U,
       accumulator: U,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): U;
-    reject<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): (collection: Array<T> | { [id: any]: T }) => Array<T>;
+
+    reject<T>(predicate: Predicate<T> | OPredicate<T>): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
     reject<T>(
       predicate: Predicate<T> | OPredicate<T>,
-      collection: Array<T> | { [id: any]: T }
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<T>;
-    sample<T>(collection: Array<T> | { [id: any]: T }): T;
+
+    sample<T>(
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ): T;
+
+    sampleSize<T>(n: number): (
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
     sampleSize<T>(
-      n: number
-    ): (collection: Array<T> | { [id: any]: T }) => Array<T>;
-    sampleSize<T>(n: number, collection: Array<T> | { [id: any]: T }): Array<T>;
-    shuffle<T>(collection: Array<T> | { [id: any]: T }): Array<T>;
-    size(collection: $ReadOnlyArray<any> | Object | string): number;
-    some<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => boolean;
-    some<T>(
-      predicate: Predicate<T> | OPredicate<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
-    ): boolean;
-    any<T>(
-      predicate: Predicate<T> | OPredicate<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => boolean;
-    any<T>(
-      predicate: Predicate<T> | OPredicate<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T }
-    ): boolean;
-    sortBy<T>(
-      iteratees: | $ReadOnlyArray<Iteratee<T> | OIteratee<T>>
-      | Iteratee<T>
-      | OIteratee<T>
-    ): (collection: $ReadOnlyArray<T> | { [id: any]: T }) => Array<T>;
-    sortBy<T>(
-      iteratees: | $ReadOnlyArray<Iteratee<T> | OIteratee<T>>
-      | Iteratee<T>
-      | OIteratee<T>,
-      collection: $ReadOnlyArray<T> | { [id: any]: T },
+      n: number,
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
     ): Array<T>;
 
-    // Date
-    now(): number;
+    shuffle<T>(
+      collection:
+        | Array<T>
+        | {
+            [id in any]: T;
+          }
+    ): Array<T>;
 
-    // Function
+    size(collection: ReadonlyArray<any> | any | string): number;
+
+    some<T>(predicate: Predicate<T> | OPredicate<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => boolean;
+
+    some<T>(
+      predicate: Predicate<T> | OPredicate<T>,
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ): boolean;
+
+    any<T>(predicate: Predicate<T> | OPredicate<T>): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => boolean;
+
+    any<T>(
+      predicate: Predicate<T> | OPredicate<T>,
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ): boolean;
+
+    sortBy<T>(
+      iteratees:
+        | ReadonlyArray<Iteratee<T> | OIteratee<T>>
+        | Iteratee<T>
+        | OIteratee<T>
+    ): (
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ) => Array<T>;
+
+    sortBy<T>(
+      iteratees:
+        | ReadonlyArray<Iteratee<T> | OIteratee<T>>
+        | Iteratee<T>
+        | OIteratee<T>,
+      collection:
+        | ReadonlyArray<T>
+        | {
+            [id in any]: T;
+          }
+    ): Array<T>;
+
+    now(): number;
     after(fn: Function): (n: number) => Function;
     after(fn: Function, n: number): Function;
     ary(func: Function): Function;
@@ -2316,21 +3279,21 @@ declare module "lodash/fp" {
     before(fn: Function, n: number): Function;
     bind(func: Function): (thisArg: any) => Function;
     bind(func: Function, thisArg: any): Function;
-    bindKey(obj: Object): (key: string) => Function;
-    bindKey(obj: Object, key: string): Function;
+    bindKey(obj: any): (key: string) => Function;
+    bindKey(obj: any, key: string): Function;
     curry: Curry;
     curryN(arity: number): (func: Function) => Function;
     curryN(arity: number, func: Function): Function;
     curryRight(func: Function): Function;
     curryRightN(arity: number): (func: Function) => Function;
     curryRightN(arity: number, func: Function): Function;
-    debounce(wait: number): <F: Function>(func: F) => F;
-    debounce<F: Function>(wait: number, func: F): F;
+    debounce(wait: number): <F extends Function>(func: F) => F;
+    debounce<F extends Function>(wait: number, func: F): F;
     defer(func: Function): TimeoutID;
     delay(wait: number): (func: Function) => TimeoutID;
     delay(wait: number, func: Function): TimeoutID;
     flip(func: Function): Function;
-    memoize<F: Function>(func: F): F;
+    memoize<F extends Function>(func: F): F;
     negate(predicate: Function): Function;
     complement(predicate: Function): Function;
     once(func: Function): Function;
@@ -2357,46 +3320,90 @@ declare module "lodash/fp" {
     unary(func: Function): Function;
     wrap(wrapper: Function): (value: any) => Function;
     wrap(wrapper: Function, value: any): Function;
-
-    // Lang
-    castArray(value: *): any[];
+    castArray(value: any): any[];
     clone<T>(value: T): T;
     cloneDeep<T>(value: T): T;
     cloneDeepWith<T, U>(
       customizer: (value: T, key: number | string, object: T, stack: any) => U
     ): (value: T) => U;
+
     cloneDeepWith<T, U>(
       customizer: (value: T, key: number | string, object: T, stack: any) => U,
       value: T
     ): U;
+
     cloneWith<T, U>(
       customizer: (value: T, key: number | string, object: T, stack: any) => U
     ): (value: T) => U;
+
     cloneWith<T, U>(
       customizer: (value: T, key: number | string, object: T, stack: any) => U,
       value: T
     ): U;
-    conformsTo<T: { [key: string]: mixed }>(
-      predicates: T & { [key: string]: (x: any) => boolean }
+
+    conformsTo<
+      T extends {
+        [key: string]: unknown;
+      }
+    >(
+      predicates: T & {
+        [key: string]: (x: any) => boolean;
+      }
     ): (source: T) => boolean;
-    conformsTo<T: { [key: string]: mixed }>(
-      predicates: T & { [key: string]: (x: any) => boolean },
+
+    conformsTo<
+      T extends {
+        [key: string]: unknown;
+      }
+    >(
+      predicates: T & {
+        [key: string]: (x: any) => boolean;
+      },
       source: T
     ): boolean;
-    where<T: { [key: string]: mixed }>(
-      predicates: T & { [key: string]: (x: any) => boolean }
+
+    where<
+      T extends {
+        [key: string]: unknown;
+      }
+    >(
+      predicates: T & {
+        [key: string]: (x: any) => boolean;
+      }
     ): (source: T) => boolean;
-    where<T: { [key: string]: mixed }>(
-      predicates: T & { [key: string]: (x: any) => boolean },
+
+    where<
+      T extends {
+        [key: string]: unknown;
+      }
+    >(
+      predicates: T & {
+        [key: string]: (x: any) => boolean;
+      },
       source: T
     ): boolean;
-    conforms<T: { [key: string]: mixed }>(
-      predicates: T & { [key: string]: (x: any) => boolean }
+
+    conforms<
+      T extends {
+        [key: string]: unknown;
+      }
+    >(
+      predicates: T & {
+        [key: string]: (x: any) => boolean;
+      }
     ): (source: T) => boolean;
-    conforms<T: { [key: string]: mixed }>(
-      predicates: T & { [key: string]: (x: any) => boolean },
+
+    conforms<
+      T extends {
+        [key: string]: unknown;
+      }
+    >(
+      predicates: T & {
+        [key: string]: (x: any) => boolean;
+      },
       source: T
     ): boolean;
+
     eq(value: any): (other: any) => boolean;
     eq(value: any, other: any): boolean;
     identical(value: any): (other: any) => boolean;
@@ -2419,6 +3426,7 @@ declare module "lodash/fp" {
     isEqual(value: any, other: any): boolean;
     equals(value: any): (other: any) => boolean;
     equals(value: any, other: any): boolean;
+
     isEqualWith<T, U>(
       customizer: (
         objValue: any,
@@ -2430,6 +3438,7 @@ declare module "lodash/fp" {
       ) => boolean | void
     ): ((value: T) => (other: U) => boolean) &
       ((value: T, other: U) => boolean);
+
     isEqualWith<T, U>(
       customizer: (
         objValue: any,
@@ -2441,6 +3450,7 @@ declare module "lodash/fp" {
       ) => boolean | void,
       value: T
     ): (other: U) => boolean;
+
     isEqualWith<T, U>(
       customizer: (
         objValue: any,
@@ -2453,18 +3463,20 @@ declare module "lodash/fp" {
       value: T,
       other: U
     ): boolean;
+
     isError(value: any): boolean;
     isFinite(value: any): boolean;
     isFunction(value: Function): true;
-    isFunction(value: number | string | void | null | Object): false;
+    isFunction(value: number | string | void | null | any): false;
     isInteger(value: any): boolean;
     isLength(value: any): boolean;
     isMap(value: any): boolean;
-    isMatch(source: Object): (object: Object) => boolean;
-    isMatch(source: Object, object: Object): boolean;
-    whereEq(source: Object): (object: Object) => boolean;
-    whereEq(source: Object, object: Object): boolean;
-    isMatchWith<T: Object, U: Object>(
+    isMatch(source: any): (object: any) => boolean;
+    isMatch(source: any, object: any): boolean;
+    whereEq(source: any): (object: any) => boolean;
+    whereEq(source: any, object: any): boolean;
+
+    isMatchWith<T extends any, U extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2474,7 +3486,8 @@ declare module "lodash/fp" {
       ) => boolean | void
     ): ((source: U) => (object: T) => boolean) &
       ((source: U, object: T) => boolean);
-    isMatchWith<T: Object, U: Object>(
+
+    isMatchWith<T extends any, U extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2484,7 +3497,8 @@ declare module "lodash/fp" {
       ) => boolean | void,
       source: U
     ): (object: T) => boolean;
-    isMatchWith<T: Object, U: Object>(
+
+    isMatchWith<T extends any, U extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2495,6 +3509,7 @@ declare module "lodash/fp" {
       source: U,
       object: T
     ): boolean;
+
     isNaN(value: any): boolean;
     isNative(value: any): boolean;
     isNil(value: any): boolean;
@@ -2522,11 +3537,9 @@ declare module "lodash/fp" {
     toInteger(value: any): number;
     toLength(value: any): number;
     toNumber(value: any): number;
-    toPlainObject(value: any): Object;
+    toPlainObject(value: any): any;
     toSafeInteger(value: any): number;
     toString(value: any): string;
-
-    // Math
     add(augend: number): (addend: number) => number;
     add(augend: number, addend: number): number;
     ceil(number: number): number;
@@ -2536,7 +3549,7 @@ declare module "lodash/fp" {
     max<T>(array: Array<T>): T;
     maxBy<T>(iteratee: Iteratee<T>): (array: Array<T>) => T;
     maxBy<T>(iteratee: Iteratee<T>, array: Array<T>): T;
-    mean(array: Array<*>): number;
+    mean(array: Array<any>): number;
     meanBy<T>(iteratee: Iteratee<T>): (array: Array<T>) => number;
     meanBy<T>(iteratee: Iteratee<T>, array: Array<T>): number;
     min<T>(array: Array<T>): T;
@@ -2547,11 +3560,9 @@ declare module "lodash/fp" {
     round(number: number): number;
     subtract(minuend: number): (subtrahend: number) => number;
     subtract(minuend: number, subtrahend: number): number;
-    sum(array: Array<*>): number;
+    sum(array: Array<any>): number;
     sumBy<T>(iteratee: Iteratee<T>): (array: Array<T>) => number;
     sumBy<T>(iteratee: Iteratee<T>, array: Array<T>): number;
-
-    // number
     clamp(
       lower: number
     ): ((upper: number) => (number: number) => number) &
@@ -2566,16 +3577,15 @@ declare module "lodash/fp" {
     inRange(start: number, end: number, number: number): boolean;
     random(lower: number): (upper: number) => number;
     random(lower: number, upper: number): number;
-
-    // Object
-    assign(object: Object): (source: Object) => Object;
-    assign(object: Object, source: Object): Object;
-    assignAll(objects: Array<Object>): Object;
-    assignInAll(objects: Array<Object>): Object;
-    extendAll(objects: Array<Object>): Object;
+    assign(object: any): (source: any) => any;
+    assign(object: any, source: any): any;
+    assignAll(objects: Array<any>): any;
+    assignInAll(objects: Array<any>): any;
+    extendAll(objects: Array<any>): any;
     assignIn<A, B>(a: A): (b: B) => A & B;
     assignIn<A, B>(a: A, b: B): A & B;
-    assignInWith<T: Object, A: Object>(
+
+    assignInWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2583,8 +3593,9 @@ declare module "lodash/fp" {
         object: T,
         source: A
       ) => any | void
-    ): ((object: T) => (s1: A) => Object) & ((object: T, s1: A) => Object);
-    assignInWith<T: Object, A: Object>(
+    ): ((object: T) => (s1: A) => any) & ((object: T, s1: A) => any);
+
+    assignInWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2593,8 +3604,9 @@ declare module "lodash/fp" {
         source: A
       ) => any | void,
       object: T
-    ): (s1: A) => Object;
-    assignInWith<T: Object, A: Object>(
+    ): (s1: A) => any;
+
+    assignInWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2604,8 +3616,9 @@ declare module "lodash/fp" {
       ) => any | void,
       object: T,
       s1: A
-    ): Object;
-    assignWith<T: Object, A: Object>(
+    ): any;
+
+    assignWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2613,8 +3626,9 @@ declare module "lodash/fp" {
         object: T,
         source: A
       ) => any | void
-    ): ((object: T) => (s1: A) => Object) & ((object: T, s1: A) => Object);
-    assignWith<T: Object, A: Object>(
+    ): ((object: T) => (s1: A) => any) & ((object: T, s1: A) => any);
+
+    assignWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2623,8 +3637,9 @@ declare module "lodash/fp" {
         source: A
       ) => any | void,
       object: T
-    ): (s1: A) => Object;
-    assignWith<T: Object, A: Object>(
+    ): (s1: A) => any;
+
+    assignWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2634,86 +3649,90 @@ declare module "lodash/fp" {
       ) => any | void,
       object: T,
       s1: A
-    ): Object;
+    ): any;
+
     assignInAllWith(
       customizer: (
         objValue: any,
         srcValue: any,
         key: string,
-        object: Object,
-        source: Object
+        object: any,
+        source: any
       ) => any | void
-    ): (objects: Array<Object>) => Object;
+    ): (objects: Array<any>) => any;
+
     assignInAllWith(
       customizer: (
         objValue: any,
         srcValue: any,
         key: string,
-        object: Object,
-        source: Object
+        object: any,
+        source: any
       ) => any | void,
-      objects: Array<Object>
-    ): Object;
+      objects: Array<any>
+    ): any;
+
     extendAllWith(
       customizer: (
         objValue: any,
         srcValue: any,
         key: string,
-        object: Object,
-        source: Object
+        object: any,
+        source: any
       ) => any | void
-    ): (objects: Array<Object>) => Object;
+    ): (objects: Array<any>) => any;
+
     extendAllWith(
       customizer: (
         objValue: any,
         srcValue: any,
         key: string,
-        object: Object,
-        source: Object
+        object: any,
+        source: any
       ) => any | void,
-      objects: Array<Object>
-    ): Object;
+      objects: Array<any>
+    ): any;
+
     assignAllWith(
       customizer: (
         objValue: any,
         srcValue: any,
         key: string,
-        object: Object,
-        source: Object
+        object: any,
+        source: any
       ) => any | void
-    ): (objects: Array<Object>) => Object;
+    ): (objects: Array<any>) => any;
+
     assignAllWith(
       customizer: (
         objValue: any,
         srcValue: any,
         key: string,
-        object: Object,
-        source: Object
+        object: any,
+        source: any
       ) => any | void,
-      objects: Array<Object>
-    ): Object;
-    at(paths: Array<string>): (object: Object) => Array<any>;
-    at(paths: Array<string>, object: Object): Array<any>;
-    props(paths: Array<string>): (object: Object) => Array<any>;
-    props(paths: Array<string>, object: Object): Array<any>;
-    paths(paths: Array<string>): (object: Object) => Array<any>;
-    paths(paths: Array<string>, object: Object): Array<any>;
+      objects: Array<any>
+    ): any;
+
+    at(paths: Array<string>): (object: any) => Array<any>;
+    at(paths: Array<string>, object: any): Array<any>;
+    props(paths: Array<string>): (object: any) => Array<any>;
+    props(paths: Array<string>, object: any): Array<any>;
+    paths(paths: Array<string>): (object: any) => Array<any>;
+    paths(paths: Array<string>, object: any): Array<any>;
     create<T>(prototype: T): $Supertype<T>;
-    defaults(source: Object): (object: Object) => Object;
-    defaults(source: Object, object: Object): Object;
-    defaultsAll(objects: Array<Object>): Object;
-    defaultsDeep(source: Object): (object: Object) => Object;
-    defaultsDeep(source: Object, object: Object): Object;
-    defaultsDeepAll(objects: Array<Object>): Object;
-    // alias for _.toPairs
-    entries(object: Object): Array<[string, any]>;
-    // alias for _.toPairsIn
-    entriesIn(object: Object): Array<[string, any]>;
-    // alias for _.assignIn
+    defaults(source: any): (object: any) => any;
+    defaults(source: any, object: any): any;
+    defaultsAll(objects: Array<any>): any;
+    defaultsDeep(source: any): (object: any) => any;
+    defaultsDeep(source: any, object: any): any;
+    defaultsDeepAll(objects: Array<any>): any;
+    entries(object: any): Array<[string, any]>;
+    entriesIn(object: any): Array<[string, any]>;
     extend<A, B>(a: A): (b: B) => A & B;
     extend<A, B>(a: A, b: B): A & B;
-    // alias for _.assignInWith
-    extendWith<T: Object, A: Object>(
+
+    extendWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2721,8 +3740,9 @@ declare module "lodash/fp" {
         object: T,
         source: A
       ) => any | void
-    ): ((object: T) => (s1: A) => Object) & ((object: T, s1: A) => Object);
-    extendWith<T: Object, A: Object>(
+    ): ((object: T) => (s1: A) => any) & ((object: T, s1: A) => any);
+
+    extendWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2731,8 +3751,9 @@ declare module "lodash/fp" {
         source: A
       ) => any | void,
       object: T
-    ): (s1: A) => Object;
-    extendWith<T: Object, A: Object>(
+    ): (s1: A) => any;
+
+    extendWith<T extends any, A extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2742,116 +3763,144 @@ declare module "lodash/fp" {
       ) => any | void,
       object: T,
       s1: A
-    ): Object;
-    findKey<A, T: { [id: any]: A }>(
-      predicate: OPredicate<A>
-    ): (object: T) => string | void;
-    findKey<A, T: { [id: any]: A }>(
-      predicate: OPredicate<A>,
-      object: T
-    ): string | void;
-    findLastKey<A, T: { [id: any]: A }>(
-      predicate: OPredicate<A>
-    ): (object: T) => string | void;
-    findLastKey<A, T: { [id: any]: A }>(
-      predicate: OPredicate<A>,
-      object: T
-    ): string | void;
-    forIn(iteratee: OIteratee<*>): (object: Object) => Object;
-    forIn(iteratee: OIteratee<*>, object: Object): Object;
-    forInRight(iteratee: OIteratee<*>): (object: Object) => Object;
-    forInRight(iteratee: OIteratee<*>, object: Object): Object;
-    forOwn(iteratee: OIteratee<*>): (object: Object) => Object;
-    forOwn(iteratee: OIteratee<*>, object: Object): Object;
-    forOwnRight(iteratee: OIteratee<*>): (object: Object) => Object;
-    forOwnRight(iteratee: OIteratee<*>, object: Object): Object;
-    functions(object: Object): Array<string>;
-    functionsIn(object: Object): Array<string>;
-    get(path: $ReadOnlyArray<string | number> | string | number): (object: Object | $ReadOnlyArray<any> | void | null) => any;
-    get(path: $ReadOnlyArray<string | number> | string | number, object: Object | $ReadOnlyArray<any> | void | null): any;
-    prop(path: Array<string> | string): (object: Object | Array<any>) => any;
-    prop(path: Array<string> | string, object: Object | Array<any>): any;
-    path(path: Array<string> | string): (object: Object | Array<any>) => any;
-    path(path: Array<string> | string, object: Object | Array<any>): any;
+    ): any;
+
+    findKey<
+      A,
+      T extends {
+        [id in any]: A;
+      }
+    >(predicate: OPredicate<A>): (object: T) => string | void;
+
+    findKey<
+      A,
+      T extends {
+        [id in any]: A;
+      }
+    >(predicate: OPredicate<A>, object: T): string | void;
+
+    findLastKey<
+      A,
+      T extends {
+        [id in any]: A;
+      }
+    >(predicate: OPredicate<A>): (object: T) => string | void;
+
+    findLastKey<
+      A,
+      T extends {
+        [id in any]: A;
+      }
+    >(predicate: OPredicate<A>, object: T): string | void;
+
+    forIn(iteratee: OIteratee<any>): (object: any) => any;
+    forIn(iteratee: OIteratee<any>, object: any): any;
+    forInRight(iteratee: OIteratee<any>): (object: any) => any;
+    forInRight(iteratee: OIteratee<any>, object: any): any;
+    forOwn(iteratee: OIteratee<any>): (object: any) => any;
+    forOwn(iteratee: OIteratee<any>, object: any): any;
+    forOwnRight(iteratee: OIteratee<any>): (object: any) => any;
+    forOwnRight(iteratee: OIteratee<any>, object: any): any;
+    functions(object: any): Array<string>;
+    functionsIn(object: any): Array<string>;
+    get(
+      path: ReadonlyArray<string | number> | string | number
+    ): (object: any | ReadonlyArray<any> | void | null) => any;
+
+    get(
+      path: ReadonlyArray<string | number> | string | number,
+      object: any | ReadonlyArray<any> | void | null
+    ): any;
+
+    prop(path: Array<string> | string): (object: any | Array<any>) => any;
+    prop(path: Array<string> | string, object: any | Array<any>): any;
+    path(path: Array<string> | string): (object: any | Array<any>) => any;
+    path(path: Array<string> | string, object: any | Array<any>): any;
+
     getOr(
       defaultValue: any
-    ): ((
-      path: Array<string> | string
-    ) => (object: Object | Array<any>) => any) &
-      ((path: Array<string> | string, object: Object | $ReadOnlyArray<any> | void | null) => any);
+    ): ((path: Array<string> | string) => (object: any | Array<any>) => any) &
+      ((
+        path: Array<string> | string,
+        object: any | ReadonlyArray<any> | void | null
+      ) => any);
+
     getOr(
       defaultValue: any,
       path: Array<string> | string
-    ): (object: Object | $ReadOnlyArray<any> | void | null) => any;
+    ): (object: any | ReadonlyArray<any> | void | null) => any;
+
     getOr(
       defaultValue: any,
       path: Array<string> | string,
-      object: Object | $ReadOnlyArray<any> | void | null
+      object: any | ReadonlyArray<any> | void | null
     ): any;
+
     propOr(
       defaultValue: any
-    ): ((
-      path: Array<string> | string
-    ) => (object: Object | Array<any>) => any) &
-      ((path: Array<string> | string, object: Object | Array<any>) => any);
+    ): ((path: Array<string> | string) => (object: any | Array<any>) => any) &
+      ((path: Array<string> | string, object: any | Array<any>) => any);
     propOr(
       defaultValue: any,
       path: Array<string> | string
-    ): (object: Object | Array<any>) => any;
+    ): (object: any | Array<any>) => any;
     propOr(
       defaultValue: any,
       path: Array<string> | string,
-      object: Object | Array<any>
+      object: any | Array<any>
     ): any;
     pathOr(
       defaultValue: any
-    ): ((
-      path: Array<string> | string
-    ) => (object: Object | Array<any>) => any) &
-      ((path: Array<string> | string, object: Object | Array<any>) => any);
+    ): ((path: Array<string> | string) => (object: any | Array<any>) => any) &
+      ((path: Array<string> | string, object: any | Array<any>) => any);
     pathOr(
       defaultValue: any,
       path: Array<string> | string
-    ): (object: Object | Array<any>) => any;
+    ): (object: any | Array<any>) => any;
     pathOr(
       defaultValue: any,
       path: Array<string> | string,
-      object: Object | Array<any>
+      object: any | Array<any>
     ): any;
-    has(path: Array<string> | string): (object: Object) => boolean;
-    has(path: Array<string> | string, object: Object): boolean;
-    hasIn(path: Array<string> | string): (object: Object) => boolean;
-    hasIn(path: Array<string> | string, object: Object): boolean;
-    invert(object: Object): Object;
-    invertObj(object: Object): Object;
-    invertBy(iteratee: Function): (object: Object) => Object;
-    invertBy(iteratee: Function, object: Object): Object;
-    invoke(path: Array<string> | string): (object: Object) => any;
-    invoke(path: Array<string> | string, object: Object): any;
+    has(path: Array<string> | string): (object: any) => boolean;
+    has(path: Array<string> | string, object: any): boolean;
+    hasIn(path: Array<string> | string): (object: any) => boolean;
+    hasIn(path: Array<string> | string, object: any): boolean;
+    invert(object: any): any;
+    invertObj(object: any): any;
+    invertBy(iteratee: Function): (object: any) => any;
+    invertBy(iteratee: Function, object: any): any;
+    invoke(path: Array<string> | string): (object: any) => any;
+    invoke(path: Array<string> | string, object: any): any;
     invokeArgs(
       path: Array<string> | string
-    ): ((object: Object) => (args: Array<any>) => any) &
-      ((object: Object, args: Array<any>) => any);
+    ): ((object: any) => (args: Array<any>) => any) &
+      ((object: any, args: Array<any>) => any);
     invokeArgs(
       path: Array<string> | string,
-      object: Object
+      object: any
     ): (args: Array<any>) => any;
     invokeArgs(
       path: Array<string> | string,
-      object: Object,
+      object: any,
       args: Array<any>
     ): any;
-    keys<K>(object: { [key: K]: any }): Array<K>;
-    keys(object: Object): Array<string>;
-    keysIn(object: Object): Array<string>;
-    mapKeys(iteratee: OIteratee<*>): (object: Object) => Object;
-    mapKeys(iteratee: OIteratee<*>, object: Object): Object;
-    mapValues(iteratee: OIteratee<*>): (object: Object) => Object;
-    mapValues(iteratee: OIteratee<*>, object: Object): Object;
-    merge(object: Object): (source: Object) => Object;
-    merge(object: Object, source: Object): Object;
-    mergeAll(objects: Array<Object>): Object;
-    mergeWith<T: Object, A: Object, B: Object>(
+
+    keys<K>(object: {
+      [key in K]: any;
+    }): Array<K>;
+
+    keys(object: any): Array<string>;
+    keysIn(object: any): Array<string>;
+    mapKeys(iteratee: OIteratee<any>): (object: any) => any;
+    mapKeys(iteratee: OIteratee<any>, object: any): any;
+    mapValues(iteratee: OIteratee<any>): (object: any) => any;
+    mapValues(iteratee: OIteratee<any>, object: any): any;
+    merge(object: any): (source: any) => any;
+    merge(object: any, source: any): any;
+    mergeAll(objects: Array<any>): any;
+
+    mergeWith<T extends any, A extends any, B extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2859,8 +3908,9 @@ declare module "lodash/fp" {
         object: T,
         source: A | B
       ) => any | void
-    ): ((object: T) => (s1: A) => Object) & ((object: T, s1: A) => Object);
-    mergeWith<T: Object, A: Object, B: Object>(
+    ): ((object: T) => (s1: A) => any) & ((object: T, s1: A) => any);
+
+    mergeWith<T extends any, A extends any, B extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2869,8 +3919,9 @@ declare module "lodash/fp" {
         source: A | B
       ) => any | void,
       object: T
-    ): (s1: A) => Object;
-    mergeWith<T: Object, A: Object, B: Object>(
+    ): (s1: A) => any;
+
+    mergeWith<T extends any, A extends any, B extends any>(
       customizer: (
         objValue: any,
         srcValue: any,
@@ -2880,157 +3931,175 @@ declare module "lodash/fp" {
       ) => any | void,
       object: T,
       s1: A
-    ): Object;
+    ): any;
+
     mergeAllWith(
       customizer: (
         objValue: any,
         srcValue: any,
         key: string,
-        object: Object,
-        source: Object
+        object: any,
+        source: any
       ) => any | void
-    ): (objects: Array<Object>) => Object;
+    ): (objects: Array<any>) => any;
+
     mergeAllWith(
       customizer: (
         objValue: any,
         srcValue: any,
         key: string,
-        object: Object,
-        source: Object
+        object: any,
+        source: any
       ) => any | void,
-      objects: Array<Object>
-    ): Object;
-    omit(props: Array<string>): (object: Object) => Object;
-    omit(props: Array<string>, object: Object): Object;
-    omitAll(props: Array<string>): (object: Object) => Object;
-    omitAll(props: Array<string>, object: Object): Object;
-    omitBy<A, T: { [id: any]: A }>(
-      predicate: OPredicate<A>
-    ): (object: T) => Object;
-    omitBy<A, T: { [id: any]: A }>(predicate: OPredicate<A>, object: T): Object;
-    pick(props: Array<string>): (object: Object) => Object;
-    pick(props: Array<string>, object: Object): Object;
-    pickAll(props: Array<string>): (object: Object) => Object;
-    pickAll(props: Array<string>, object: Object): Object;
-    pickBy<A, T: { [id: any]: A }>(
-      predicate: OPredicate<A>
-    ): (object: T) => Object;
-    pickBy<A, T: { [id: any]: A }>(predicate: OPredicate<A>, object: T): Object;
-    result(path: Array<string> | string): (object: Object) => any;
-    result(path: Array<string> | string, object: Object): any;
+      objects: Array<any>
+    ): any;
+
+    omit(props: Array<string>): (object: any) => any;
+    omit(props: Array<string>, object: any): any;
+    omitAll(props: Array<string>): (object: any) => any;
+    omitAll(props: Array<string>, object: any): any;
+
+    omitBy<
+      A,
+      T extends {
+        [id in any]: A;
+      }
+    >(predicate: OPredicate<A>): (object: T) => any;
+
+    omitBy<
+      A,
+      T extends {
+        [id in any]: A;
+      }
+    >(predicate: OPredicate<A>, object: T): any;
+
+    pick(props: Array<string>): (object: any) => any;
+    pick(props: Array<string>, object: any): any;
+    pickAll(props: Array<string>): (object: any) => any;
+    pickAll(props: Array<string>, object: any): any;
+
+    pickBy<
+      A,
+      T extends {
+        [id in any]: A;
+      }
+    >(predicate: OPredicate<A>): (object: T) => any;
+
+    pickBy<
+      A,
+      T extends {
+        [id in any]: A;
+      }
+    >(predicate: OPredicate<A>, object: T): any;
+
+    result(path: Array<string> | string): (object: any) => any;
+    result(path: Array<string> | string, object: any): any;
     set(
       path: Array<string> | string
-    ): ((value: any) => (object: Object) => Object) &
-      ((value: any, object: Object) => Object);
-    set(path: Array<string> | string, value: any): (object: Object) => Object;
-    set(path: Array<string> | string, value: any, object: Object): Object;
+    ): ((value: any) => (object: any) => any) &
+      ((value: any, object: any) => any);
+    set(path: Array<string> | string, value: any): (object: any) => any;
+    set(path: Array<string> | string, value: any, object: any): any;
     assoc(
       path: Array<string> | string
-    ): ((value: any) => (object: Object) => Object) &
-      ((value: any, object: Object) => Object);
-    assoc(path: Array<string> | string, value: any): (object: Object) => Object;
-    assoc(path: Array<string> | string, value: any, object: Object): Object;
+    ): ((value: any) => (object: any) => any) &
+      ((value: any, object: any) => any);
+    assoc(path: Array<string> | string, value: any): (object: any) => any;
+    assoc(path: Array<string> | string, value: any, object: any): any;
     assocPath(
       path: Array<string> | string
-    ): ((value: any) => (object: Object) => Object) &
-      ((value: any, object: Object) => Object);
-    assocPath(
-      path: Array<string> | string,
-      value: any
-    ): (object: Object) => Object;
-    assocPath(path: Array<string> | string, value: any, object: Object): Object;
+    ): ((value: any) => (object: any) => any) &
+      ((value: any, object: any) => any);
+    assocPath(path: Array<string> | string, value: any): (object: any) => any;
+    assocPath(path: Array<string> | string, value: any, object: any): any;
     setWith<T>(
       customizer: (nsValue: any, key: string, nsObject: T) => any
     ): ((
       path: Array<string> | string
-    ) => ((value: any) => (object: T) => Object) &
-      ((value: any, object: T) => Object)) &
-      ((path: Array<string> | string, value: any) => (object: T) => Object) &
-      ((path: Array<string> | string, value: any, object: T) => Object);
+    ) => ((value: any) => (object: T) => any) &
+      ((value: any, object: T) => any)) &
+      ((path: Array<string> | string, value: any) => (object: T) => any) &
+      ((path: Array<string> | string, value: any, object: T) => any);
+
     setWith<T>(
       customizer: (nsValue: any, key: string, nsObject: T) => any,
       path: Array<string> | string
-    ): ((value: any) => (object: T) => Object) &
-      ((value: any, object: T) => Object);
+    ): ((value: any) => (object: T) => any) & ((value: any, object: T) => any);
+
     setWith<T>(
       customizer: (nsValue: any, key: string, nsObject: T) => any,
       path: Array<string> | string,
       value: any
-    ): (object: T) => Object;
+    ): (object: T) => any;
+
     setWith<T>(
       customizer: (nsValue: any, key: string, nsObject: T) => any,
       path: Array<string> | string,
       value: any,
       object: T
-    ): Object;
-    toPairs(object: Object | Array<*>): Array<[string, any]>;
-    toPairsIn(object: Object): Array<[string, any]>;
-    transform(
-      iteratee: OIteratee<*>
-    ): ((
-      accumulator: any
-    ) => (collection: Object | $ReadOnlyArray<any>) => any) &
-      ((accumulator: any, collection: Object | $ReadOnlyArray<any>) => any);
-    transform(
-      iteratee: OIteratee<*>,
-      accumulator: any
-    ): (collection: Object | $ReadOnlyArray<any>) => any;
-    transform(
-      iteratee: OIteratee<*>,
-      accumulator: any,
-      collection: Object | $ReadOnlyArray<any>
     ): any;
-    unset(path: Array<string> | string): (object: Object) => Object;
-    unset(path: Array<string> | string, object: Object): Object;
-    dissoc(path: Array<string> | string): (object: Object) => Object;
-    dissoc(path: Array<string> | string, object: Object): Object;
-    dissocPath(path: Array<string> | string): (object: Object) => Object;
-    dissocPath(path: Array<string> | string, object: Object): Object;
+
+    toPairs(object: any | Array<any>): Array<[string, any]>;
+    toPairsIn(object: any): Array<[string, any]>;
+    transform(
+      iteratee: OIteratee<any>
+    ): ((accumulator: any) => (collection: any | ReadonlyArray<any>) => any) &
+      ((accumulator: any, collection: any | ReadonlyArray<any>) => any);
+    transform(
+      iteratee: OIteratee<any>,
+      accumulator: any
+    ): (collection: any | ReadonlyArray<any>) => any;
+
+    transform(
+      iteratee: OIteratee<any>,
+      accumulator: any,
+      collection: any | ReadonlyArray<any>
+    ): any;
+
+    unset(path: Array<string> | string): (object: any) => any;
+    unset(path: Array<string> | string, object: any): any;
+    dissoc(path: Array<string> | string): (object: any) => any;
+    dissoc(path: Array<string> | string, object: any): any;
+    dissocPath(path: Array<string> | string): (object: any) => any;
+    dissocPath(path: Array<string> | string, object: any): any;
     update(
       path: string[] | string
-    ): ((updater: Function) => (object: Object) => Object) &
-      ((updater: Function, object: Object) => Object);
-    update(
-      path: string[] | string,
-      updater: Function
-    ): (object: Object) => Object;
-    update(path: string[] | string, updater: Function, object: Object): Object;
+    ): ((updater: Function) => (object: any) => any) &
+      ((updater: Function, object: any) => any);
+    update(path: string[] | string, updater: Function): (object: any) => any;
+    update(path: string[] | string, updater: Function, object: any): any;
     updateWith(
       customizer: Function
     ): ((
       path: string[] | string
-    ) => ((updater: Function) => (object: Object) => Object) &
-      ((updater: Function, object: Object) => Object)) &
-      ((
-        path: string[] | string,
-        updater: Function
-      ) => (object: Object) => Object) &
-      ((path: string[] | string, updater: Function, object: Object) => Object);
+    ) => ((updater: Function) => (object: any) => any) &
+      ((updater: Function, object: any) => any)) &
+      ((path: string[] | string, updater: Function) => (object: any) => any) &
+      ((path: string[] | string, updater: Function, object: any) => any);
     updateWith(
       customizer: Function,
       path: string[] | string
-    ): ((updater: Function) => (object: Object) => Object) &
-      ((updater: Function, object: Object) => Object);
+    ): ((updater: Function) => (object: any) => any) &
+      ((updater: Function, object: any) => any);
     updateWith(
       customizer: Function,
       path: string[] | string,
       updater: Function
-    ): (object: Object) => Object;
+    ): (object: any) => any;
+
     updateWith(
       customizer: Function,
       path: string[] | string,
       updater: Function,
-      object: Object
-    ): Object;
-    values(object: Object): Array<any>;
-    valuesIn(object: Object): Array<any>;
+      object: any
+    ): any;
 
+    values(object: any): Array<any>;
+    valuesIn(object: any): Array<any>;
     tap<T>(interceptor: (value: T) => any): (value: T) => T;
     tap<T>(interceptor: (value: T) => any, value: T): T;
     thru<T1, T2>(interceptor: (value: T1) => T2): (value: T1) => T2;
     thru<T1, T2>(interceptor: (value: T1) => T2, value: T1): T2;
-
-    // String
     camelCase(string: string): string;
     capitalize(string: string): string;
     deburr(string: string): string;
@@ -3078,15 +4147,18 @@ declare module "lodash/fp" {
         replacement: ((string: string) => string) | string,
         string: string
       ) => string);
+
     replace(
       pattern: RegExp | string,
       replacement: ((string: string) => string) | string
     ): (string: string) => string;
+
     replace(
       pattern: RegExp | string,
       replacement: ((string: string) => string) | string,
       string: string
     ): string;
+
     snakeCase(string: string): string;
     split(separator: RegExp | string): (string: string) => Array<string>;
     split(separator: RegExp | string, string: string): Array<string>;
@@ -3111,35 +4183,32 @@ declare module "lodash/fp" {
     upperCase(string: string): string;
     upperFirst(string: string): string;
     words(string: string): Array<string>;
-
-    // Util
     attempt(func: Function): any;
-    bindAll(methodNames: Array<string>): (object: Object) => Object;
-    bindAll(methodNames: Array<string>, object: Object): Object;
+    bindAll(methodNames: Array<string>): (object: any) => any;
+    bindAll(methodNames: Array<string>, object: any): any;
     cond(pairs: NestedArray<Function>): Function;
     constant<T>(value: T): () => T;
     always<T>(value: T): () => T;
-    defaultTo<T1: string | boolean | Object, T2>(
+    defaultTo<T1 extends string | boolean | any, T2>(
       defaultValue: T2
     ): (value: T1) => T1;
-    defaultTo<T1: string | boolean | Object, T2>(
+    defaultTo<T1 extends string | boolean | any, T2>(
       defaultValue: T2,
       value: T1
     ): T1;
-    // NaN is a number instead of its own type, otherwise it would behave like null/void
-    defaultTo<T1: number, T2>(defaultValue: T2): (value: T1) => T1 | T2;
-    defaultTo<T1: number, T2>(defaultValue: T2, value: T1): T1 | T2;
-    defaultTo<T1: void | null, T2>(defaultValue: T2): (value: T1) => T2;
-    defaultTo<T1: void | null, T2>(defaultValue: T2, value: T1): T2;
-    flow: ($ComposeReverse & (funcs: Array<Function>) => Function);
-    pipe: ($ComposeReverse & (funcs: Array<Function>) => Function);
-    flowRight: ($Compose & (funcs: Array<Function>) => Function);
-    compose: ($Compose & (funcs: Array<Function>) => Function);
+    defaultTo<T1 extends number, T2>(defaultValue: T2): (value: T1) => T1 | T2;
+    defaultTo<T1 extends number, T2>(defaultValue: T2, value: T1): T1 | T2;
+    defaultTo<T1 extends void | null, T2>(defaultValue: T2): (value: T1) => T2;
+    defaultTo<T1 extends void | null, T2>(defaultValue: T2, value: T1): T2;
+    flow: $ComposeReverse & ((funcs: Array<Function>) => Function);
+    pipe: $ComposeReverse & ((funcs: Array<Function>) => Function);
+    flowRight: $Compose & ((funcs: Array<Function>) => Function);
+    compose: $Compose & ((funcs: Array<Function>) => Function);
     compose(funcs: Array<Function>): Function;
     identity<T>(value: T): T;
     iteratee(func: any): Function;
-    matches(source: Object): (object: Object) => boolean;
-    matches(source: Object, object: Object): boolean;
+    matches(source: any): (object: any) => boolean;
+    matches(source: any, object: any): boolean;
     matchesProperty(path: Array<string> | string): (srcValue: any) => Function;
     matchesProperty(path: Array<string> | string, srcValue: any): Function;
     propEq(path: Array<string> | string): (srcValue: any) => Function;
@@ -3147,22 +4216,33 @@ declare module "lodash/fp" {
     pathEq(path: Array<string> | string): (srcValue: any) => Function;
     pathEq(path: Array<string> | string, srcValue: any): Function;
     method(path: Array<string> | string): Function;
-    methodOf(object: Object): Function;
-    mixin<T: Function | Object>(
+    methodOf(object: any): Function;
+
+    mixin<T extends Function | any>(
       object: T
-    ): ((source: Object) => (options: { chain: boolean }) => T) &
-      ((source: Object, options: { chain: boolean }) => T);
-    mixin<T: Function | Object>(
+    ): ((source: any) => (options: { chain: boolean }) => T) &
+      ((
+        source: any,
+        options: {
+          chain: boolean;
+        }
+      ) => T);
+
+    mixin<T extends Function | any>(
       object: T,
-      source: Object
+      source: any
     ): (options: { chain: boolean }) => T;
-    mixin<T: Function | Object>(
+
+    mixin<T extends Function | any>(
       object: T,
-      source: Object,
-      options: { chain: boolean }
+      source: any,
+      options: {
+        chain: boolean;
+      }
     ): T;
+
     noConflict(): Lodash;
-    noop(...args: Array<mixed>): void;
+    noop(...args: Array<unknown>): void;
     nthArg(n: number): Function;
     over(iteratees: Array<Function>): Function;
     juxt(iteratees: Array<Function>): Function;
@@ -3170,12 +4250,10 @@ declare module "lodash/fp" {
     allPass(predicates: Array<Function>): Function;
     overSome(predicates: Array<Function>): Function;
     anyPass(predicates: Array<Function>): Function;
-    property(
-      path: Array<string> | string
-    ): (object: Object | Array<any>) => any;
-    property(path: Array<string> | string, object: Object | Array<any>): any;
-    propertyOf(object: Object): (path: Array<string> | string) => Function;
-    propertyOf(object: Object, path: Array<string> | string): Function;
+    property(path: Array<string> | string): (object: any | Array<any>) => any;
+    property(path: Array<string> | string, object: any | Array<any>): any;
+    propertyOf(object: any): (path: Array<string> | string) => Function;
+    propertyOf(object: any, path: Array<string> | string): Function;
     range(start: number): (end: number) => Array<number>;
     range(start: number, end: number): Array<number>;
     rangeStep(
@@ -3192,9 +4270,8 @@ declare module "lodash/fp" {
       ((start: number, end: number) => Array<number>);
     rangeStepRight(step: number, start: number): (end: number) => Array<number>;
     rangeStepRight(step: number, start: number, end: number): Array<number>;
-    runInContext(context: Object): Function;
-
-    stubArray(): Array<*>;
+    runInContext(context: any): Function;
+    stubArray(): Array<any>;
     stubFalse(): false;
     F(): false;
     stubObject(): {};
@@ -3210,11 +4287,11 @@ declare module "lodash/fp" {
     placeholder: any;
 
     convert(options: {
-      cap?: boolean,
-      curry?: boolean,
-      fixed?: boolean,
-      immutable?: boolean,
-      rearg?: boolean
+      cap?: boolean;
+      curry?: boolean;
+      fixed?: boolean;
+      immutable?: boolean;
+      rearg?: boolean;
     }): void;
 
     // Properties
@@ -3222,2770 +4299,3451 @@ declare module "lodash/fp" {
     templateSettings: TemplateSettings;
   }
 
-  declare module.exports: Lodash;
+  let __exports: Lodash;
+  export = __exports;
 }
 
 declare module "lodash/chunk" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "chunk">;
+  let __exports: import("lodash").chunk;
+  export = __exports;
 }
 
 declare module "lodash/compact" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "compact">;
+  let __exports: import("lodash").compact;
+  export = __exports;
 }
 
 declare module "lodash/concat" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "concat">;
+  let __exports: import("lodash").concat;
+  export = __exports;
 }
 
 declare module "lodash/difference" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "difference">;
+  let __exports: import("lodash").difference;
+  export = __exports;
 }
 
 declare module "lodash/differenceBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "differenceBy">;
+  let __exports: import("lodash").differenceBy;
+  export = __exports;
 }
 
 declare module "lodash/differenceWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "differenceWith">;
+  let __exports: import("lodash").differenceWith;
+  export = __exports;
 }
 
 declare module "lodash/drop" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "drop">;
+  let __exports: import("lodash").drop;
+  export = __exports;
 }
 
 declare module "lodash/dropRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "dropRight">;
+  let __exports: import("lodash").dropRight;
+  export = __exports;
 }
 
 declare module "lodash/dropRightWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "dropRightWhile">;
+  let __exports: import("lodash").dropRightWhile;
+  export = __exports;
 }
 
 declare module "lodash/dropWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "dropWhile">;
+  let __exports: import("lodash").dropWhile;
+  export = __exports;
 }
 
 declare module "lodash/fill" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "fill">;
+  let __exports: import("lodash").fill;
+  export = __exports;
 }
 
 declare module "lodash/findIndex" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "findIndex">;
+  let __exports: import("lodash").findIndex;
+  export = __exports;
 }
 
 declare module "lodash/findLastIndex" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "findLastIndex">;
+  let __exports: import("lodash").findLastIndex;
+  export = __exports;
 }
 
 declare module "lodash/first" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "first">;
+  let __exports: import("lodash").first;
+  export = __exports;
 }
 
 declare module "lodash/flatten" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flatten">;
+  let __exports: import("lodash").flatten;
+  export = __exports;
 }
 
 declare module "lodash/flattenDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flattenDeep">;
+  let __exports: import("lodash").flattenDeep;
+  export = __exports;
 }
 
 declare module "lodash/flattenDepth" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flattenDepth">;
+  let __exports: import("lodash").flattenDepth;
+  export = __exports;
 }
 
 declare module "lodash/fromPairs" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "fromPairs">;
+  let __exports: import("lodash").fromPairs;
+  export = __exports;
 }
 
 declare module "lodash/head" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "head">;
+  let __exports: import("lodash").head;
+  export = __exports;
 }
 
 declare module "lodash/indexOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "indexOf">;
+  let __exports: import("lodash").indexOf;
+  export = __exports;
 }
 
 declare module "lodash/initial" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "initial">;
+  let __exports: import("lodash").initial;
+  export = __exports;
 }
 
 declare module "lodash/intersection" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "intersection">;
+  let __exports: import("lodash").intersection;
+  export = __exports;
 }
 
 declare module "lodash/intersectionBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "intersectionBy">;
+  let __exports: import("lodash").intersectionBy;
+  export = __exports;
 }
 
 declare module "lodash/intersectionWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "intersectionWith">;
+  let __exports: import("lodash").intersectionWith;
+  export = __exports;
 }
 
 declare module "lodash/join" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "join">;
+  let __exports: import("lodash").join;
+  export = __exports;
 }
 
 declare module "lodash/last" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "last">;
+  let __exports: import("lodash").last;
+  export = __exports;
 }
 
 declare module "lodash/lastIndexOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "lastIndexOf">;
+  let __exports: import("lodash").lastIndexOf;
+  export = __exports;
 }
 
 declare module "lodash/nth" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "nth">;
+  let __exports: import("lodash").nth;
+  export = __exports;
 }
 
 declare module "lodash/pull" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "pull">;
+  let __exports: import("lodash").pull;
+  export = __exports;
 }
 
 declare module "lodash/pullAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "pullAll">;
+  let __exports: import("lodash").pullAll;
+  export = __exports;
 }
 
 declare module "lodash/pullAllBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "pullAllBy">;
+  let __exports: import("lodash").pullAllBy;
+  export = __exports;
 }
 
 declare module "lodash/pullAllWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "pullAllWith">;
+  let __exports: import("lodash").pullAllWith;
+  export = __exports;
 }
 
 declare module "lodash/pullAt" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "pullAt">;
+  let __exports: import("lodash").pullAt;
+  export = __exports;
 }
 
 declare module "lodash/remove" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "remove">;
+  let __exports: import("lodash").remove;
+  export = __exports;
 }
 
 declare module "lodash/reverse" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "reverse">;
+  let __exports: import("lodash").reverse;
+  export = __exports;
 }
 
 declare module "lodash/slice" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "slice">;
+  let __exports: import("lodash").slice;
+  export = __exports;
 }
 
 declare module "lodash/sortedIndex" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sortedIndex">;
+  let __exports: import("lodash").sortedIndex;
+  export = __exports;
 }
 
 declare module "lodash/sortedIndexBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sortedIndexBy">;
+  let __exports: import("lodash").sortedIndexBy;
+  export = __exports;
 }
 
 declare module "lodash/sortedIndexOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sortedIndexOf">;
+  let __exports: import("lodash").sortedIndexOf;
+  export = __exports;
 }
 
 declare module "lodash/sortedLastIndex" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sortedLastIndex">;
+  let __exports: import("lodash").sortedLastIndex;
+  export = __exports;
 }
 
 declare module "lodash/sortedLastIndexBy" {
-  declare module.exports: $PropertyType<
-    $Exports<"lodash">,
-    "sortedLastIndexBy"
-  >;
+  let __exports: import("lodash").sortedLastIndexBy;
+  export = __exports;
 }
 
 declare module "lodash/sortedLastIndexOf" {
-  declare module.exports: $PropertyType<
-    $Exports<"lodash">,
-    "sortedLastIndexOf"
-  >;
+  let __exports: import("lodash").sortedLastIndexOf;
+  export = __exports;
 }
 
 declare module "lodash/sortedUniq" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sortedUniq">;
+  let __exports: import("lodash").sortedUniq;
+  export = __exports;
 }
 
 declare module "lodash/sortedUniqBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sortedUniqBy">;
+  let __exports: import("lodash").sortedUniqBy;
+  export = __exports;
 }
 
 declare module "lodash/tail" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "tail">;
+  let __exports: import("lodash").tail;
+  export = __exports;
 }
 
 declare module "lodash/take" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "take">;
+  let __exports: import("lodash").take;
+  export = __exports;
 }
 
 declare module "lodash/takeRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "takeRight">;
+  let __exports: import("lodash").takeRight;
+  export = __exports;
 }
 
 declare module "lodash/takeRightWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "takeRightWhile">;
+  let __exports: import("lodash").takeRightWhile;
+  export = __exports;
 }
 
 declare module "lodash/takeWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "takeWhile">;
+  let __exports: import("lodash").takeWhile;
+  export = __exports;
 }
 
 declare module "lodash/union" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "union">;
+  let __exports: import("lodash").union;
+  export = __exports;
 }
 
 declare module "lodash/unionBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "unionBy">;
+  let __exports: import("lodash").unionBy;
+  export = __exports;
 }
 
 declare module "lodash/unionWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "unionWith">;
+  let __exports: import("lodash").unionWith;
+  export = __exports;
 }
 
 declare module "lodash/uniq" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "uniq">;
+  let __exports: import("lodash").uniq;
+  export = __exports;
 }
 
 declare module "lodash/uniqBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "uniqBy">;
+  let __exports: import("lodash").uniqBy;
+  export = __exports;
 }
 
 declare module "lodash/uniqWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "uniqWith">;
+  let __exports: import("lodash").uniqWith;
+  export = __exports;
 }
 
 declare module "lodash/unzip" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "unzip">;
+  let __exports: import("lodash").unzip;
+  export = __exports;
 }
 
 declare module "lodash/unzipWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "unzipWith">;
+  let __exports: import("lodash").unzipWith;
+  export = __exports;
 }
 
 declare module "lodash/without" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "without">;
+  let __exports: import("lodash").without;
+  export = __exports;
 }
 
 declare module "lodash/xor" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "xor">;
+  let __exports: import("lodash").xor;
+  export = __exports;
 }
 
 declare module "lodash/xorBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "xorBy">;
+  let __exports: import("lodash").xorBy;
+  export = __exports;
 }
 
 declare module "lodash/xorWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "xorWith">;
+  let __exports: import("lodash").xorWith;
+  export = __exports;
 }
 
 declare module "lodash/zip" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "zip">;
+  let __exports: import("lodash").zip;
+  export = __exports;
 }
 
 declare module "lodash/zipObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "zipObject">;
+  let __exports: import("lodash").zipObject;
+  export = __exports;
 }
 
 declare module "lodash/zipObjectDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "zipObjectDeep">;
+  let __exports: import("lodash").zipObjectDeep;
+  export = __exports;
 }
 
 declare module "lodash/zipWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "zipWith">;
+  let __exports: import("lodash").zipWith;
+  export = __exports;
 }
 
 declare module "lodash/countBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "countBy">;
+  let __exports: import("lodash").countBy;
+  export = __exports;
 }
 
 declare module "lodash/each" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "each">;
+  let __exports: import("lodash").each;
+  export = __exports;
 }
 
 declare module "lodash/eachRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "eachRight">;
+  let __exports: import("lodash").eachRight;
+  export = __exports;
 }
 
 declare module "lodash/every" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "every">;
+  let __exports: import("lodash").every;
+  export = __exports;
 }
 
 declare module "lodash/filter" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "filter">;
+  let __exports: import("lodash").filter;
+  export = __exports;
 }
 
 declare module "lodash/find" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "find">;
+  let __exports: import("lodash").find;
+  export = __exports;
 }
 
 declare module "lodash/findLast" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "findLast">;
+  let __exports: import("lodash").findLast;
+  export = __exports;
 }
 
 declare module "lodash/flatMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flatMap">;
+  let __exports: import("lodash").flatMap;
+  export = __exports;
 }
 
 declare module "lodash/flatMapDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flatMapDeep">;
+  let __exports: import("lodash").flatMapDeep;
+  export = __exports;
 }
 
 declare module "lodash/flatMapDepth" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flatMapDepth">;
+  let __exports: import("lodash").flatMapDepth;
+  export = __exports;
 }
 
 declare module "lodash/forEach" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "forEach">;
+  let __exports: import("lodash").forEach;
+  export = __exports;
 }
 
 declare module "lodash/forEachRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "forEachRight">;
+  let __exports: import("lodash").forEachRight;
+  export = __exports;
 }
 
 declare module "lodash/groupBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "groupBy">;
+  let __exports: import("lodash").groupBy;
+  export = __exports;
 }
 
 declare module "lodash/includes" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "includes">;
+  let __exports: import("lodash").includes;
+  export = __exports;
 }
 
 declare module "lodash/invokeMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "invokeMap">;
+  let __exports: import("lodash").invokeMap;
+  export = __exports;
 }
 
 declare module "lodash/keyBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "keyBy">;
+  let __exports: import("lodash").keyBy;
+  export = __exports;
 }
 
 declare module "lodash/map" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "map">;
+  let __exports: import("lodash").map;
+  export = __exports;
 }
 
 declare module "lodash/orderBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "orderBy">;
+  let __exports: import("lodash").orderBy;
+  export = __exports;
 }
 
 declare module "lodash/partition" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "partition">;
+  let __exports: import("lodash").partition;
+  export = __exports;
 }
 
 declare module "lodash/reduce" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "reduce">;
+  let __exports: import("lodash").reduce;
+  export = __exports;
 }
 
 declare module "lodash/reduceRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "reduceRight">;
+  let __exports: import("lodash").reduceRight;
+  export = __exports;
 }
 
 declare module "lodash/reject" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "reject">;
+  let __exports: import("lodash").reject;
+  export = __exports;
 }
 
 declare module "lodash/sample" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sample">;
+  let __exports: import("lodash").sample;
+  export = __exports;
 }
 
 declare module "lodash/sampleSize" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sampleSize">;
+  let __exports: import("lodash").sampleSize;
+  export = __exports;
 }
 
 declare module "lodash/shuffle" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "shuffle">;
+  let __exports: import("lodash").shuffle;
+  export = __exports;
 }
 
 declare module "lodash/size" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "size">;
+  let __exports: import("lodash").size;
+  export = __exports;
 }
 
 declare module "lodash/some" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "some">;
+  let __exports: import("lodash").some;
+  export = __exports;
 }
 
 declare module "lodash/sortBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sortBy">;
+  let __exports: import("lodash").sortBy;
+  export = __exports;
 }
 
 declare module "lodash/now" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "now">;
+  let __exports: import("lodash").now;
+  export = __exports;
 }
 
 declare module "lodash/after" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "after">;
+  let __exports: import("lodash").after;
+  export = __exports;
 }
 
 declare module "lodash/ary" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "ary">;
+  let __exports: import("lodash").ary;
+  export = __exports;
 }
 
 declare module "lodash/before" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "before">;
+  let __exports: import("lodash").before;
+  export = __exports;
 }
 
 declare module "lodash/bind" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "bind">;
+  let __exports: import("lodash").bind;
+  export = __exports;
 }
 
 declare module "lodash/bindKey" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "bindKey">;
+  let __exports: import("lodash").bindKey;
+  export = __exports;
 }
 
 declare module "lodash/curry" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "curry">;
+  let __exports: import("lodash").curry;
+  export = __exports;
 }
 
 declare module "lodash/curryRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "curryRight">;
+  let __exports: import("lodash").curryRight;
+  export = __exports;
 }
 
 declare module "lodash/debounce" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "debounce">;
+  let __exports: import("lodash").debounce;
+  export = __exports;
 }
 
 declare module "lodash/defer" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "defer">;
+  let __exports: import("lodash").defer;
+  export = __exports;
 }
 
 declare module "lodash/delay" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "delay">;
+  let __exports: import("lodash").delay;
+  export = __exports;
 }
 
 declare module "lodash/flip" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flip">;
+  let __exports: import("lodash").flip;
+  export = __exports;
 }
 
 declare module "lodash/memoize" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "memoize">;
+  let __exports: import("lodash").memoize;
+  export = __exports;
 }
 
 declare module "lodash/negate" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "negate">;
+  let __exports: import("lodash").negate;
+  export = __exports;
 }
 
 declare module "lodash/once" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "once">;
+  let __exports: import("lodash").once;
+  export = __exports;
 }
 
 declare module "lodash/overArgs" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "overArgs">;
+  let __exports: import("lodash").overArgs;
+  export = __exports;
 }
 
 declare module "lodash/partial" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "partial">;
+  let __exports: import("lodash").partial;
+  export = __exports;
 }
 
 declare module "lodash/partialRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "partialRight">;
+  let __exports: import("lodash").partialRight;
+  export = __exports;
 }
 
 declare module "lodash/rearg" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "rearg">;
+  let __exports: import("lodash").rearg;
+  export = __exports;
 }
 
 declare module "lodash/rest" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "rest">;
+  let __exports: import("lodash").rest;
+  export = __exports;
 }
 
 declare module "lodash/spread" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "spread">;
+  let __exports: import("lodash").spread;
+  export = __exports;
 }
 
 declare module "lodash/throttle" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "throttle">;
+  let __exports: import("lodash").throttle;
+  export = __exports;
 }
 
 declare module "lodash/unary" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "unary">;
+  let __exports: import("lodash").unary;
+  export = __exports;
 }
 
 declare module "lodash/wrap" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "wrap">;
+  let __exports: import("lodash").wrap;
+  export = __exports;
 }
 
 declare module "lodash/castArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "castArray">;
+  let __exports: import("lodash").castArray;
+  export = __exports;
 }
 
 declare module "lodash/clone" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "clone">;
+  let __exports: import("lodash").clone;
+  export = __exports;
 }
 
 declare module "lodash/cloneDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "cloneDeep">;
+  let __exports: import("lodash").cloneDeep;
+  export = __exports;
 }
 
 declare module "lodash/cloneDeepWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "cloneDeepWith">;
+  let __exports: import("lodash").cloneDeepWith;
+  export = __exports;
 }
 
 declare module "lodash/cloneWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "cloneWith">;
+  let __exports: import("lodash").cloneWith;
+  export = __exports;
 }
 
 declare module "lodash/conformsTo" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "conformsTo">;
+  let __exports: import("lodash").conformsTo;
+  export = __exports;
 }
 
 declare module "lodash/eq" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "eq">;
+  let __exports: import("lodash").eq;
+  export = __exports;
 }
 
 declare module "lodash/gt" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "gt">;
+  let __exports: import("lodash").gt;
+  export = __exports;
 }
 
 declare module "lodash/gte" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "gte">;
+  let __exports: import("lodash").gte;
+  export = __exports;
 }
 
 declare module "lodash/isArguments" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isArguments">;
+  let __exports: import("lodash").isArguments;
+  export = __exports;
 }
 
 declare module "lodash/isArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isArray">;
+  let __exports: import("lodash").isArray;
+  export = __exports;
 }
 
 declare module "lodash/isArrayBuffer" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isArrayBuffer">;
+  let __exports: import("lodash").isArrayBuffer;
+  export = __exports;
 }
 
 declare module "lodash/isArrayLike" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isArrayLike">;
+  let __exports: import("lodash").isArrayLike;
+  export = __exports;
 }
 
 declare module "lodash/isArrayLikeObject" {
-  declare module.exports: $PropertyType<
-    $Exports<"lodash">,
-    "isArrayLikeObject"
-  >;
+  let __exports: import("lodash").isArrayLikeObject;
+  export = __exports;
 }
 
 declare module "lodash/isBoolean" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isBoolean">;
+  let __exports: import("lodash").isBoolean;
+  export = __exports;
 }
 
 declare module "lodash/isBuffer" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isBuffer">;
+  let __exports: import("lodash").isBuffer;
+  export = __exports;
 }
 
 declare module "lodash/isDate" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isDate">;
+  let __exports: import("lodash").isDate;
+  export = __exports;
 }
 
 declare module "lodash/isElement" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isElement">;
+  let __exports: import("lodash").isElement;
+  export = __exports;
 }
 
 declare module "lodash/isEmpty" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isEmpty">;
+  let __exports: import("lodash").isEmpty;
+  export = __exports;
 }
 
 declare module "lodash/isEqual" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isEqual">;
+  let __exports: import("lodash").isEqual;
+  export = __exports;
 }
 
 declare module "lodash/isEqualWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isEqualWith">;
+  let __exports: import("lodash").isEqualWith;
+  export = __exports;
 }
 
 declare module "lodash/isError" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isError">;
+  let __exports: import("lodash").isError;
+  export = __exports;
 }
 
 declare module "lodash/isFinite" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isFinite">;
+  let __exports: import("lodash").isFinite;
+  export = __exports;
 }
 
 declare module "lodash/isFunction" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isFunction">;
+  let __exports: import("lodash").isFunction;
+  export = __exports;
 }
 
 declare module "lodash/isInteger" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isInteger">;
+  let __exports: import("lodash").isInteger;
+  export = __exports;
 }
 
 declare module "lodash/isLength" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isLength">;
+  let __exports: import("lodash").isLength;
+  export = __exports;
 }
 
 declare module "lodash/isMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isMap">;
+  let __exports: import("lodash").isMap;
+  export = __exports;
 }
 
 declare module "lodash/isMatch" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isMatch">;
+  let __exports: import("lodash").isMatch;
+  export = __exports;
 }
 
 declare module "lodash/isMatchWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isMatchWith">;
+  let __exports: import("lodash").isMatchWith;
+  export = __exports;
 }
 
 declare module "lodash/isNaN" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isNaN">;
+  let __exports: import("lodash").isNaN;
+  export = __exports;
 }
 
 declare module "lodash/isNative" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isNative">;
+  let __exports: import("lodash").isNative;
+  export = __exports;
 }
 
 declare module "lodash/isNil" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isNil">;
+  let __exports: import("lodash").isNil;
+  export = __exports;
 }
 
 declare module "lodash/isNull" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isNull">;
+  let __exports: import("lodash").isNull;
+  export = __exports;
 }
 
 declare module "lodash/isNumber" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isNumber">;
+  let __exports: import("lodash").isNumber;
+  export = __exports;
 }
 
 declare module "lodash/isObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isObject">;
+  let __exports: import("lodash").isObject;
+  export = __exports;
 }
 
 declare module "lodash/isObjectLike" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isObjectLike">;
+  let __exports: import("lodash").isObjectLike;
+  export = __exports;
 }
 
 declare module "lodash/isPlainObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isPlainObject">;
+  let __exports: import("lodash").isPlainObject;
+  export = __exports;
 }
 
 declare module "lodash/isRegExp" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isRegExp">;
+  let __exports: import("lodash").isRegExp;
+  export = __exports;
 }
 
 declare module "lodash/isSafeInteger" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isSafeInteger">;
+  let __exports: import("lodash").isSafeInteger;
+  export = __exports;
 }
 
 declare module "lodash/isSet" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isSet">;
+  let __exports: import("lodash").isSet;
+  export = __exports;
 }
 
 declare module "lodash/isString" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isString">;
+  let __exports: import("lodash").isString;
+  export = __exports;
 }
 
 declare module "lodash/isSymbol" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isSymbol">;
+  let __exports: import("lodash").isSymbol;
+  export = __exports;
 }
 
 declare module "lodash/isTypedArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isTypedArray">;
+  let __exports: import("lodash").isTypedArray;
+  export = __exports;
 }
 
 declare module "lodash/isUndefined" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isUndefined">;
+  let __exports: import("lodash").isUndefined;
+  export = __exports;
 }
 
 declare module "lodash/isWeakMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isWeakMap">;
+  let __exports: import("lodash").isWeakMap;
+  export = __exports;
 }
 
 declare module "lodash/isWeakSet" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "isWeakSet">;
+  let __exports: import("lodash").isWeakSet;
+  export = __exports;
 }
 
 declare module "lodash/lt" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "lt">;
+  let __exports: import("lodash").lt;
+  export = __exports;
 }
 
 declare module "lodash/lte" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "lte">;
+  let __exports: import("lodash").lte;
+  export = __exports;
 }
 
 declare module "lodash/toArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toArray">;
+  let __exports: import("lodash").toArray;
+  export = __exports;
 }
 
 declare module "lodash/toFinite" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toFinite">;
+  let __exports: import("lodash").toFinite;
+  export = __exports;
 }
 
 declare module "lodash/toInteger" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toInteger">;
+  let __exports: import("lodash").toInteger;
+  export = __exports;
 }
 
 declare module "lodash/toLength" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toLength">;
+  let __exports: import("lodash").toLength;
+  export = __exports;
 }
 
 declare module "lodash/toNumber" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toNumber">;
+  let __exports: import("lodash").toNumber;
+  export = __exports;
 }
 
 declare module "lodash/toPlainObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toPlainObject">;
+  let __exports: import("lodash").toPlainObject;
+  export = __exports;
 }
 
 declare module "lodash/toSafeInteger" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toSafeInteger">;
+  let __exports: import("lodash").toSafeInteger;
+  export = __exports;
 }
 
 declare module "lodash/toString" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toString">;
+  let __exports: import("lodash").toString;
+  export = __exports;
 }
 
 declare module "lodash/add" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "add">;
+  let __exports: import("lodash").add;
+  export = __exports;
 }
 
 declare module "lodash/ceil" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "ceil">;
+  let __exports: import("lodash").ceil;
+  export = __exports;
 }
 
 declare module "lodash/divide" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "divide">;
+  let __exports: import("lodash").divide;
+  export = __exports;
 }
 
 declare module "lodash/floor" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "floor">;
+  let __exports: import("lodash").floor;
+  export = __exports;
 }
 
 declare module "lodash/max" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "max">;
+  let __exports: import("lodash").max;
+  export = __exports;
 }
 
 declare module "lodash/maxBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "maxBy">;
+  let __exports: import("lodash").maxBy;
+  export = __exports;
 }
 
 declare module "lodash/mean" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "mean">;
+  let __exports: import("lodash").mean;
+  export = __exports;
 }
 
 declare module "lodash/meanBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "meanBy">;
+  let __exports: import("lodash").meanBy;
+  export = __exports;
 }
 
 declare module "lodash/min" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "min">;
+  let __exports: import("lodash").min;
+  export = __exports;
 }
 
 declare module "lodash/minBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "minBy">;
+  let __exports: import("lodash").minBy;
+  export = __exports;
 }
 
 declare module "lodash/multiply" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "multiply">;
+  let __exports: import("lodash").multiply;
+  export = __exports;
 }
 
 declare module "lodash/round" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "round">;
+  let __exports: import("lodash").round;
+  export = __exports;
 }
 
 declare module "lodash/subtract" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "subtract">;
+  let __exports: import("lodash").subtract;
+  export = __exports;
 }
 
 declare module "lodash/sum" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sum">;
+  let __exports: import("lodash").sum;
+  export = __exports;
 }
 
 declare module "lodash/sumBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "sumBy">;
+  let __exports: import("lodash").sumBy;
+  export = __exports;
 }
 
 declare module "lodash/clamp" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "clamp">;
+  let __exports: import("lodash").clamp;
+  export = __exports;
 }
 
 declare module "lodash/inRange" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "inRange">;
+  let __exports: import("lodash").inRange;
+  export = __exports;
 }
 
 declare module "lodash/random" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "random">;
+  let __exports: import("lodash").random;
+  export = __exports;
 }
 
 declare module "lodash/assign" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "assign">;
+  let __exports: import("lodash").assign;
+  export = __exports;
 }
 
 declare module "lodash/assignIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "assignIn">;
+  let __exports: import("lodash").assignIn;
+  export = __exports;
 }
 
 declare module "lodash/assignInWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "assignInWith">;
+  let __exports: import("lodash").assignInWith;
+  export = __exports;
 }
 
 declare module "lodash/assignWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "assignWith">;
+  let __exports: import("lodash").assignWith;
+  export = __exports;
 }
 
 declare module "lodash/at" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "at">;
+  let __exports: import("lodash").at;
+  export = __exports;
 }
 
 declare module "lodash/create" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "create">;
+  let __exports: import("lodash").create;
+  export = __exports;
 }
 
 declare module "lodash/defaults" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "defaults">;
+  let __exports: import("lodash").defaults;
+  export = __exports;
 }
 
 declare module "lodash/defaultsDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "defaultsDeep">;
+  let __exports: import("lodash").defaultsDeep;
+  export = __exports;
 }
 
 declare module "lodash/entries" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "entries">;
+  let __exports: import("lodash").entries;
+  export = __exports;
 }
 
 declare module "lodash/entriesIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "entriesIn">;
+  let __exports: import("lodash").entriesIn;
+  export = __exports;
 }
 
 declare module "lodash/extend" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "extend">;
+  let __exports: import("lodash").extend;
+  export = __exports;
 }
 
 declare module "lodash/extendWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "extendWith">;
+  let __exports: import("lodash").extendWith;
+  export = __exports;
 }
 
 declare module "lodash/findKey" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "findKey">;
+  let __exports: import("lodash").findKey;
+  export = __exports;
 }
 
 declare module "lodash/findLastKey" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "findLastKey">;
+  let __exports: import("lodash").findLastKey;
+  export = __exports;
 }
 
 declare module "lodash/forIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "forIn">;
+  let __exports: import("lodash").forIn;
+  export = __exports;
 }
 
 declare module "lodash/forInRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "forInRight">;
+  let __exports: import("lodash").forInRight;
+  export = __exports;
 }
 
 declare module "lodash/forOwn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "forOwn">;
+  let __exports: import("lodash").forOwn;
+  export = __exports;
 }
 
 declare module "lodash/forOwnRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "forOwnRight">;
+  let __exports: import("lodash").forOwnRight;
+  export = __exports;
 }
 
 declare module "lodash/functions" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "functions">;
+  let __exports: import("lodash").functions;
+  export = __exports;
 }
 
 declare module "lodash/functionsIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "functionsIn">;
+  let __exports: import("lodash").functionsIn;
+  export = __exports;
 }
 
 declare module "lodash/get" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "get">;
+  let __exports: import("lodash").get;
+  export = __exports;
 }
 
 declare module "lodash/has" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "has">;
+  let __exports: import("lodash").has;
+  export = __exports;
 }
 
 declare module "lodash/hasIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "hasIn">;
+  let __exports: import("lodash").hasIn;
+  export = __exports;
 }
 
 declare module "lodash/invert" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "invert">;
+  let __exports: import("lodash").invert;
+  export = __exports;
 }
 
 declare module "lodash/invertBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "invertBy">;
+  let __exports: import("lodash").invertBy;
+  export = __exports;
 }
 
 declare module "lodash/invoke" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "invoke">;
+  let __exports: import("lodash").invoke;
+  export = __exports;
 }
 
 declare module "lodash/keys" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "keys">;
+  let __exports: import("lodash").keys;
+  export = __exports;
 }
 
 declare module "lodash/keysIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "keysIn">;
+  let __exports: import("lodash").keysIn;
+  export = __exports;
 }
 
 declare module "lodash/mapKeys" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "mapKeys">;
+  let __exports: import("lodash").mapKeys;
+  export = __exports;
 }
 
 declare module "lodash/mapValues" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "mapValues">;
+  let __exports: import("lodash").mapValues;
+  export = __exports;
 }
 
 declare module "lodash/merge" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "merge">;
+  let __exports: import("lodash").merge;
+  export = __exports;
 }
 
 declare module "lodash/mergeWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "mergeWith">;
+  let __exports: import("lodash").mergeWith;
+  export = __exports;
 }
 
 declare module "lodash/omit" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "omit">;
+  let __exports: import("lodash").omit;
+  export = __exports;
 }
 
 declare module "lodash/omitBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "omitBy">;
+  let __exports: import("lodash").omitBy;
+  export = __exports;
 }
 
 declare module "lodash/pick" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "pick">;
+  let __exports: import("lodash").pick;
+  export = __exports;
 }
 
 declare module "lodash/pickBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "pickBy">;
+  let __exports: import("lodash").pickBy;
+  export = __exports;
 }
 
 declare module "lodash/result" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "result">;
+  let __exports: import("lodash").result;
+  export = __exports;
 }
 
 declare module "lodash/set" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "set">;
+  let __exports: import("lodash").set;
+  export = __exports;
 }
 
 declare module "lodash/setWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "setWith">;
+  let __exports: import("lodash").setWith;
+  export = __exports;
 }
 
 declare module "lodash/toPairs" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toPairs">;
+  let __exports: import("lodash").toPairs;
+  export = __exports;
 }
 
 declare module "lodash/toPairsIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toPairsIn">;
+  let __exports: import("lodash").toPairsIn;
+  export = __exports;
 }
 
 declare module "lodash/transform" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "transform">;
+  let __exports: import("lodash").transform;
+  export = __exports;
 }
 
 declare module "lodash/unset" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "unset">;
+  let __exports: import("lodash").unset;
+  export = __exports;
 }
 
 declare module "lodash/update" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "update">;
+  let __exports: import("lodash").update;
+  export = __exports;
 }
 
 declare module "lodash/updateWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "updateWith">;
+  let __exports: import("lodash").updateWith;
+  export = __exports;
 }
 
 declare module "lodash/values" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "values">;
+  let __exports: import("lodash").values;
+  export = __exports;
 }
 
 declare module "lodash/valuesIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "valuesIn">;
+  let __exports: import("lodash").valuesIn;
+  export = __exports;
 }
 
 declare module "lodash/chain" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "chain">;
+  let __exports: import("lodash").chain;
+  export = __exports;
 }
 
 declare module "lodash/tap" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "tap">;
+  let __exports: import("lodash").tap;
+  export = __exports;
 }
 
 declare module "lodash/thru" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "thru">;
+  let __exports: import("lodash").thru;
+  export = __exports;
 }
 
 declare module "lodash/camelCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "camelCase">;
+  let __exports: import("lodash").camelCase;
+  export = __exports;
 }
 
 declare module "lodash/capitalize" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "capitalize">;
+  let __exports: import("lodash").capitalize;
+  export = __exports;
 }
 
 declare module "lodash/deburr" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "deburr">;
+  let __exports: import("lodash").deburr;
+  export = __exports;
 }
 
 declare module "lodash/endsWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "endsWith">;
+  let __exports: import("lodash").endsWith;
+  export = __exports;
 }
 
 declare module "lodash/escape" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "escape">;
+  let __exports: import("lodash").escape;
+  export = __exports;
 }
 
 declare module "lodash/escapeRegExp" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "escapeRegExp">;
+  let __exports: import("lodash").escapeRegExp;
+  export = __exports;
 }
 
 declare module "lodash/kebabCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "kebabCase">;
+  let __exports: import("lodash").kebabCase;
+  export = __exports;
 }
 
 declare module "lodash/lowerCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "lowerCase">;
+  let __exports: import("lodash").lowerCase;
+  export = __exports;
 }
 
 declare module "lodash/lowerFirst" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "lowerFirst">;
+  let __exports: import("lodash").lowerFirst;
+  export = __exports;
 }
 
 declare module "lodash/pad" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "pad">;
+  let __exports: import("lodash").pad;
+  export = __exports;
 }
 
 declare module "lodash/padEnd" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "padEnd">;
+  let __exports: import("lodash").padEnd;
+  export = __exports;
 }
 
 declare module "lodash/padStart" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "padStart">;
+  let __exports: import("lodash").padStart;
+  export = __exports;
 }
 
 declare module "lodash/parseInt" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "parseInt">;
+  let __exports: import("lodash").parseInt;
+  export = __exports;
 }
 
 declare module "lodash/repeat" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "repeat">;
+  let __exports: import("lodash").repeat;
+  export = __exports;
 }
 
 declare module "lodash/replace" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "replace">;
+  let __exports: import("lodash").replace;
+  export = __exports;
 }
 
 declare module "lodash/snakeCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "snakeCase">;
+  let __exports: import("lodash").snakeCase;
+  export = __exports;
 }
 
 declare module "lodash/split" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "split">;
+  let __exports: import("lodash").split;
+  export = __exports;
 }
 
 declare module "lodash/startCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "startCase">;
+  let __exports: import("lodash").startCase;
+  export = __exports;
 }
 
 declare module "lodash/startsWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "startsWith">;
+  let __exports: import("lodash").startsWith;
+  export = __exports;
 }
 
 declare module "lodash/template" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "template">;
+  let __exports: import("lodash").template;
+  export = __exports;
 }
 
 declare module "lodash/toLower" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toLower">;
+  let __exports: import("lodash").toLower;
+  export = __exports;
 }
 
 declare module "lodash/toUpper" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toUpper">;
+  let __exports: import("lodash").toUpper;
+  export = __exports;
 }
 
 declare module "lodash/trim" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "trim">;
+  let __exports: import("lodash").trim;
+  export = __exports;
 }
 
 declare module "lodash/trimEnd" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "trimEnd">;
+  let __exports: import("lodash").trimEnd;
+  export = __exports;
 }
 
 declare module "lodash/trimStart" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "trimStart">;
+  let __exports: import("lodash").trimStart;
+  export = __exports;
 }
 
 declare module "lodash/truncate" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "truncate">;
+  let __exports: import("lodash").truncate;
+  export = __exports;
 }
 
 declare module "lodash/unescape" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "unescape">;
+  let __exports: import("lodash").unescape;
+  export = __exports;
 }
 
 declare module "lodash/upperCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "upperCase">;
+  let __exports: import("lodash").upperCase;
+  export = __exports;
 }
 
 declare module "lodash/upperFirst" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "upperFirst">;
+  let __exports: import("lodash").upperFirst;
+  export = __exports;
 }
 
 declare module "lodash/words" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "words">;
+  let __exports: import("lodash").words;
+  export = __exports;
 }
 
 declare module "lodash/attempt" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "attempt">;
+  let __exports: import("lodash").attempt;
+  export = __exports;
 }
 
 declare module "lodash/bindAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "bindAll">;
+  let __exports: import("lodash").bindAll;
+  export = __exports;
 }
 
 declare module "lodash/cond" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "cond">;
+  let __exports: import("lodash").cond;
+  export = __exports;
 }
 
 declare module "lodash/conforms" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "conforms">;
+  let __exports: import("lodash").conforms;
+  export = __exports;
 }
 
 declare module "lodash/constant" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "constant">;
+  let __exports: import("lodash").constant;
+  export = __exports;
 }
 
 declare module "lodash/defaultTo" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "defaultTo">;
+  let __exports: import("lodash").defaultTo;
+  export = __exports;
 }
 
 declare module "lodash/flow" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flow">;
+  let __exports: import("lodash").flow;
+  export = __exports;
 }
 
 declare module "lodash/flowRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "flowRight">;
+  let __exports: import("lodash").flowRight;
+  export = __exports;
 }
 
 declare module "lodash/identity" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "identity">;
+  let __exports: import("lodash").identity;
+  export = __exports;
 }
 
 declare module "lodash/iteratee" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "iteratee">;
+  let __exports: import("lodash").iteratee;
+  export = __exports;
 }
 
 declare module "lodash/matches" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "matches">;
+  let __exports: import("lodash").matches;
+  export = __exports;
 }
 
 declare module "lodash/matchesProperty" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "matchesProperty">;
+  let __exports: import("lodash").matchesProperty;
+  export = __exports;
 }
 
 declare module "lodash/method" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "method">;
+  let __exports: import("lodash").method;
+  export = __exports;
 }
 
 declare module "lodash/methodOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "methodOf">;
+  let __exports: import("lodash").methodOf;
+  export = __exports;
 }
 
 declare module "lodash/mixin" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "mixin">;
+  let __exports: import("lodash").mixin;
+  export = __exports;
 }
 
 declare module "lodash/noConflict" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "noConflict">;
+  let __exports: import("lodash").noConflict;
+  export = __exports;
 }
 
 declare module "lodash/noop" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "noop">;
+  let __exports: import("lodash").noop;
+  export = __exports;
 }
 
 declare module "lodash/nthArg" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "nthArg">;
+  let __exports: import("lodash").nthArg;
+  export = __exports;
 }
 
 declare module "lodash/over" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "over">;
+  let __exports: import("lodash").over;
+  export = __exports;
 }
 
 declare module "lodash/overEvery" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "overEvery">;
+  let __exports: import("lodash").overEvery;
+  export = __exports;
 }
 
 declare module "lodash/overSome" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "overSome">;
+  let __exports: import("lodash").overSome;
+  export = __exports;
 }
 
 declare module "lodash/property" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "property">;
+  let __exports: import("lodash").property;
+  export = __exports;
 }
 
 declare module "lodash/propertyOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "propertyOf">;
+  let __exports: import("lodash").propertyOf;
+  export = __exports;
 }
 
 declare module "lodash/range" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "range">;
+  let __exports: import("lodash").range;
+  export = __exports;
 }
 
 declare module "lodash/rangeRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "rangeRight">;
+  let __exports: import("lodash").rangeRight;
+  export = __exports;
 }
 
 declare module "lodash/runInContext" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "runInContext">;
+  let __exports: import("lodash").runInContext;
+  export = __exports;
 }
 
 declare module "lodash/stubArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "stubArray">;
+  let __exports: import("lodash").stubArray;
+  export = __exports;
 }
 
 declare module "lodash/stubFalse" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "stubFalse">;
+  let __exports: import("lodash").stubFalse;
+  export = __exports;
 }
 
 declare module "lodash/stubObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "stubObject">;
+  let __exports: import("lodash").stubObject;
+  export = __exports;
 }
 
 declare module "lodash/stubString" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "stubString">;
+  let __exports: import("lodash").stubString;
+  export = __exports;
 }
 
 declare module "lodash/stubTrue" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "stubTrue">;
+  let __exports: import("lodash").stubTrue;
+  export = __exports;
 }
 
 declare module "lodash/times" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "times">;
+  let __exports: import("lodash").times;
+  export = __exports;
 }
 
 declare module "lodash/toPath" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "toPath">;
+  let __exports: import("lodash").toPath;
+  export = __exports;
 }
 
 declare module "lodash/uniqueId" {
-  declare module.exports: $PropertyType<$Exports<"lodash">, "uniqueId">;
+  let __exports: import("lodash").uniqueId;
+  export = __exports;
 }
 
 declare module "lodash/fp/chunk" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "chunk">;
+  let __exports: import("lodash/fp").chunk;
+  export = __exports;
 }
 
 declare module "lodash/fp/compact" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "compact">;
+  let __exports: import("lodash/fp").compact;
+  export = __exports;
 }
 
 declare module "lodash/fp/concat" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "concat">;
+  let __exports: import("lodash/fp").concat;
+  export = __exports;
 }
 
 declare module "lodash/fp/difference" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "difference">;
+  let __exports: import("lodash/fp").difference;
+  export = __exports;
 }
 
 declare module "lodash/fp/differenceBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "differenceBy">;
+  let __exports: import("lodash/fp").differenceBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/differenceWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "differenceWith">;
+  let __exports: import("lodash/fp").differenceWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/drop" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "drop">;
+  let __exports: import("lodash/fp").drop;
+  export = __exports;
 }
 
 declare module "lodash/fp/dropLast" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "dropLast">;
+  let __exports: import("lodash/fp").dropLast;
+  export = __exports;
 }
 
 declare module "lodash/fp/dropRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "dropRight">;
+  let __exports: import("lodash/fp").dropRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/dropRightWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "dropRightWhile">;
+  let __exports: import("lodash/fp").dropRightWhile;
+  export = __exports;
 }
 
 declare module "lodash/fp/dropWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "dropWhile">;
+  let __exports: import("lodash/fp").dropWhile;
+  export = __exports;
 }
 
 declare module "lodash/fp/dropLastWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "dropLastWhile">;
+  let __exports: import("lodash/fp").dropLastWhile;
+  export = __exports;
 }
 
 declare module "lodash/fp/fill" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "fill">;
+  let __exports: import("lodash/fp").fill;
+  export = __exports;
 }
 
 declare module "lodash/fp/findIndex" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findIndex">;
+  let __exports: import("lodash/fp").findIndex;
+  export = __exports;
 }
 
 declare module "lodash/fp/findIndexFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findIndexFrom">;
+  let __exports: import("lodash/fp").findIndexFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/findLastIndex" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findLastIndex">;
+  let __exports: import("lodash/fp").findLastIndex;
+  export = __exports;
 }
 
 declare module "lodash/fp/findLastIndexFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findLastIndexFrom">;
+  let __exports: import("lodash/fp").findLastIndexFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/first" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "first">;
+  let __exports: import("lodash/fp").first;
+  export = __exports;
 }
 
 declare module "lodash/fp/flatten" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flatten">;
+  let __exports: import("lodash/fp").flatten;
+  export = __exports;
 }
 
 declare module "lodash/fp/unnest" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unnest">;
+  let __exports: import("lodash/fp").unnest;
+  export = __exports;
 }
 
 declare module "lodash/fp/flattenDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flattenDeep">;
+  let __exports: import("lodash/fp").flattenDeep;
+  export = __exports;
 }
 
 declare module "lodash/fp/flattenDepth" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flattenDepth">;
+  let __exports: import("lodash/fp").flattenDepth;
+  export = __exports;
 }
 
 declare module "lodash/fp/fromPairs" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "fromPairs">;
+  let __exports: import("lodash/fp").fromPairs;
+  export = __exports;
 }
 
 declare module "lodash/fp/head" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "head">;
+  let __exports: import("lodash/fp").head;
+  export = __exports;
 }
 
 declare module "lodash/fp/indexOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "indexOf">;
+  let __exports: import("lodash/fp").indexOf;
+  export = __exports;
 }
 
 declare module "lodash/fp/indexOfFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "indexOfFrom">;
+  let __exports: import("lodash/fp").indexOfFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/initial" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "initial">;
+  let __exports: import("lodash/fp").initial;
+  export = __exports;
 }
 
 declare module "lodash/fp/init" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "init">;
+  let __exports: import("lodash/fp").init;
+  export = __exports;
 }
 
 declare module "lodash/fp/intersection" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "intersection">;
+  let __exports: import("lodash/fp").intersection;
+  export = __exports;
 }
 
 declare module "lodash/fp/intersectionBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "intersectionBy">;
+  let __exports: import("lodash/fp").intersectionBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/intersectionWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "intersectionWith">;
+  let __exports: import("lodash/fp").intersectionWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/join" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "join">;
+  let __exports: import("lodash/fp").join;
+  export = __exports;
 }
 
 declare module "lodash/fp/last" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "last">;
+  let __exports: import("lodash/fp").last;
+  export = __exports;
 }
 
 declare module "lodash/fp/lastIndexOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "lastIndexOf">;
+  let __exports: import("lodash/fp").lastIndexOf;
+  export = __exports;
 }
 
 declare module "lodash/fp/lastIndexOfFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "lastIndexOfFrom">;
+  let __exports: import("lodash/fp").lastIndexOfFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/nth" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "nth">;
+  let __exports: import("lodash/fp").nth;
+  export = __exports;
 }
 
 declare module "lodash/fp/pull" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pull">;
+  let __exports: import("lodash/fp").pull;
+  export = __exports;
 }
 
 declare module "lodash/fp/pullAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pullAll">;
+  let __exports: import("lodash/fp").pullAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/pullAllBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pullAllBy">;
+  let __exports: import("lodash/fp").pullAllBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/pullAllWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pullAllWith">;
+  let __exports: import("lodash/fp").pullAllWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/pullAt" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pullAt">;
+  let __exports: import("lodash/fp").pullAt;
+  export = __exports;
 }
 
 declare module "lodash/fp/remove" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "remove">;
+  let __exports: import("lodash/fp").remove;
+  export = __exports;
 }
 
 declare module "lodash/fp/reverse" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "reverse">;
+  let __exports: import("lodash/fp").reverse;
+  export = __exports;
 }
 
 declare module "lodash/fp/slice" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "slice">;
+  let __exports: import("lodash/fp").slice;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortedIndex" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortedIndex">;
+  let __exports: import("lodash/fp").sortedIndex;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortedIndexBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortedIndexBy">;
+  let __exports: import("lodash/fp").sortedIndexBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortedIndexOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortedIndexOf">;
+  let __exports: import("lodash/fp").sortedIndexOf;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortedLastIndex" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortedLastIndex">;
+  let __exports: import("lodash/fp").sortedLastIndex;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortedLastIndexBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortedLastIndexBy">;
+  let __exports: import("lodash/fp").sortedLastIndexBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortedLastIndexOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortedLastIndexOf">;
+  let __exports: import("lodash/fp").sortedLastIndexOf;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortedUniq" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortedUniq">;
+  let __exports: import("lodash/fp").sortedUniq;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortedUniqBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortedUniqBy">;
+  let __exports: import("lodash/fp").sortedUniqBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/tail" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "tail">;
+  let __exports: import("lodash/fp").tail;
+  export = __exports;
 }
 
 declare module "lodash/fp/take" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "take">;
+  let __exports: import("lodash/fp").take;
+  export = __exports;
 }
 
 declare module "lodash/fp/takeRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "takeRight">;
+  let __exports: import("lodash/fp").takeRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/takeLast" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "takeLast">;
+  let __exports: import("lodash/fp").takeLast;
+  export = __exports;
 }
 
 declare module "lodash/fp/takeRightWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "takeRightWhile">;
+  let __exports: import("lodash/fp").takeRightWhile;
+  export = __exports;
 }
 
 declare module "lodash/fp/takeLastWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "takeLastWhile">;
+  let __exports: import("lodash/fp").takeLastWhile;
+  export = __exports;
 }
 
 declare module "lodash/fp/takeWhile" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "takeWhile">;
+  let __exports: import("lodash/fp").takeWhile;
+  export = __exports;
 }
 
 declare module "lodash/fp/union" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "union">;
+  let __exports: import("lodash/fp").union;
+  export = __exports;
 }
 
 declare module "lodash/fp/unionBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unionBy">;
+  let __exports: import("lodash/fp").unionBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/unionWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unionWith">;
+  let __exports: import("lodash/fp").unionWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/uniq" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "uniq">;
+  let __exports: import("lodash/fp").uniq;
+  export = __exports;
 }
 
 declare module "lodash/fp/uniqBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "uniqBy">;
+  let __exports: import("lodash/fp").uniqBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/uniqWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "uniqWith">;
+  let __exports: import("lodash/fp").uniqWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/unzip" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unzip">;
+  let __exports: import("lodash/fp").unzip;
+  export = __exports;
 }
 
 declare module "lodash/fp/unzipWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unzipWith">;
+  let __exports: import("lodash/fp").unzipWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/without" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "without">;
+  let __exports: import("lodash/fp").without;
+  export = __exports;
 }
 
 declare module "lodash/fp/xor" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "xor">;
+  let __exports: import("lodash/fp").xor;
+  export = __exports;
 }
 
 declare module "lodash/fp/symmetricDifference" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "symmetricDifference">;
+  let __exports: import("lodash/fp").symmetricDifference;
+  export = __exports;
 }
 
 declare module "lodash/fp/xorBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "xorBy">;
+  let __exports: import("lodash/fp").xorBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/symmetricDifferenceBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "symmetricDifferenceBy">;
+  let __exports: import("lodash/fp").symmetricDifferenceBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/xorWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "xorWith">;
+  let __exports: import("lodash/fp").xorWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/symmetricDifferenceWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "symmetricDifferenceWith">;
+  let __exports: import("lodash/fp").symmetricDifferenceWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/zip" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "zip">;
+  let __exports: import("lodash/fp").zip;
+  export = __exports;
 }
 
 declare module "lodash/fp/zipAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "zipAll">;
+  let __exports: import("lodash/fp").zipAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/zipObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "zipObject">;
+  let __exports: import("lodash/fp").zipObject;
+  export = __exports;
 }
 
 declare module "lodash/fp/zipObj" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "zipObj">;
+  let __exports: import("lodash/fp").zipObj;
+  export = __exports;
 }
 
 declare module "lodash/fp/zipObjectDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "zipObjectDeep">;
+  let __exports: import("lodash/fp").zipObjectDeep;
+  export = __exports;
 }
 
 declare module "lodash/fp/zipWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "zipWith">;
+  let __exports: import("lodash/fp").zipWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/countBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "countBy">;
+  let __exports: import("lodash/fp").countBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/each" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "each">;
+  let __exports: import("lodash/fp").each;
+  export = __exports;
 }
 
 declare module "lodash/fp/eachRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "eachRight">;
+  let __exports: import("lodash/fp").eachRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/every" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "every">;
+  let __exports: import("lodash/fp").every;
+  export = __exports;
 }
 
 declare module "lodash/fp/all" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "all">;
+  let __exports: import("lodash/fp").all;
+  export = __exports;
 }
 
 declare module "lodash/fp/filter" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "filter">;
+  let __exports: import("lodash/fp").filter;
+  export = __exports;
 }
 
 declare module "lodash/fp/find" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "find">;
+  let __exports: import("lodash/fp").find;
+  export = __exports;
 }
 
 declare module "lodash/fp/findFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findFrom">;
+  let __exports: import("lodash/fp").findFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/findLast" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findLast">;
+  let __exports: import("lodash/fp").findLast;
+  export = __exports;
 }
 
 declare module "lodash/fp/findLastFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findLastFrom">;
+  let __exports: import("lodash/fp").findLastFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/flatMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flatMap">;
+  let __exports: import("lodash/fp").flatMap;
+  export = __exports;
 }
 
 declare module "lodash/fp/flatMapDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flatMapDeep">;
+  let __exports: import("lodash/fp").flatMapDeep;
+  export = __exports;
 }
 
 declare module "lodash/fp/flatMapDepth" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flatMapDepth">;
+  let __exports: import("lodash/fp").flatMapDepth;
+  export = __exports;
 }
 
 declare module "lodash/fp/forEach" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "forEach">;
+  let __exports: import("lodash/fp").forEach;
+  export = __exports;
 }
 
 declare module "lodash/fp/forEachRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "forEachRight">;
+  let __exports: import("lodash/fp").forEachRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/groupBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "groupBy">;
+  let __exports: import("lodash/fp").groupBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/includes" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "includes">;
+  let __exports: import("lodash/fp").includes;
+  export = __exports;
 }
 
 declare module "lodash/fp/contains" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "contains">;
+  let __exports: import("lodash/fp").contains;
+  export = __exports;
 }
 
 declare module "lodash/fp/includesFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "includesFrom">;
+  let __exports: import("lodash/fp").includesFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/invokeMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "invokeMap">;
+  let __exports: import("lodash/fp").invokeMap;
+  export = __exports;
 }
 
 declare module "lodash/fp/invokeArgsMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "invokeArgsMap">;
+  let __exports: import("lodash/fp").invokeArgsMap;
+  export = __exports;
 }
 
 declare module "lodash/fp/keyBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "keyBy">;
+  let __exports: import("lodash/fp").keyBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/indexBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "indexBy">;
+  let __exports: import("lodash/fp").indexBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/map" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "map">;
+  let __exports: import("lodash/fp").map;
+  export = __exports;
 }
 
 declare module "lodash/fp/pluck" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pluck">;
+  let __exports: import("lodash/fp").pluck;
+  export = __exports;
 }
 
 declare module "lodash/fp/orderBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "orderBy">;
+  let __exports: import("lodash/fp").orderBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/partition" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "partition">;
+  let __exports: import("lodash/fp").partition;
+  export = __exports;
 }
 
 declare module "lodash/fp/reduce" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "reduce">;
+  let __exports: import("lodash/fp").reduce;
+  export = __exports;
 }
 
 declare module "lodash/fp/reduceRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "reduceRight">;
+  let __exports: import("lodash/fp").reduceRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/reject" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "reject">;
+  let __exports: import("lodash/fp").reject;
+  export = __exports;
 }
 
 declare module "lodash/fp/sample" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sample">;
+  let __exports: import("lodash/fp").sample;
+  export = __exports;
 }
 
 declare module "lodash/fp/sampleSize" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sampleSize">;
+  let __exports: import("lodash/fp").sampleSize;
+  export = __exports;
 }
 
 declare module "lodash/fp/shuffle" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "shuffle">;
+  let __exports: import("lodash/fp").shuffle;
+  export = __exports;
 }
 
 declare module "lodash/fp/size" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "size">;
+  let __exports: import("lodash/fp").size;
+  export = __exports;
 }
 
 declare module "lodash/fp/some" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "some">;
+  let __exports: import("lodash/fp").some;
+  export = __exports;
 }
 
 declare module "lodash/fp/any" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "any">;
+  let __exports: import("lodash/fp").any;
+  export = __exports;
 }
 
 declare module "lodash/fp/sortBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sortBy">;
+  let __exports: import("lodash/fp").sortBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/now" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "now">;
+  let __exports: import("lodash/fp").now;
+  export = __exports;
 }
 
 declare module "lodash/fp/after" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "after">;
+  let __exports: import("lodash/fp").after;
+  export = __exports;
 }
 
 declare module "lodash/fp/ary" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "ary">;
+  let __exports: import("lodash/fp").ary;
+  export = __exports;
 }
 
 declare module "lodash/fp/nAry" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "nAry">;
+  let __exports: import("lodash/fp").nAry;
+  export = __exports;
 }
 
 declare module "lodash/fp/before" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "before">;
+  let __exports: import("lodash/fp").before;
+  export = __exports;
 }
 
 declare module "lodash/fp/bind" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "bind">;
+  let __exports: import("lodash/fp").bind;
+  export = __exports;
 }
 
 declare module "lodash/fp/bindKey" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "bindKey">;
+  let __exports: import("lodash/fp").bindKey;
+  export = __exports;
 }
 
 declare module "lodash/fp/curry" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "curry">;
+  let __exports: import("lodash/fp").curry;
+  export = __exports;
 }
 
 declare module "lodash/fp/curryN" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "curryN">;
+  let __exports: import("lodash/fp").curryN;
+  export = __exports;
 }
 
 declare module "lodash/fp/curryRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "curryRight">;
+  let __exports: import("lodash/fp").curryRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/curryRightN" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "curryRightN">;
+  let __exports: import("lodash/fp").curryRightN;
+  export = __exports;
 }
 
 declare module "lodash/fp/debounce" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "debounce">;
+  let __exports: import("lodash/fp").debounce;
+  export = __exports;
 }
 
 declare module "lodash/fp/defer" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "defer">;
+  let __exports: import("lodash/fp").defer;
+  export = __exports;
 }
 
 declare module "lodash/fp/delay" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "delay">;
+  let __exports: import("lodash/fp").delay;
+  export = __exports;
 }
 
 declare module "lodash/fp/flip" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flip">;
+  let __exports: import("lodash/fp").flip;
+  export = __exports;
 }
 
 declare module "lodash/fp/memoize" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "memoize">;
+  let __exports: import("lodash/fp").memoize;
+  export = __exports;
 }
 
 declare module "lodash/fp/negate" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "negate">;
+  let __exports: import("lodash/fp").negate;
+  export = __exports;
 }
 
 declare module "lodash/fp/complement" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "complement">;
+  let __exports: import("lodash/fp").complement;
+  export = __exports;
 }
 
 declare module "lodash/fp/once" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "once">;
+  let __exports: import("lodash/fp").once;
+  export = __exports;
 }
 
 declare module "lodash/fp/overArgs" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "overArgs">;
+  let __exports: import("lodash/fp").overArgs;
+  export = __exports;
 }
 
 declare module "lodash/fp/useWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "useWith">;
+  let __exports: import("lodash/fp").useWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/partial" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "partial">;
+  let __exports: import("lodash/fp").partial;
+  export = __exports;
 }
 
 declare module "lodash/fp/partialRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "partialRight">;
+  let __exports: import("lodash/fp").partialRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/rearg" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "rearg">;
+  let __exports: import("lodash/fp").rearg;
+  export = __exports;
 }
 
 declare module "lodash/fp/rest" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "rest">;
+  let __exports: import("lodash/fp").rest;
+  export = __exports;
 }
 
 declare module "lodash/fp/unapply" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unapply">;
+  let __exports: import("lodash/fp").unapply;
+  export = __exports;
 }
 
 declare module "lodash/fp/restFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "restFrom">;
+  let __exports: import("lodash/fp").restFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/spread" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "spread">;
+  let __exports: import("lodash/fp").spread;
+  export = __exports;
 }
 
 declare module "lodash/fp/apply" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "apply">;
+  let __exports: import("lodash/fp").apply;
+  export = __exports;
 }
 
 declare module "lodash/fp/spreadFrom" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "spreadFrom">;
+  let __exports: import("lodash/fp").spreadFrom;
+  export = __exports;
 }
 
 declare module "lodash/fp/throttle" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "throttle">;
+  let __exports: import("lodash/fp").throttle;
+  export = __exports;
 }
 
 declare module "lodash/fp/unary" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unary">;
+  let __exports: import("lodash/fp").unary;
+  export = __exports;
 }
 
 declare module "lodash/fp/wrap" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "wrap">;
+  let __exports: import("lodash/fp").wrap;
+  export = __exports;
 }
 
 declare module "lodash/fp/castArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "castArray">;
+  let __exports: import("lodash/fp").castArray;
+  export = __exports;
 }
 
 declare module "lodash/fp/clone" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "clone">;
+  let __exports: import("lodash/fp").clone;
+  export = __exports;
 }
 
 declare module "lodash/fp/cloneDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "cloneDeep">;
+  let __exports: import("lodash/fp").cloneDeep;
+  export = __exports;
 }
 
 declare module "lodash/fp/cloneDeepWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "cloneDeepWith">;
+  let __exports: import("lodash/fp").cloneDeepWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/cloneWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "cloneWith">;
+  let __exports: import("lodash/fp").cloneWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/conformsTo" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "conformsTo">;
+  let __exports: import("lodash/fp").conformsTo;
+  export = __exports;
 }
 
 declare module "lodash/fp/where" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "where">;
+  let __exports: import("lodash/fp").where;
+  export = __exports;
 }
 
 declare module "lodash/fp/conforms" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "conforms">;
+  let __exports: import("lodash/fp").conforms;
+  export = __exports;
 }
 
 declare module "lodash/fp/eq" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "eq">;
+  let __exports: import("lodash/fp").eq;
+  export = __exports;
 }
 
 declare module "lodash/fp/identical" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "identical">;
+  let __exports: import("lodash/fp").identical;
+  export = __exports;
 }
 
 declare module "lodash/fp/gt" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "gt">;
+  let __exports: import("lodash/fp").gt;
+  export = __exports;
 }
 
 declare module "lodash/fp/gte" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "gte">;
+  let __exports: import("lodash/fp").gte;
+  export = __exports;
 }
 
 declare module "lodash/fp/isArguments" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isArguments">;
+  let __exports: import("lodash/fp").isArguments;
+  export = __exports;
 }
 
 declare module "lodash/fp/isArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isArray">;
+  let __exports: import("lodash/fp").isArray;
+  export = __exports;
 }
 
 declare module "lodash/fp/isArrayBuffer" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isArrayBuffer">;
+  let __exports: import("lodash/fp").isArrayBuffer;
+  export = __exports;
 }
 
 declare module "lodash/fp/isArrayLike" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isArrayLike">;
+  let __exports: import("lodash/fp").isArrayLike;
+  export = __exports;
 }
 
 declare module "lodash/fp/isArrayLikeObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isArrayLikeObject">;
+  let __exports: import("lodash/fp").isArrayLikeObject;
+  export = __exports;
 }
 
 declare module "lodash/fp/isBoolean" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isBoolean">;
+  let __exports: import("lodash/fp").isBoolean;
+  export = __exports;
 }
 
 declare module "lodash/fp/isBuffer" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isBuffer">;
+  let __exports: import("lodash/fp").isBuffer;
+  export = __exports;
 }
 
 declare module "lodash/fp/isDate" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isDate">;
+  let __exports: import("lodash/fp").isDate;
+  export = __exports;
 }
 
 declare module "lodash/fp/isElement" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isElement">;
+  let __exports: import("lodash/fp").isElement;
+  export = __exports;
 }
 
 declare module "lodash/fp/isEmpty" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isEmpty">;
+  let __exports: import("lodash/fp").isEmpty;
+  export = __exports;
 }
 
 declare module "lodash/fp/isEqual" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isEqual">;
+  let __exports: import("lodash/fp").isEqual;
+  export = __exports;
 }
 
 declare module "lodash/fp/equals" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "equals">;
+  let __exports: import("lodash/fp").equals;
+  export = __exports;
 }
 
 declare module "lodash/fp/isEqualWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isEqualWith">;
+  let __exports: import("lodash/fp").isEqualWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/isError" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isError">;
+  let __exports: import("lodash/fp").isError;
+  export = __exports;
 }
 
 declare module "lodash/fp/isFinite" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isFinite">;
+  let __exports: import("lodash/fp").isFinite;
+  export = __exports;
 }
 
 declare module "lodash/fp/isFunction" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isFunction">;
+  let __exports: import("lodash/fp").isFunction;
+  export = __exports;
 }
 
 declare module "lodash/fp/isInteger" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isInteger">;
+  let __exports: import("lodash/fp").isInteger;
+  export = __exports;
 }
 
 declare module "lodash/fp/isLength" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isLength">;
+  let __exports: import("lodash/fp").isLength;
+  export = __exports;
 }
 
 declare module "lodash/fp/isMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isMap">;
+  let __exports: import("lodash/fp").isMap;
+  export = __exports;
 }
 
 declare module "lodash/fp/isMatch" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isMatch">;
+  let __exports: import("lodash/fp").isMatch;
+  export = __exports;
 }
 
 declare module "lodash/fp/whereEq" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "whereEq">;
+  let __exports: import("lodash/fp").whereEq;
+  export = __exports;
 }
 
 declare module "lodash/fp/isMatchWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isMatchWith">;
+  let __exports: import("lodash/fp").isMatchWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/isNaN" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isNaN">;
+  let __exports: import("lodash/fp").isNaN;
+  export = __exports;
 }
 
 declare module "lodash/fp/isNative" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isNative">;
+  let __exports: import("lodash/fp").isNative;
+  export = __exports;
 }
 
 declare module "lodash/fp/isNil" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isNil">;
+  let __exports: import("lodash/fp").isNil;
+  export = __exports;
 }
 
 declare module "lodash/fp/isNull" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isNull">;
+  let __exports: import("lodash/fp").isNull;
+  export = __exports;
 }
 
 declare module "lodash/fp/isNumber" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isNumber">;
+  let __exports: import("lodash/fp").isNumber;
+  export = __exports;
 }
 
 declare module "lodash/fp/isObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isObject">;
+  let __exports: import("lodash/fp").isObject;
+  export = __exports;
 }
 
 declare module "lodash/fp/isObjectLike" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isObjectLike">;
+  let __exports: import("lodash/fp").isObjectLike;
+  export = __exports;
 }
 
 declare module "lodash/fp/isPlainObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isPlainObject">;
+  let __exports: import("lodash/fp").isPlainObject;
+  export = __exports;
 }
 
 declare module "lodash/fp/isRegExp" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isRegExp">;
+  let __exports: import("lodash/fp").isRegExp;
+  export = __exports;
 }
 
 declare module "lodash/fp/isSafeInteger" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isSafeInteger">;
+  let __exports: import("lodash/fp").isSafeInteger;
+  export = __exports;
 }
 
 declare module "lodash/fp/isSet" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isSet">;
+  let __exports: import("lodash/fp").isSet;
+  export = __exports;
 }
 
 declare module "lodash/fp/isString" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isString">;
+  let __exports: import("lodash/fp").isString;
+  export = __exports;
 }
 
 declare module "lodash/fp/isSymbol" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isSymbol">;
+  let __exports: import("lodash/fp").isSymbol;
+  export = __exports;
 }
 
 declare module "lodash/fp/isTypedArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isTypedArray">;
+  let __exports: import("lodash/fp").isTypedArray;
+  export = __exports;
 }
 
 declare module "lodash/fp/isUndefined" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isUndefined">;
+  let __exports: import("lodash/fp").isUndefined;
+  export = __exports;
 }
 
 declare module "lodash/fp/isWeakMap" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isWeakMap">;
+  let __exports: import("lodash/fp").isWeakMap;
+  export = __exports;
 }
 
 declare module "lodash/fp/isWeakSet" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "isWeakSet">;
+  let __exports: import("lodash/fp").isWeakSet;
+  export = __exports;
 }
 
 declare module "lodash/fp/lt" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "lt">;
+  let __exports: import("lodash/fp").lt;
+  export = __exports;
 }
 
 declare module "lodash/fp/lte" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "lte">;
+  let __exports: import("lodash/fp").lte;
+  export = __exports;
 }
 
 declare module "lodash/fp/toArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toArray">;
+  let __exports: import("lodash/fp").toArray;
+  export = __exports;
 }
 
 declare module "lodash/fp/toFinite" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toFinite">;
+  let __exports: import("lodash/fp").toFinite;
+  export = __exports;
 }
 
 declare module "lodash/fp/toInteger" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toInteger">;
+  let __exports: import("lodash/fp").toInteger;
+  export = __exports;
 }
 
 declare module "lodash/fp/toLength" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toLength">;
+  let __exports: import("lodash/fp").toLength;
+  export = __exports;
 }
 
 declare module "lodash/fp/toNumber" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toNumber">;
+  let __exports: import("lodash/fp").toNumber;
+  export = __exports;
 }
 
 declare module "lodash/fp/toPlainObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toPlainObject">;
+  let __exports: import("lodash/fp").toPlainObject;
+  export = __exports;
 }
 
 declare module "lodash/fp/toSafeInteger" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toSafeInteger">;
+  let __exports: import("lodash/fp").toSafeInteger;
+  export = __exports;
 }
 
 declare module "lodash/fp/toString" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toString">;
+  let __exports: import("lodash/fp").toString;
+  export = __exports;
 }
 
 declare module "lodash/fp/add" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "add">;
+  let __exports: import("lodash/fp").add;
+  export = __exports;
 }
 
 declare module "lodash/fp/ceil" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "ceil">;
+  let __exports: import("lodash/fp").ceil;
+  export = __exports;
 }
 
 declare module "lodash/fp/divide" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "divide">;
+  let __exports: import("lodash/fp").divide;
+  export = __exports;
 }
 
 declare module "lodash/fp/floor" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "floor">;
+  let __exports: import("lodash/fp").floor;
+  export = __exports;
 }
 
 declare module "lodash/fp/max" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "max">;
+  let __exports: import("lodash/fp").max;
+  export = __exports;
 }
 
 declare module "lodash/fp/maxBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "maxBy">;
+  let __exports: import("lodash/fp").maxBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/mean" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "mean">;
+  let __exports: import("lodash/fp").mean;
+  export = __exports;
 }
 
 declare module "lodash/fp/meanBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "meanBy">;
+  let __exports: import("lodash/fp").meanBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/min" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "min">;
+  let __exports: import("lodash/fp").min;
+  export = __exports;
 }
 
 declare module "lodash/fp/minBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "minBy">;
+  let __exports: import("lodash/fp").minBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/multiply" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "multiply">;
+  let __exports: import("lodash/fp").multiply;
+  export = __exports;
 }
 
 declare module "lodash/fp/round" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "round">;
+  let __exports: import("lodash/fp").round;
+  export = __exports;
 }
 
 declare module "lodash/fp/subtract" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "subtract">;
+  let __exports: import("lodash/fp").subtract;
+  export = __exports;
 }
 
 declare module "lodash/fp/sum" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sum">;
+  let __exports: import("lodash/fp").sum;
+  export = __exports;
 }
 
 declare module "lodash/fp/sumBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "sumBy">;
+  let __exports: import("lodash/fp").sumBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/clamp" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "clamp">;
+  let __exports: import("lodash/fp").clamp;
+  export = __exports;
 }
 
 declare module "lodash/fp/inRange" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "inRange">;
+  let __exports: import("lodash/fp").inRange;
+  export = __exports;
 }
 
 declare module "lodash/fp/random" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "random">;
+  let __exports: import("lodash/fp").random;
+  export = __exports;
 }
 
 declare module "lodash/fp/assign" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assign">;
+  let __exports: import("lodash/fp").assign;
+  export = __exports;
 }
 
 declare module "lodash/fp/assignAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assignAll">;
+  let __exports: import("lodash/fp").assignAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/assignInAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assignInAll">;
+  let __exports: import("lodash/fp").assignInAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/extendAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "extendAll">;
+  let __exports: import("lodash/fp").extendAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/assignIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assignIn">;
+  let __exports: import("lodash/fp").assignIn;
+  export = __exports;
 }
 
 declare module "lodash/fp/assignInWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assignInWith">;
+  let __exports: import("lodash/fp").assignInWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/assignWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assignWith">;
+  let __exports: import("lodash/fp").assignWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/assignInAllWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assignInAllWith">;
+  let __exports: import("lodash/fp").assignInAllWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/extendAllWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "extendAllWith">;
+  let __exports: import("lodash/fp").extendAllWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/assignAllWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assignAllWith">;
+  let __exports: import("lodash/fp").assignAllWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/at" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "at">;
+  let __exports: import("lodash/fp").at;
+  export = __exports;
 }
 
 declare module "lodash/fp/props" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "props">;
+  let __exports: import("lodash/fp").props;
+  export = __exports;
 }
 
 declare module "lodash/fp/paths" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "paths">;
+  let __exports: import("lodash/fp").paths;
+  export = __exports;
 }
 
 declare module "lodash/fp/create" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "create">;
+  let __exports: import("lodash/fp").create;
+  export = __exports;
 }
 
 declare module "lodash/fp/defaults" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "defaults">;
+  let __exports: import("lodash/fp").defaults;
+  export = __exports;
 }
 
 declare module "lodash/fp/defaultsAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "defaultsAll">;
+  let __exports: import("lodash/fp").defaultsAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/defaultsDeep" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "defaultsDeep">;
+  let __exports: import("lodash/fp").defaultsDeep;
+  export = __exports;
 }
 
 declare module "lodash/fp/defaultsDeepAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "defaultsDeepAll">;
+  let __exports: import("lodash/fp").defaultsDeepAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/entries" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "entries">;
+  let __exports: import("lodash/fp").entries;
+  export = __exports;
 }
 
 declare module "lodash/fp/entriesIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "entriesIn">;
+  let __exports: import("lodash/fp").entriesIn;
+  export = __exports;
 }
 
 declare module "lodash/fp/extend" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "extend">;
+  let __exports: import("lodash/fp").extend;
+  export = __exports;
 }
 
 declare module "lodash/fp/extendWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "extendWith">;
+  let __exports: import("lodash/fp").extendWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/findKey" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findKey">;
+  let __exports: import("lodash/fp").findKey;
+  export = __exports;
 }
 
 declare module "lodash/fp/findLastKey" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "findLastKey">;
+  let __exports: import("lodash/fp").findLastKey;
+  export = __exports;
 }
 
 declare module "lodash/fp/forIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "forIn">;
+  let __exports: import("lodash/fp").forIn;
+  export = __exports;
 }
 
 declare module "lodash/fp/forInRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "forInRight">;
+  let __exports: import("lodash/fp").forInRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/forOwn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "forOwn">;
+  let __exports: import("lodash/fp").forOwn;
+  export = __exports;
 }
 
 declare module "lodash/fp/forOwnRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "forOwnRight">;
+  let __exports: import("lodash/fp").forOwnRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/functions" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "functions">;
+  let __exports: import("lodash/fp").functions;
+  export = __exports;
 }
 
 declare module "lodash/fp/functionsIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "functionsIn">;
+  let __exports: import("lodash/fp").functionsIn;
+  export = __exports;
 }
 
 declare module "lodash/fp/get" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "get">;
+  let __exports: import("lodash/fp").get;
+  export = __exports;
 }
 
 declare module "lodash/fp/prop" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "prop">;
+  let __exports: import("lodash/fp").prop;
+  export = __exports;
 }
 
 declare module "lodash/fp/path" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "path">;
+  let __exports: import("lodash/fp").path;
+  export = __exports;
 }
 
 declare module "lodash/fp/getOr" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "getOr">;
+  let __exports: import("lodash/fp").getOr;
+  export = __exports;
 }
 
 declare module "lodash/fp/propOr" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "propOr">;
+  let __exports: import("lodash/fp").propOr;
+  export = __exports;
 }
 
 declare module "lodash/fp/pathOr" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pathOr">;
+  let __exports: import("lodash/fp").pathOr;
+  export = __exports;
 }
 
 declare module "lodash/fp/has" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "has">;
+  let __exports: import("lodash/fp").has;
+  export = __exports;
 }
 
 declare module "lodash/fp/hasIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "hasIn">;
+  let __exports: import("lodash/fp").hasIn;
+  export = __exports;
 }
 
 declare module "lodash/fp/invert" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "invert">;
+  let __exports: import("lodash/fp").invert;
+  export = __exports;
 }
 
 declare module "lodash/fp/invertObj" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "invertObj">;
+  let __exports: import("lodash/fp").invertObj;
+  export = __exports;
 }
 
 declare module "lodash/fp/invertBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "invertBy">;
+  let __exports: import("lodash/fp").invertBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/invoke" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "invoke">;
+  let __exports: import("lodash/fp").invoke;
+  export = __exports;
 }
 
 declare module "lodash/fp/invokeArgs" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "invokeArgs">;
+  let __exports: import("lodash/fp").invokeArgs;
+  export = __exports;
 }
 
 declare module "lodash/fp/keys" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "keys">;
+  let __exports: import("lodash/fp").keys;
+  export = __exports;
 }
 
 declare module "lodash/fp/keysIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "keysIn">;
+  let __exports: import("lodash/fp").keysIn;
+  export = __exports;
 }
 
 declare module "lodash/fp/mapKeys" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "mapKeys">;
+  let __exports: import("lodash/fp").mapKeys;
+  export = __exports;
 }
 
 declare module "lodash/fp/mapValues" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "mapValues">;
+  let __exports: import("lodash/fp").mapValues;
+  export = __exports;
 }
 
 declare module "lodash/fp/merge" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "merge">;
+  let __exports: import("lodash/fp").merge;
+  export = __exports;
 }
 
 declare module "lodash/fp/mergeAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "mergeAll">;
+  let __exports: import("lodash/fp").mergeAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/mergeWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "mergeWith">;
+  let __exports: import("lodash/fp").mergeWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/mergeAllWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "mergeAllWith">;
+  let __exports: import("lodash/fp").mergeAllWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/omit" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "omit">;
+  let __exports: import("lodash/fp").omit;
+  export = __exports;
 }
 
 declare module "lodash/fp/omitAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "omitAll">;
+  let __exports: import("lodash/fp").omitAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/omitBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "omitBy">;
+  let __exports: import("lodash/fp").omitBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/pick" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pick">;
+  let __exports: import("lodash/fp").pick;
+  export = __exports;
 }
 
 declare module "lodash/fp/pickAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pickAll">;
+  let __exports: import("lodash/fp").pickAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/pickBy" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pickBy">;
+  let __exports: import("lodash/fp").pickBy;
+  export = __exports;
 }
 
 declare module "lodash/fp/result" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "result">;
+  let __exports: import("lodash/fp").result;
+  export = __exports;
 }
 
 declare module "lodash/fp/set" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "set">;
+  let __exports: import("lodash/fp").set;
+  export = __exports;
 }
 
 declare module "lodash/fp/assoc" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assoc">;
+  let __exports: import("lodash/fp").assoc;
+  export = __exports;
 }
 
 declare module "lodash/fp/assocPath" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "assocPath">;
+  let __exports: import("lodash/fp").assocPath;
+  export = __exports;
 }
 
 declare module "lodash/fp/setWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "setWith">;
+  let __exports: import("lodash/fp").setWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/toPairs" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toPairs">;
+  let __exports: import("lodash/fp").toPairs;
+  export = __exports;
 }
 
 declare module "lodash/fp/toPairsIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toPairsIn">;
+  let __exports: import("lodash/fp").toPairsIn;
+  export = __exports;
 }
 
 declare module "lodash/fp/transform" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "transform">;
+  let __exports: import("lodash/fp").transform;
+  export = __exports;
 }
 
 declare module "lodash/fp/unset" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unset">;
+  let __exports: import("lodash/fp").unset;
+  export = __exports;
 }
 
 declare module "lodash/fp/dissoc" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "dissoc">;
+  let __exports: import("lodash/fp").dissoc;
+  export = __exports;
 }
 
 declare module "lodash/fp/dissocPath" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "dissocPath">;
+  let __exports: import("lodash/fp").dissocPath;
+  export = __exports;
 }
 
 declare module "lodash/fp/update" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "update">;
+  let __exports: import("lodash/fp").update;
+  export = __exports;
 }
 
 declare module "lodash/fp/updateWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "updateWith">;
+  let __exports: import("lodash/fp").updateWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/values" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "values">;
+  let __exports: import("lodash/fp").values;
+  export = __exports;
 }
 
 declare module "lodash/fp/valuesIn" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "valuesIn">;
+  let __exports: import("lodash/fp").valuesIn;
+  export = __exports;
 }
 
 declare module "lodash/fp/tap" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "tap">;
+  let __exports: import("lodash/fp").tap;
+  export = __exports;
 }
 
 declare module "lodash/fp/thru" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "thru">;
+  let __exports: import("lodash/fp").thru;
+  export = __exports;
 }
 
 declare module "lodash/fp/camelCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "camelCase">;
+  let __exports: import("lodash/fp").camelCase;
+  export = __exports;
 }
 
 declare module "lodash/fp/capitalize" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "capitalize">;
+  let __exports: import("lodash/fp").capitalize;
+  export = __exports;
 }
 
 declare module "lodash/fp/deburr" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "deburr">;
+  let __exports: import("lodash/fp").deburr;
+  export = __exports;
 }
 
 declare module "lodash/fp/endsWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "endsWith">;
+  let __exports: import("lodash/fp").endsWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/escape" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "escape">;
+  let __exports: import("lodash/fp").escape;
+  export = __exports;
 }
 
 declare module "lodash/fp/escapeRegExp" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "escapeRegExp">;
+  let __exports: import("lodash/fp").escapeRegExp;
+  export = __exports;
 }
 
 declare module "lodash/fp/kebabCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "kebabCase">;
+  let __exports: import("lodash/fp").kebabCase;
+  export = __exports;
 }
 
 declare module "lodash/fp/lowerCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "lowerCase">;
+  let __exports: import("lodash/fp").lowerCase;
+  export = __exports;
 }
 
 declare module "lodash/fp/lowerFirst" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "lowerFirst">;
+  let __exports: import("lodash/fp").lowerFirst;
+  export = __exports;
 }
 
 declare module "lodash/fp/pad" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pad">;
+  let __exports: import("lodash/fp").pad;
+  export = __exports;
 }
 
 declare module "lodash/fp/padChars" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "padChars">;
+  let __exports: import("lodash/fp").padChars;
+  export = __exports;
 }
 
 declare module "lodash/fp/padEnd" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "padEnd">;
+  let __exports: import("lodash/fp").padEnd;
+  export = __exports;
 }
 
 declare module "lodash/fp/padCharsEnd" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "padCharsEnd">;
+  let __exports: import("lodash/fp").padCharsEnd;
+  export = __exports;
 }
 
 declare module "lodash/fp/padStart" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "padStart">;
+  let __exports: import("lodash/fp").padStart;
+  export = __exports;
 }
 
 declare module "lodash/fp/padCharsStart" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "padCharsStart">;
+  let __exports: import("lodash/fp").padCharsStart;
+  export = __exports;
 }
 
 declare module "lodash/fp/parseInt" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "parseInt">;
+  let __exports: import("lodash/fp").parseInt;
+  export = __exports;
 }
 
 declare module "lodash/fp/repeat" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "repeat">;
+  let __exports: import("lodash/fp").repeat;
+  export = __exports;
 }
 
 declare module "lodash/fp/replace" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "replace">;
+  let __exports: import("lodash/fp").replace;
+  export = __exports;
 }
 
 declare module "lodash/fp/snakeCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "snakeCase">;
+  let __exports: import("lodash/fp").snakeCase;
+  export = __exports;
 }
 
 declare module "lodash/fp/split" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "split">;
+  let __exports: import("lodash/fp").split;
+  export = __exports;
 }
 
 declare module "lodash/fp/startCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "startCase">;
+  let __exports: import("lodash/fp").startCase;
+  export = __exports;
 }
 
 declare module "lodash/fp/startsWith" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "startsWith">;
+  let __exports: import("lodash/fp").startsWith;
+  export = __exports;
 }
 
 declare module "lodash/fp/template" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "template">;
+  let __exports: import("lodash/fp").template;
+  export = __exports;
 }
 
 declare module "lodash/fp/toLower" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toLower">;
+  let __exports: import("lodash/fp").toLower;
+  export = __exports;
 }
 
 declare module "lodash/fp/toUpper" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toUpper">;
+  let __exports: import("lodash/fp").toUpper;
+  export = __exports;
 }
 
 declare module "lodash/fp/trim" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "trim">;
+  let __exports: import("lodash/fp").trim;
+  export = __exports;
 }
 
 declare module "lodash/fp/trimChars" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "trimChars">;
+  let __exports: import("lodash/fp").trimChars;
+  export = __exports;
 }
 
 declare module "lodash/fp/trimEnd" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "trimEnd">;
+  let __exports: import("lodash/fp").trimEnd;
+  export = __exports;
 }
 
 declare module "lodash/fp/trimCharsEnd" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "trimCharsEnd">;
+  let __exports: import("lodash/fp").trimCharsEnd;
+  export = __exports;
 }
 
 declare module "lodash/fp/trimStart" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "trimStart">;
+  let __exports: import("lodash/fp").trimStart;
+  export = __exports;
 }
 
 declare module "lodash/fp/trimCharsStart" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "trimCharsStart">;
+  let __exports: import("lodash/fp").trimCharsStart;
+  export = __exports;
 }
 
 declare module "lodash/fp/truncate" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "truncate">;
+  let __exports: import("lodash/fp").truncate;
+  export = __exports;
 }
 
 declare module "lodash/fp/unescape" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "unescape">;
+  let __exports: import("lodash/fp").unescape;
+  export = __exports;
 }
 
 declare module "lodash/fp/upperCase" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "upperCase">;
+  let __exports: import("lodash/fp").upperCase;
+  export = __exports;
 }
 
 declare module "lodash/fp/upperFirst" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "upperFirst">;
+  let __exports: import("lodash/fp").upperFirst;
+  export = __exports;
 }
 
 declare module "lodash/fp/words" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "words">;
+  let __exports: import("lodash/fp").words;
+  export = __exports;
 }
 
 declare module "lodash/fp/attempt" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "attempt">;
+  let __exports: import("lodash/fp").attempt;
+  export = __exports;
 }
 
 declare module "lodash/fp/bindAll" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "bindAll">;
+  let __exports: import("lodash/fp").bindAll;
+  export = __exports;
 }
 
 declare module "lodash/fp/cond" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "cond">;
+  let __exports: import("lodash/fp").cond;
+  export = __exports;
 }
 
 declare module "lodash/fp/constant" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "constant">;
+  let __exports: import("lodash/fp").constant;
+  export = __exports;
 }
 
 declare module "lodash/fp/always" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "always">;
+  let __exports: import("lodash/fp").always;
+  export = __exports;
 }
 
 declare module "lodash/fp/defaultTo" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "defaultTo">;
+  let __exports: import("lodash/fp").defaultTo;
+  export = __exports;
 }
 
 declare module "lodash/fp/flow" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flow">;
+  let __exports: import("lodash/fp").flow;
+  export = __exports;
 }
 
 declare module "lodash/fp/pipe" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pipe">;
+  let __exports: import("lodash/fp").pipe;
+  export = __exports;
 }
 
 declare module "lodash/fp/flowRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "flowRight">;
+  let __exports: import("lodash/fp").flowRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/compose" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "compose">;
+  let __exports: import("lodash/fp").compose;
+  export = __exports;
 }
 
 declare module "lodash/fp/identity" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "identity">;
+  let __exports: import("lodash/fp").identity;
+  export = __exports;
 }
 
 declare module "lodash/fp/iteratee" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "iteratee">;
+  let __exports: import("lodash/fp").iteratee;
+  export = __exports;
 }
 
 declare module "lodash/fp/matches" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "matches">;
+  let __exports: import("lodash/fp").matches;
+  export = __exports;
 }
 
 declare module "lodash/fp/matchesProperty" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "matchesProperty">;
+  let __exports: import("lodash/fp").matchesProperty;
+  export = __exports;
 }
 
 declare module "lodash/fp/propEq" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "propEq">;
+  let __exports: import("lodash/fp").propEq;
+  export = __exports;
 }
 
 declare module "lodash/fp/pathEq" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "pathEq">;
+  let __exports: import("lodash/fp").pathEq;
+  export = __exports;
 }
 
 declare module "lodash/fp/method" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "method">;
+  let __exports: import("lodash/fp").method;
+  export = __exports;
 }
 
 declare module "lodash/fp/methodOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "methodOf">;
+  let __exports: import("lodash/fp").methodOf;
+  export = __exports;
 }
 
 declare module "lodash/fp/mixin" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "mixin">;
+  let __exports: import("lodash/fp").mixin;
+  export = __exports;
 }
 
 declare module "lodash/fp/noConflict" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "noConflict">;
+  let __exports: import("lodash/fp").noConflict;
+  export = __exports;
 }
 
 declare module "lodash/fp/noop" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "noop">;
+  let __exports: import("lodash/fp").noop;
+  export = __exports;
 }
 
 declare module "lodash/fp/nthArg" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "nthArg">;
+  let __exports: import("lodash/fp").nthArg;
+  export = __exports;
 }
 
 declare module "lodash/fp/over" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "over">;
+  let __exports: import("lodash/fp").over;
+  export = __exports;
 }
 
 declare module "lodash/fp/juxt" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "juxt">;
+  let __exports: import("lodash/fp").juxt;
+  export = __exports;
 }
 
 declare module "lodash/fp/overEvery" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "overEvery">;
+  let __exports: import("lodash/fp").overEvery;
+  export = __exports;
 }
 
 declare module "lodash/fp/allPass" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "allPass">;
+  let __exports: import("lodash/fp").allPass;
+  export = __exports;
 }
 
 declare module "lodash/fp/overSome" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "overSome">;
+  let __exports: import("lodash/fp").overSome;
+  export = __exports;
 }
 
 declare module "lodash/fp/anyPass" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "anyPass">;
+  let __exports: import("lodash/fp").anyPass;
+  export = __exports;
 }
 
 declare module "lodash/fp/property" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "property">;
+  let __exports: import("lodash/fp").property;
+  export = __exports;
 }
 
 declare module "lodash/fp/propertyOf" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "propertyOf">;
+  let __exports: import("lodash/fp").propertyOf;
+  export = __exports;
 }
 
 declare module "lodash/fp/range" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "range">;
+  let __exports: import("lodash/fp").range;
+  export = __exports;
 }
 
 declare module "lodash/fp/rangeStep" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "rangeStep">;
+  let __exports: import("lodash/fp").rangeStep;
+  export = __exports;
 }
 
 declare module "lodash/fp/rangeRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "rangeRight">;
+  let __exports: import("lodash/fp").rangeRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/rangeStepRight" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "rangeStepRight">;
+  let __exports: import("lodash/fp").rangeStepRight;
+  export = __exports;
 }
 
 declare module "lodash/fp/runInContext" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "runInContext">;
+  let __exports: import("lodash/fp").runInContext;
+  export = __exports;
 }
 
 declare module "lodash/fp/stubArray" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "stubArray">;
+  let __exports: import("lodash/fp").stubArray;
+  export = __exports;
 }
 
 declare module "lodash/fp/stubFalse" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "stubFalse">;
+  let __exports: import("lodash/fp").stubFalse;
+  export = __exports;
 }
 
 declare module "lodash/fp/F" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "F">;
+  let __exports: import("lodash/fp").F;
+  export = __exports;
 }
 
 declare module "lodash/fp/stubObject" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "stubObject">;
+  let __exports: import("lodash/fp").stubObject;
+  export = __exports;
 }
 
 declare module "lodash/fp/stubString" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "stubString">;
+  let __exports: import("lodash/fp").stubString;
+  export = __exports;
 }
 
 declare module "lodash/fp/stubTrue" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "stubTrue">;
+  let __exports: import("lodash/fp").stubTrue;
+  export = __exports;
 }
 
 declare module "lodash/fp/T" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "T">;
+  let __exports: import("lodash/fp").T;
+  export = __exports;
 }
 
 declare module "lodash/fp/times" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "times">;
+  let __exports: import("lodash/fp").times;
+  export = __exports;
 }
 
 declare module "lodash/fp/toPath" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "toPath">;
+  let __exports: import("lodash/fp").toPath;
+  export = __exports;
 }
 
 declare module "lodash/fp/uniqueId" {
-  declare module.exports: $PropertyType<$Exports<"lodash/fp">, "uniqueId">;
+  let __exports: import("lodash/fp").uniqueId;
+  export = __exports;
 }

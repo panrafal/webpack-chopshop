@@ -13,8 +13,9 @@
  * https://github.com/flowtype/flow-typed
  */
 
-declare module 'react-promise' {
-  declare module.exports: any;
+declare module "react-promise" {
+  let __exports: any;
+  export = __exports;
 }
 
 /**
@@ -22,32 +23,43 @@ declare module 'react-promise' {
  * require those files directly. Feel free to delete any files that aren't
  * needed.
  */
-declare module 'react-promise/dist/react-promise.cjs' {
-  declare module.exports: any;
+declare module "react-promise/dist/react-promise.cjs" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-promise/dist/react-promise.es' {
-  declare module.exports: any;
+declare module "react-promise/dist/react-promise.es" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-promise/src/react-promise' {
-  declare module.exports: any;
+declare module "react-promise/src/react-promise" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-promise/src/react-promise.spec' {
-  declare module.exports: any;
+declare module "react-promise/src/react-promise.spec" {
+  let __exports: any;
+  export = __exports;
 }
 
 // Filename aliases
-declare module 'react-promise/dist/react-promise.cjs.js' {
-  declare module.exports: $Exports<'react-promise/dist/react-promise.cjs'>;
+declare module "react-promise/dist/react-promise.cjs.js" {
+  let __exports: import("react-promise/dist/react-promise.cjs");
+  export = __exports;
 }
-declare module 'react-promise/dist/react-promise.es.js' {
-  declare module.exports: $Exports<'react-promise/dist/react-promise.es'>;
+
+declare module "react-promise/dist/react-promise.es.js" {
+  let __exports: import("react-promise/dist/react-promise.es");
+  export = __exports;
 }
-declare module 'react-promise/src/react-promise.js' {
-  declare module.exports: $Exports<'react-promise/src/react-promise'>;
+
+declare module "react-promise/src/react-promise.js" {
+  let __exports: import("react-promise/src/react-promise");
+  export = __exports;
 }
-declare module 'react-promise/src/react-promise.spec.js' {
-  declare module.exports: $Exports<'react-promise/src/react-promise.spec'>;
+
+declare module "react-promise/src/react-promise.spec.js" {
+  let __exports: import("react-promise/src/react-promise.spec");
+  export = __exports;
 }

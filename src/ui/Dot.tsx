@@ -1,28 +1,28 @@
-// @flow
+import * as React from "react";
+import { withStyles } from "@material-ui/core";
 
-import * as React from 'react'
-import {withStyles} from '@material-ui/core'
+type Props = {
+  classes: any;
+  children: React.ReactNode;
+};
 
-type Props = {|
-  classes: Object,
-  children: React.Node,
-|}
-
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     background: theme.palette.primary.dark,
     color: theme.palette.primary.contrastText,
-    width: '1em',
-    height: '1em',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "1em",
+    height: "1em",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
     flexShrink: 0,
-    borderRadius: '100%',
-    textAlign: 'center',
+    borderRadius: "100%",
+    textAlign: "center",
   },
-})
+});
 
-const Dot = ({classes, children}: Props) => <div className={classes.root}>{children}</div>
+const Dot = ({ classes, children }: Props) => (
+  <div className={classes.root}>{children}</div>
+);
 
-export default withStyles(styles)(Dot)
+export default withStyles(styles)(Dot);

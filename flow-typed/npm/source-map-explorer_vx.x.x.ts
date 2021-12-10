@@ -13,8 +13,9 @@
  * https://github.com/flowtype/flow-typed
  */
 
-declare module 'source-map-explorer' {
-  declare module.exports: any;
+declare module "source-map-explorer" {
+  let __exports: any;
+  export = __exports;
 }
 
 /**
@@ -22,38 +23,53 @@ declare module 'source-map-explorer' {
  * require those files directly. Feel free to delete any files that aren't
  * needed.
  */
-declare module 'source-map-explorer/test' {
-  declare module.exports: any;
+declare module "source-map-explorer/test" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'source-map-explorer/testdata/foo.min.inline-map' {
-  declare module.exports: any;
+declare module "source-map-explorer/testdata/foo.min.inline-map" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'source-map-explorer/testdata/foo.min' {
-  declare module.exports: any;
+declare module "source-map-explorer/testdata/foo.min" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'source-map-explorer/vendor/webtreemap' {
-  declare module.exports: any;
+declare module "source-map-explorer/vendor/webtreemap" {
+  let __exports: any;
+  export = __exports;
 }
 
 // Filename aliases
-declare module 'source-map-explorer/index' {
-  declare module.exports: $Exports<'source-map-explorer'>;
+declare module "source-map-explorer/index" {
+  let __exports: import("source-map-explorer");
+  export = __exports;
 }
-declare module 'source-map-explorer/index.js' {
-  declare module.exports: $Exports<'source-map-explorer'>;
+
+declare module "source-map-explorer/index.js" {
+  let __exports: import("source-map-explorer");
+  export = __exports;
 }
-declare module 'source-map-explorer/test.js' {
-  declare module.exports: $Exports<'source-map-explorer/test'>;
+
+declare module "source-map-explorer/test.js" {
+  let __exports: import("source-map-explorer/test");
+  export = __exports;
 }
-declare module 'source-map-explorer/testdata/foo.min.inline-map.js' {
-  declare module.exports: $Exports<'source-map-explorer/testdata/foo.min.inline-map'>;
+
+declare module "source-map-explorer/testdata/foo.min.inline-map.js" {
+  let __exports: import("source-map-explorer/testdata/foo.min.inline-map");
+  export = __exports;
 }
-declare module 'source-map-explorer/testdata/foo.min.js' {
-  declare module.exports: $Exports<'source-map-explorer/testdata/foo.min'>;
+
+declare module "source-map-explorer/testdata/foo.min.js" {
+  let __exports: import("source-map-explorer/testdata/foo.min");
+  export = __exports;
 }
-declare module 'source-map-explorer/vendor/webtreemap.js' {
-  declare module.exports: $Exports<'source-map-explorer/vendor/webtreemap'>;
+
+declare module "source-map-explorer/vendor/webtreemap.js" {
+  let __exports: import("source-map-explorer/vendor/webtreemap");
+  export = __exports;
 }

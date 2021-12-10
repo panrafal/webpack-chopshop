@@ -13,8 +13,9 @@
  * https://github.com/flowtype/flow-typed
  */
 
-declare module 'react-scripts' {
-  declare module.exports: any;
+declare module "react-scripts" {
+  let __exports: any;
+  export = __exports;
 }
 
 /**
@@ -22,158 +23,223 @@ declare module 'react-scripts' {
  * require those files directly. Feel free to delete any files that aren't
  * needed.
  */
-declare module 'react-scripts/bin/react-scripts' {
-  declare module.exports: any;
+declare module "react-scripts/bin/react-scripts" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/env' {
-  declare module.exports: any;
+declare module "react-scripts/config/env" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/jest/babelTransform' {
-  declare module.exports: any;
+declare module "react-scripts/config/jest/babelTransform" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/jest/cssTransform' {
-  declare module.exports: any;
+declare module "react-scripts/config/jest/cssTransform" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/jest/fileTransform' {
-  declare module.exports: any;
+declare module "react-scripts/config/jest/fileTransform" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/jest/graphqlTransform' {
-  declare module.exports: any;
+declare module "react-scripts/config/jest/graphqlTransform" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/paths' {
-  declare module.exports: any;
+declare module "react-scripts/config/paths" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/polyfills' {
-  declare module.exports: any;
+declare module "react-scripts/config/polyfills" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/webpack.config.dev' {
-  declare module.exports: any;
+declare module "react-scripts/config/webpack.config.dev" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/webpack.config.prod' {
-  declare module.exports: any;
+declare module "react-scripts/config/webpack.config.prod" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/config/webpackDevServer.config' {
-  declare module.exports: any;
+declare module "react-scripts/config/webpackDevServer.config" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/scripts/build' {
-  declare module.exports: any;
+declare module "react-scripts/scripts/build" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/scripts/eject' {
-  declare module.exports: any;
+declare module "react-scripts/scripts/eject" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/scripts/init' {
-  declare module.exports: any;
+declare module "react-scripts/scripts/init" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/scripts/start' {
-  declare module.exports: any;
+declare module "react-scripts/scripts/start" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/scripts/test' {
-  declare module.exports: any;
+declare module "react-scripts/scripts/test" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/scripts/utils/createJestConfig' {
-  declare module.exports: any;
+declare module "react-scripts/scripts/utils/createJestConfig" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/scripts/utils/verifyPackageTree' {
-  declare module.exports: any;
+declare module "react-scripts/scripts/utils/verifyPackageTree" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/template/src/App' {
-  declare module.exports: any;
+declare module "react-scripts/template/src/App" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/template/src/App.test' {
-  declare module.exports: any;
+declare module "react-scripts/template/src/App.test" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/template/src/index' {
-  declare module.exports: any;
+declare module "react-scripts/template/src/index" {
+  let __exports: any;
+  export = __exports;
 }
 
-declare module 'react-scripts/template/src/serviceWorker' {
-  declare module.exports: any;
+declare module "react-scripts/template/src/serviceWorker" {
+  let __exports: any;
+  export = __exports;
 }
 
 // Filename aliases
-declare module 'react-scripts/bin/react-scripts.js' {
-  declare module.exports: $Exports<'react-scripts/bin/react-scripts'>;
+declare module "react-scripts/bin/react-scripts.js" {
+  let __exports: import("react-scripts/bin/react-scripts");
+  export = __exports;
 }
-declare module 'react-scripts/config/env.js' {
-  declare module.exports: $Exports<'react-scripts/config/env'>;
+
+declare module "react-scripts/config/env.js" {
+  let __exports: import("react-scripts/config/env");
+  export = __exports;
 }
-declare module 'react-scripts/config/jest/babelTransform.js' {
-  declare module.exports: $Exports<'react-scripts/config/jest/babelTransform'>;
+
+declare module "react-scripts/config/jest/babelTransform.js" {
+  let __exports: import("react-scripts/config/jest/babelTransform");
+  export = __exports;
 }
-declare module 'react-scripts/config/jest/cssTransform.js' {
-  declare module.exports: $Exports<'react-scripts/config/jest/cssTransform'>;
+
+declare module "react-scripts/config/jest/cssTransform.js" {
+  let __exports: import("react-scripts/config/jest/cssTransform");
+  export = __exports;
 }
-declare module 'react-scripts/config/jest/fileTransform.js' {
-  declare module.exports: $Exports<'react-scripts/config/jest/fileTransform'>;
+
+declare module "react-scripts/config/jest/fileTransform.js" {
+  let __exports: import("react-scripts/config/jest/fileTransform");
+  export = __exports;
 }
-declare module 'react-scripts/config/jest/graphqlTransform.js' {
-  declare module.exports: $Exports<'react-scripts/config/jest/graphqlTransform'>;
+
+declare module "react-scripts/config/jest/graphqlTransform.js" {
+  let __exports: import("react-scripts/config/jest/graphqlTransform");
+  export = __exports;
 }
-declare module 'react-scripts/config/paths.js' {
-  declare module.exports: $Exports<'react-scripts/config/paths'>;
+
+declare module "react-scripts/config/paths.js" {
+  let __exports: import("react-scripts/config/paths");
+  export = __exports;
 }
-declare module 'react-scripts/config/polyfills.js' {
-  declare module.exports: $Exports<'react-scripts/config/polyfills'>;
+
+declare module "react-scripts/config/polyfills.js" {
+  let __exports: import("react-scripts/config/polyfills");
+  export = __exports;
 }
-declare module 'react-scripts/config/webpack.config.dev.js' {
-  declare module.exports: $Exports<'react-scripts/config/webpack.config.dev'>;
+
+declare module "react-scripts/config/webpack.config.dev.js" {
+  let __exports: import("react-scripts/config/webpack.config.dev");
+  export = __exports;
 }
-declare module 'react-scripts/config/webpack.config.prod.js' {
-  declare module.exports: $Exports<'react-scripts/config/webpack.config.prod'>;
+
+declare module "react-scripts/config/webpack.config.prod.js" {
+  let __exports: import("react-scripts/config/webpack.config.prod");
+  export = __exports;
 }
-declare module 'react-scripts/config/webpackDevServer.config.js' {
-  declare module.exports: $Exports<'react-scripts/config/webpackDevServer.config'>;
+
+declare module "react-scripts/config/webpackDevServer.config.js" {
+  let __exports: import("react-scripts/config/webpackDevServer.config");
+  export = __exports;
 }
-declare module 'react-scripts/scripts/build.js' {
-  declare module.exports: $Exports<'react-scripts/scripts/build'>;
+
+declare module "react-scripts/scripts/build.js" {
+  let __exports: import("react-scripts/scripts/build");
+  export = __exports;
 }
-declare module 'react-scripts/scripts/eject.js' {
-  declare module.exports: $Exports<'react-scripts/scripts/eject'>;
+
+declare module "react-scripts/scripts/eject.js" {
+  let __exports: import("react-scripts/scripts/eject");
+  export = __exports;
 }
-declare module 'react-scripts/scripts/init.js' {
-  declare module.exports: $Exports<'react-scripts/scripts/init'>;
+
+declare module "react-scripts/scripts/init.js" {
+  let __exports: import("react-scripts/scripts/init");
+  export = __exports;
 }
-declare module 'react-scripts/scripts/start.js' {
-  declare module.exports: $Exports<'react-scripts/scripts/start'>;
+
+declare module "react-scripts/scripts/start.js" {
+  let __exports: import("react-scripts/scripts/start");
+  export = __exports;
 }
-declare module 'react-scripts/scripts/test.js' {
-  declare module.exports: $Exports<'react-scripts/scripts/test'>;
+
+declare module "react-scripts/scripts/test.js" {
+  let __exports: import("react-scripts/scripts/test");
+  export = __exports;
 }
-declare module 'react-scripts/scripts/utils/createJestConfig.js' {
-  declare module.exports: $Exports<'react-scripts/scripts/utils/createJestConfig'>;
+
+declare module "react-scripts/scripts/utils/createJestConfig.js" {
+  let __exports: import("react-scripts/scripts/utils/createJestConfig");
+  export = __exports;
 }
-declare module 'react-scripts/scripts/utils/verifyPackageTree.js' {
-  declare module.exports: $Exports<'react-scripts/scripts/utils/verifyPackageTree'>;
+
+declare module "react-scripts/scripts/utils/verifyPackageTree.js" {
+  let __exports: import("react-scripts/scripts/utils/verifyPackageTree");
+  export = __exports;
 }
-declare module 'react-scripts/template/src/App.js' {
-  declare module.exports: $Exports<'react-scripts/template/src/App'>;
+
+declare module "react-scripts/template/src/App.js" {
+  let __exports: import("react-scripts/template/src/App");
+  export = __exports;
 }
-declare module 'react-scripts/template/src/App.test.js' {
-  declare module.exports: $Exports<'react-scripts/template/src/App.test'>;
+
+declare module "react-scripts/template/src/App.test.js" {
+  let __exports: import("react-scripts/template/src/App.test");
+  export = __exports;
 }
-declare module 'react-scripts/template/src/index.js' {
-  declare module.exports: $Exports<'react-scripts/template/src/index'>;
+
+declare module "react-scripts/template/src/index.js" {
+  let __exports: import("react-scripts/template/src/index");
+  export = __exports;
 }
-declare module 'react-scripts/template/src/serviceWorker.js' {
-  declare module.exports: $Exports<'react-scripts/template/src/serviceWorker'>;
+
+declare module "react-scripts/template/src/serviceWorker.js" {
+  let __exports: import("react-scripts/template/src/serviceWorker");
+  export = __exports;
 }

@@ -1,30 +1,29 @@
-// @flow
-import {throttle} from 'lodash'
+import { throttle } from "lodash";
 
-export const ABORTED = Symbol('Aborted')
+export const ABORTED = Symbol("Aborted");
 
 //
 export const backgroundProcessor = () => {
-  let abort
-  let idleReject
+  let abort;
+  let idleReject;
   const fn = throttle(
     () =>
       new Promise((resolve, reject) => {
-        if (abort) reject(abort())
-        idleReject = reject
-        setTimeout(resolve, 0)
+        if (abort) reject(abort());
+        idleReject = reject;
+        setTimeout(resolve, 0);
         // requestIdleCallback(resolve)
       }),
-    16,
-  )
+    16
+  );
   fn.abort = (err = ABORTED) => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       abort = () => {
-        resolve()
-        return err
-      }
-      if (idleReject) idleReject(abort())
-    })
-  }
-  return fn
-}
+        resolve();
+        return err;
+      };
+      if (idleReject) idleReject(abort());
+    });
+  };
+  return fn;
+};

@@ -1,33 +1,32 @@
-// @flow
-import type {Graph, Node, NodeID} from '../../analysis/graph'
+import type { Graph, Node, NodeID } from "../../analysis/graph";
 
-import * as React from 'react'
-import classNames from 'classnames'
-import {withStyles, ListItem, ListItemText} from '@material-ui/core'
-import NodeSize from './NodeSize'
-import NodeName from './NodeName'
+import * as React from "react";
+import classNames from "classnames";
+import { withStyles, ListItem, ListItemText } from "@material-ui/core";
+import NodeSize from "./NodeSize";
+import NodeName from "./NodeName";
 
-export type Props = {|
-  baseGraph: Graph,
-  graph: Graph,
-  checked?: boolean,
-  node: Node,
-  hidePackage?: boolean,
-  retainerRootNode?: ?Node,
-  children?: React.Node,
-  selectFromNode?: (node: NodeID) => void,
-  selectToNode?: (node: NodeID) => void,
-  onClick?: () => void,
-  style?: Object,
-  classes: Object,
-  className?: string,
-|}
+export type Props = {
+  baseGraph: Graph;
+  graph: Graph;
+  checked?: boolean;
+  node: Node;
+  hidePackage?: boolean;
+  retainerRootNode?: Node | null;
+  children?: React.ReactNode;
+  selectFromNode?: (node: NodeID) => void;
+  selectToNode?: (node: NodeID) => void;
+  onClick?: () => void;
+  style?: any;
+  classes: any;
+  className?: string;
+};
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     // paddingLeft: 16,
   },
-})
+});
 
 function NodeItem({
   baseGraph,
@@ -60,7 +59,10 @@ function NodeItem({
       >
         <ListItemText
           primary={<NodeName node={node} hidePackage={hidePackage} tooltip />}
-          primaryTypographyProps={{noWrap: true, color: checked ? 'secondary' : 'default'}}
+          primaryTypographyProps={{
+            noWrap: true,
+            color: checked ? "secondary" : "default",
+          }}
           secondary={
             <NodeSize
               baseGraph={baseGraph}
@@ -73,6 +75,6 @@ function NodeItem({
         {children}
       </ListItem>
     </div>
-  )
+  );
 }
-export default withStyles(styles)(NodeItem)
+export default withStyles(styles)(NodeItem);
