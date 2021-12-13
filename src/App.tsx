@@ -21,6 +21,7 @@ export type AppState = {
   changes: ReadonlyArray<Change>;
   showChanges: boolean;
   pinned: ReadonlyArray<NodeID>;
+  page: string;
 };
 
 class App extends React.Component<{}, AppState> {
@@ -34,6 +35,7 @@ class App extends React.Component<{}, AppState> {
     changes: [],
     showChanges: false,
     pinned: [],
+    page: 'chains'
   };
 
   async componentDidMount() {
@@ -42,7 +44,7 @@ class App extends React.Component<{}, AppState> {
     if (process.env.REACT_APP_STATS) {
       this.openFile(async () => {
         console.time("loading");
-        const result = await fetch(`./${process.env.REACT_APP_STATS || ""}`);
+        const result = await fetch(process.env.PUBLIC_URL + `/stats/${process.env.REACT_APP_STATS || ""}`);
         console.timeEnd("loading");
         console.time("parsing");
         const json = await result.json();
@@ -221,6 +223,10 @@ class App extends React.Component<{}, AppState> {
     window.localStorage.setItem("pinned", JSON.stringify(pinned));
   };
 
+  navigate = (page: string) => {
+    this.setState({page})
+  }
+
   render() {
     const {
       graph,
@@ -232,6 +238,7 @@ class App extends React.Component<{}, AppState> {
       changes,
       showChanges,
       pinned,
+      page,
     } = this.state;
     return (
       // @ts-expect-error TODO: WTF?
@@ -245,6 +252,7 @@ class App extends React.Component<{}, AppState> {
         changes={changes}
         showChanges={showChanges}
         pinned={pinned}
+        page={page}
         onAddChange={this.addChange}
         onFromNodeSelect={this.selectFromNode}
         onToNodeSelect={this.selectToNode}
@@ -253,6 +261,7 @@ class App extends React.Component<{}, AppState> {
         onFileDrop={this.handleDrop}
         onShowChangesToggle={this.toggleShowChanges}
         onPinnedToggle={this.togglePinned}
+        onNavigate={this.navigate}
       />
     );
   }

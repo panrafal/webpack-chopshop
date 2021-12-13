@@ -16,13 +16,14 @@ import {
   Icon,
 } from "@material-ui/core";
 
-import ChainsExplorer from "./ui/graph/ChainsExplorer";
 import WarningBar from "./ui/WarningBar";
 import ErrorBar from "./ui/ErrorBar";
-import ChangesView from "./ui/graph/ChangesView";
 import EmptyBox from "./ui/EmptyBox";
 import ParentsExplorer from "./ui/graph/ParentsExplorer";
 import ChildrenExplorer from "./ui/graph/ChildrenExplorer";
+
+const ChainsExplorer = React.lazy(() => import('./ui/graph/ChainsExplorer'))
+const ChangesView = React.lazy(() => import('./ui/graph/ChangesView'))
 
 type Props = {
   loading: boolean;
@@ -34,6 +35,7 @@ type Props = {
   changes: ReadonlyArray<Change>;
   showChanges: boolean;
   pinned: ReadonlyArray<NodeID>;
+  page: string;
   onAddChange: (a: Change) => any;
   onFromNodeSelect: (a: NodeID) => any;
   onToNodeSelect: (a: NodeID) => any;
@@ -42,6 +44,7 @@ type Props = {
   onFileDrop: (files: File[], rejectedFiles: File[]) => any;
   onShowChangesToggle: () => any;
   onPinnedToggle: (a: NodeID) => any;
+  onNavigate: (p: string) => void;
   classes: any;
 };
 
@@ -191,82 +194,84 @@ class AppUI extends React.Component<Props> {
       >
         <div className={classes.root}>
           <CssBaseline />
-          <AppBar position="static">
-            <Toolbar variant="regular" className={classes.container}>
-              {!loading && (
-                <Button color="inherit" onClick={() => this.dropzone.open()}>
-                  Open stats
-                </Button>
-              )}
-              {graph && (
-                <Button color="inherit" onClick={onShowChangesToggle}>
-                  See changes
-                  {changes.length ? ` (${changes.length})` : null}
-                </Button>
-              )}
-              {fromNode && (
-                <Button color="inherit" onClick={onNodesSelectionReset}>
-                  Choose root node
-                </Button>
-              )}
-              <Typography
-                variant="h6"
-                color="inherit"
-                className={classes.title}
-              >
-                Webpack Chop Shop
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          {loading && <LinearProgress className={classes.progress} />}
-          {graph && graph.errors.length > 0 && (
-            <WarningBar>
-              There where {graph.errors.length} errors found. Check the console
-              for more
-            </WarningBar>
-          )}
-          {error && <ErrorBar>{String(error)}</ErrorBar>}
-          {this.renderGraph()}
-          {!graph && !loading && (
-            <div
-              onClick={() => this.dropzone.open()}
-              className={classes.openFileMessage}
-            >
-              <EmptyBox
-                icon={
-                  <Icon color="inherit" fontSize="default">
-                    open_in_browser
-                  </Icon>
-                }
-              >
-                First,{" "}
-                <a
-                  href="https://webpack.js.org/api/cli/#stats-options"
-                  target="_blank"
-                  rel="noopener noreferrer"
+          <React.Suspense fallback={<LinearProgress className={classes.progress} />}>
+            <AppBar position="static">
+              <Toolbar variant="regular" className={classes.container}>
+                {!loading && (
+                  <Button color="inherit" onClick={() => this.dropzone.open()}>
+                    Open stats
+                  </Button>
+                )}
+                {graph && (
+                  <Button color="inherit" onClick={onShowChangesToggle}>
+                    See changes
+                    {changes.length ? ` (${changes.length})` : null}
+                  </Button>
+                )}
+                {fromNode && (
+                  <Button color="inherit" onClick={onNodesSelectionReset}>
+                    Choose root node
+                  </Button>
+                )}
+                <Typography
+                  variant="h6"
+                  color="inherit"
+                  className={classes.title}
                 >
-                  generate the stats file in webpack
-                </a>
-                , then click here or drop it anywhere on the page to start
-              </EmptyBox>
-            </div>
-          )}
-          {graph && (
-            <Drawer
-              anchor="top"
-              open={showChanges}
-              onClose={onShowChangesToggle}
-            >
-              <div className={classes.container}>
-                <ChangesView
-                  graph={graph}
-                  changes={changes}
-                  pinned={pinned}
-                  onChangesUpdate={onChangesUpdate}
-                />
+                  Webpack Chop Shop
+                </Typography>
+              </Toolbar>
+            </AppBar>
+            {loading && <LinearProgress className={classes.progress} />}
+            {graph && graph.errors.length > 0 && (
+              <WarningBar>
+                There where {graph.errors.length} errors found. Check the console
+                for more
+              </WarningBar>
+            )}
+            {error && <ErrorBar>{String(error)}</ErrorBar>}
+            {this.renderGraph()}
+            {!graph && !loading && (
+              <div
+                onClick={() => this.dropzone.open()}
+                className={classes.openFileMessage}
+              >
+                <EmptyBox
+                  icon={
+                    <Icon color="inherit" fontSize="default">
+                      open_in_browser
+                    </Icon>
+                  }
+                >
+                  First,{" "}
+                  <a
+                    href="https://webpack.js.org/api/cli/#stats-options"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    generate the stats file in webpack
+                  </a>
+                  , then click here or drop it anywhere on the page to start
+                </EmptyBox>
               </div>
-            </Drawer>
-          )}
+            )}
+            {graph && (
+              <Drawer
+                anchor="top"
+                open={showChanges}
+                onClose={onShowChangesToggle}
+              >
+                <div className={classes.container}>
+                  <ChangesView
+                    graph={graph}
+                    changes={changes}
+                    pinned={pinned}
+                    onChangesUpdate={onChangesUpdate}
+                  />
+                </div>
+              </Drawer>
+            )}
+          </React.Suspense>
         </div>
       </Dropzone>
     );
