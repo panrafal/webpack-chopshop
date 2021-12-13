@@ -18,19 +18,19 @@ import {
 import classNames from "classnames"
 import { createSelector } from "reselect"
 
-import type { Node, Graph, NodeID } from "../../analysis/graph"
+import type { GraphNode, Graph, GraphNodeID } from "../../analysis/graph"
 import { flattenTreeToRows, toggleTreeRowState, isTreeExpanded } from "../tree"
 import { getPackageName } from "../../analysis/info"
 
 export type Props = {
   baseGraph: Graph
   graph: Graph
-  nodes: ReadonlyArray<Node>
+  nodes: ReadonlyArray<GraphNode>
   renderItem: (a: any) => React.ReactNode
   renderEmpty: (a: any) => React.ReactNode
   search?: string
-  selected?: Node | null
-  pinned: ReadonlyArray<NodeID>
+  selected?: GraphNode | null
+  pinned: ReadonlyArray<GraphNodeID>
   groupNodesBy?: "" | "package"
   orderNodesBy?: [any[], string[]]
   orderGroupsBy?: [any[], string[]]
@@ -62,14 +62,14 @@ const styles = (theme) => ({
 
 const treeOptions = { getKey: (group) => group.name }
 
-class NodeList extends React.PureComponent<Props, State> {
+class NodeList extends React.Component<Props, State> {
   state = {
     search: "",
     expanded: [],
   }
   fuseSelector = createSelector(
     (_, p) => p.nodes,
-    (nodes: ReadonlyArray<Node>) => {
+    (nodes: ReadonlyArray<GraphNode>) => {
       return new Fuse(nodes, {
         keys: ["name", "id", "kind"],
         tokenize: true,

@@ -1,4 +1,4 @@
-import type { Node, NodeID, Graph } from "../../analysis/graph"
+import type { GraphNode, GraphNodeID, Graph } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
@@ -13,17 +13,16 @@ import {
   keepOnlyLeafModules,
   getDeepNodeChildren,
   getRetainedNodes,
-  getDisabledLeafChildren,
 } from "../../analysis/dependencies"
 import { calculateRetainedTreeSize } from "../../analysis/size"
 
 type Props = {
   baseGraph: Graph
   graph: Graph
-  pinned: ReadonlyArray<NodeID>
-  fromNode: Node | undefined | null
-  toNode: Node | undefined | null
-  onNodeSelect: (a: NodeID) => void
+  pinned: ReadonlyArray<GraphNodeID>
+  fromNode: GraphNode | undefined | null
+  toNode: GraphNode | undefined | null
+  onNodeSelect: (a: GraphNodeID) => void
   className?: string
   classes: any
 }
@@ -32,7 +31,7 @@ const styles = {
   root: {},
 }
 
-class ChildrenExplorer extends React.PureComponent<Props> {
+class ChildrenExplorer extends React.Component<Props> {
   allNodesSelector = createSelector(
     (_, p) => p.graph,
     (graph) => getAllNodes(graph)
@@ -90,19 +89,6 @@ class ChildrenExplorer extends React.PureComponent<Props> {
     }
   )
   getChildrenNodes = () => this.childrenNodesSelector(this.state, this.props)
-
-  childAsyncNodesSelector = createSelector(
-    (_, p) => p.graph,
-    (_, p) => p.fromNode,
-    (graph, fromNode) => {
-      if (!fromNode) return []
-      return getDisabledLeafChildren(graph, fromNode).then((ids) =>
-        getNodes(graph, ids)
-      )
-    }
-  )
-  getChildAsyncNodes = () =>
-    this.childAsyncNodesSelector(this.state, this.props)
 
   childLeafNodesSelector = createSelector(
     (_, p) => p.graph,
@@ -164,27 +150,6 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       listProps: () => ({
         groupNodesBy: "",
         orderNodesBy: [["treeSize"], ["desc"]],
-      }),
-    },
-    asyncLeafs: {
-      getNodes: this.getChildAsyncNodes,
-      renderTitle: () => "Child Async Modules",
-      renderInfo: () => {
-        const { fromNode } = this.props
-        if (!fromNode) return null
-        return (
-          <>
-            Move down to child async modules of <NodeName node={fromNode} />
-          </>
-        )
-      },
-      renderEmpty: () => "No modules found",
-      listProps: () => ({
-        groupNodesBy: "",
-        orderNodesBy: [["name"], ["asc"]],
-      }),
-      itemProps: () => ({
-        retainerRootNode: null,
       }),
     },
     childLeafs: {

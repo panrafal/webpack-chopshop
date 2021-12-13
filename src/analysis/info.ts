@@ -1,6 +1,6 @@
-import type { Node, NodeID } from "./graph"
+import type { GraphNode, GraphNodeID } from "./graph"
 
-export type EdgePath = NodeID[]
+export type EdgePath = GraphNodeID[]
 
 // https://regex101.com/r/yU5wqf/2
 // 1 - path to packages dir (null if no package)
@@ -19,7 +19,7 @@ type ModuleInfo = {
   extension?: string
 }
 
-export function getModuleInfo({ file, name, id }: Node): ModuleInfo {
+export function getModuleInfo({ file, name, id }: GraphNode): ModuleInfo {
   if (!file) {
     return { name: name || String(id) || "(unknown)" }
   }
@@ -36,13 +36,13 @@ export function getModuleInfo({ file, name, id }: Node): ModuleInfo {
   }
 }
 
-export function getPackageName({ file }: Node): string {
+export function getPackageName({ file }: GraphNode): string {
   if (!file) return ""
   const found = file.match(FILENAME_RE)
   return found ? found[2] : ""
 }
 
-export function getPackageRelativeFilePath(node: Node): string {
+export function getPackageRelativeFilePath(node: GraphNode): string {
   const { file } = node
   if (!file) return ""
   const pkg = getPackageName(node)
@@ -50,12 +50,12 @@ export function getPackageRelativeFilePath(node: Node): string {
   return file.slice(file.indexOf(pkg) + pkg.length + 1)
 }
 
-export function isExternal({ file }: Node): boolean {
+export function isExternal({ file }: GraphNode): boolean {
   if (!file) return false
   return file.indexOf("/node_modules/") >= 0
 }
 
-export function getFileExtension({ file }: Node): string {
+export function getFileExtension({ file }: GraphNode): string {
   if (!file) return ""
   const dot = file.lastIndexOf(".")
   if (dot <= 0) return ""

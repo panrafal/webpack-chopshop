@@ -1,4 +1,4 @@
-import type { Graph, Node } from "../../analysis/graph"
+import type { Graph, GraphNode } from "../../analysis/graph"
 
 import * as React from "react"
 import numeral from "numeral"
@@ -15,8 +15,8 @@ import {
 type Props = {
   baseGraph: Graph
   graph: Graph
-  retainerRootNode?: Node | null
-  node: Node
+  retainerRootNode?: GraphNode | null
+  node: GraphNode
   classes: any
 }
 

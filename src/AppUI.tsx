@@ -1,4 +1,4 @@
-import type { NodeID, Node, Graph } from "./analysis/graph"
+import type { GraphNodeID, GraphNode, Graph } from "./analysis/graph"
 import type { Change } from "./analysis/changes"
 
 import * as React from "react"
@@ -28,20 +28,20 @@ type Props = {
   baseGraph: Graph | undefined | null
   graph: Graph | undefined | null
   error: any
-  fromNode: Node | undefined | null
-  toNode: Node | undefined | null
+  fromNode: GraphNode | undefined | null
+  toNode: GraphNode | undefined | null
   changes: ReadonlyArray<Change>
   showChanges: boolean
-  pinned: ReadonlyArray<NodeID>
+  pinned: ReadonlyArray<GraphNodeID>
   page: string
   onAddChange: (a: Change) => any
-  onFromNodeSelect: (a: NodeID) => any
-  onToNodeSelect: (a: NodeID) => any
+  onFromNodeSelect: (a: GraphNodeID) => any
+  onToNodeSelect: (a: GraphNodeID) => any
   onNodesSelectionReset: () => any
   onChangesUpdate: (a: ReadonlyArray<Change>) => any
   onFileDrop: (files: File[], rejectedFiles: File[]) => any
   onShowChangesToggle: () => any
-  onPinnedToggle: (a: NodeID) => any
+  onPinnedToggle: (a: GraphNodeID) => any
   onNavigate: (p: string) => void
   classes: any
 }

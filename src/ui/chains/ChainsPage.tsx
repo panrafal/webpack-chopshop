@@ -1,7 +1,7 @@
 import { withStyles } from "@material-ui/core"
 import classNames from "classnames"
 import { Change } from "../../analysis/changes"
-import { Graph, Node, NodeID } from "../../analysis/graph"
+import { Graph, GraphNode, GraphNodeID } from "../../analysis/graph"
 import ChainsExplorer from "./ChainsExplorer"
 import ChildrenExplorer from "./ChildrenExplorer"
 import ParentsExplorer from "./ParentsExplorer"
@@ -9,13 +9,13 @@ import ParentsExplorer from "./ParentsExplorer"
 type Props = {
   baseGraph: Graph
   graph: Graph
-  fromNode: Node | undefined | null
-  toNode: Node | undefined | null
-  pinned: ReadonlyArray<NodeID>
-  onPinnedToggle: (a: NodeID) => any
+  fromNode: GraphNode | undefined | null
+  toNode: GraphNode | undefined | null
+  pinned: ReadonlyArray<GraphNodeID>
+  onPinnedToggle: (a: GraphNodeID) => any
   onAddChange: (a: Change) => any
-  onFromNodeSelect: (a: NodeID) => any
-  onToNodeSelect: (a: NodeID) => any
+  onFromNodeSelect: (a: GraphNodeID) => any
+  onToNodeSelect: (a: GraphNodeID) => any
   classes: any
   className?: string
 }

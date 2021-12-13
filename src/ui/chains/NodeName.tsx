@@ -1,4 +1,4 @@
-import type { Node } from "../../analysis/graph"
+import type { GraphNode } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
@@ -7,7 +7,7 @@ import { withStyles, Tooltip } from "@material-ui/core"
 import { getModuleInfo } from "../../analysis/info"
 
 type Props = {
-  node: Node
+  node: GraphNode
   hidePackage?: boolean
   onlyPackage?: boolean
   tooltip?: boolean | string

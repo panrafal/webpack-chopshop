@@ -1,4 +1,4 @@
-import type { NodeID, Graph } from "./analysis/graph"
+import { GraphNodeID, Graph, modifyGraph } from "./analysis/graph"
 import type { Change } from "./analysis/changes"
 
 import * as React from "react"
@@ -6,21 +6,20 @@ import { hot } from "react-hot-loader"
 import { isEqual, pick } from "lodash"
 
 import { readWebpackStats } from "./analysis/webpack"
-import { getNode, cloneGraph, abortGraph, resolveNode } from "./analysis/graph"
+import { getNode, resolveNode } from "./analysis/graph"
 import { applyChanges, addChange } from "./analysis/changes"
 import AppUI from "./AppUI"
 import { decodeUrlStateHash, encodeUrlStateHash } from "./history"
 
 export type AppState = {
   loading: boolean
-  baseGraph: Graph | undefined | null
   graph: Graph | undefined | null
   error: any
-  fromNodeId: NodeID | undefined | null
-  toNodeId: NodeID | undefined | null
+  fromNodeId: GraphNodeID | undefined | null
+  toNodeId: GraphNodeID | undefined | null
   changes: ReadonlyArray<Change>
   showChanges: boolean
-  pinned: ReadonlyArray<NodeID>
+  pinned: ReadonlyArray<GraphNodeID>
   page: string
 }
 
@@ -57,9 +56,8 @@ class App extends React.Component<{}, AppState> {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const hasNewBaseGraph = prevState.baseGraph !== this.state.baseGraph
     const hasNewChanges = !isEqual(prevState.changes, this.state.changes)
-    if (hasNewBaseGraph || hasNewChanges) {
+    if (hasNewChanges) {
       this.applyChanges()
     }
   }
@@ -112,7 +110,6 @@ class App extends React.Component<{}, AppState> {
     this.setState({
       loading: true,
       error: null,
-      baseGraph: null,
       graph: null,
     })
     try {
@@ -126,7 +123,7 @@ class App extends React.Component<{}, AppState> {
       console.timeEnd("conversion")
       console.log("Graph: ", graph)
       console.warn("Errors found: ", graph.errors)
-      this.setState({ loading: false, graph, baseGraph: graph })
+      this.setState({ loading: false, graph })
     } catch (error) {
       console.error(error)
       this.setState({ loading: false, error })
@@ -167,15 +164,11 @@ class App extends React.Component<{}, AppState> {
   }
 
   applyChanges = () => {
-    const { baseGraph, graph, changes } = this.state
-    if (!graph || !baseGraph) return
-    const newGraph = cloneGraph(baseGraph)
-    // discard old graph
-    if (graph !== baseGraph) {
-      abortGraph(graph)
-    }
-    applyChanges(newGraph, changes)
-    this.setState({ graph: newGraph })
+    const { graph, changes } = this.state
+    if (!graph) return
+    modifyGraph(graph, () => applyChanges(graph, changes))
+
+    this.setState({ graph })
   }
 
   updateChanges = (changes) => {
@@ -190,8 +183,8 @@ class App extends React.Component<{}, AppState> {
   }
 
   setNodesSelection = (
-    fromNodeId?: NodeID | null,
-    toNodeId?: NodeID | null
+    fromNodeId?: GraphNodeID | null,
+    toNodeId?: GraphNodeID | null
   ) => {
     this.setState({ fromNodeId, toNodeId }, this.pushHistory)
   }
@@ -200,19 +193,19 @@ class App extends React.Component<{}, AppState> {
     this.setNodesSelection(null, null)
   }
 
-  selectFromNode = (fromNodeId: NodeID) => {
+  selectFromNode = (fromNodeId: GraphNodeID) => {
     const { graph, toNodeId } = this.state
     if (graph) console.log("Selected FROM node", getNode(graph, fromNodeId))
     this.setNodesSelection(fromNodeId, toNodeId || fromNodeId)
   }
 
-  selectToNode = (toNodeId: NodeID) => {
+  selectToNode = (toNodeId: GraphNodeID) => {
     const { graph, fromNodeId } = this.state
     if (graph) console.log("Selected TO node", getNode(graph, toNodeId))
     this.setNodesSelection(fromNodeId || toNodeId, toNodeId)
   }
 
-  togglePinned = (id: NodeID) => {
+  togglePinned = (id: GraphNodeID) => {
     let { pinned } = this.state
     const wasPinned = pinned.indexOf(id) >= 0
     pinned = pinned.filter((pin) => pin !== id)
@@ -230,7 +223,6 @@ class App extends React.Component<{}, AppState> {
   render() {
     const {
       graph,
-      baseGraph,
       loading,
       error,
       fromNodeId,
@@ -243,7 +235,7 @@ class App extends React.Component<{}, AppState> {
     return (
       // @ts-expect-error TODO: WTF?
       <AppUI
-        baseGraph={baseGraph}
+        baseGraph={graph}
         graph={graph}
         loading={loading}
         error={error}

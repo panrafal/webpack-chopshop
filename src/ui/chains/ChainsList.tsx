@@ -1,4 +1,4 @@
-import type { Graph, Node, NodeID } from "../../analysis/graph"
+import type { Graph, GraphNode, GraphNodeID } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
@@ -11,11 +11,11 @@ import EmptyBox from "../EmptyBox"
 
 type Props = {
   graph: Graph
-  fromNode: Node
-  toNode: Node
-  chains: ReadonlyArray<ReadonlyArray<NodeID>>
-  selectedChain: ReadonlyArray<NodeID>
-  onChainSelect: (nodes: ReadonlyArray<NodeID>) => void
+  fromNode: GraphNode
+  toNode: GraphNode
+  chains: ReadonlyArray<ReadonlyArray<GraphNodeID>>
+  selectedChain: ReadonlyArray<GraphNodeID>
+  onChainSelect: (nodes: ReadonlyArray<GraphNodeID>) => void
   classes: any
   className?: string
 }

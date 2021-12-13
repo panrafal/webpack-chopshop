@@ -1,4 +1,11 @@
-import { createGraph, addNode, getNodeId, addEdge, ROOT_NODE_ID } from "./graph"
+import {
+  createGraph,
+  addNode,
+  getNodeId,
+  addEdge,
+  ROOT_NODE_ID,
+  getNode,
+} from "./graph"
 
 import type { Graph } from "./graph"
 
@@ -79,11 +86,12 @@ export async function readWebpackStats(
       // module has been removed at optimization phase (concatenated, tree-shaken, etc)
       continue
     }
+    const node = getNode(graph, getNodeId("module", module.identifier))
     if (includeChunks) {
       for (const chunkId of module.chunks) {
         addEdge(graph, {
-          from: getNodeId("chunk", chunkId),
-          to: getNodeId("module", module.identifier),
+          from: getNode(graph, getNodeId("chunk", chunkId)),
+          to: node,
           kind: "chunk child",
           original: module,
         })
@@ -92,8 +100,8 @@ export async function readWebpackStats(
     if (includeAssets) {
       for (const assetId of module.assets) {
         addEdge(graph, {
-          from: getNodeId("module", module.identifier),
-          to: getNodeId("asset", assetId),
+          from: node,
+          to: getNode(graph, getNodeId("asset", assetId)),
           kind: "asset child",
           original: module,
         })
@@ -110,9 +118,9 @@ export async function readWebpackStats(
         isEntry || (type.includes("import()") && !type.includes("eager"))
       addEdge(graph, {
         from: isEntry
-          ? ROOT_NODE_ID
-          : getNodeId("module", reason.moduleIdentifier),
-        to: getNodeId("module", module.identifier),
+          ? graph.root
+          : getNode(graph, getNodeId("module", reason.moduleIdentifier)),
+        to: node,
         kind: type,
         name: reason.userRequest,
         async,

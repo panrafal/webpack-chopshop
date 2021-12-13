@@ -1,10 +1,13 @@
-import type { Graph, Node, NodeID } from "./graph"
+import type { Graph, GraphNode, GraphNodeID } from "./graph"
 import { getNode } from "./graph"
 import { getDeepNodeChildren, getRetainedNodes } from "./dependencies"
 
-export type EdgePath = NodeID[]
+export type EdgePath = GraphNodeID[]
 
-export function calculateTreeSize(graph: Graph, node: Node): Promise<number> {
+export function calculateTreeSize(
+  graph: Graph,
+  node: GraphNode
+): Promise<number> {
   const key = `calculateTreeSize:${node.id}`
 
   if (!graph.cache[key]) {
@@ -17,8 +20,8 @@ export function calculateTreeSize(graph: Graph, node: Node): Promise<number> {
 
 export function calculateRetainedTreeSize(
   graph: Graph,
-  rootNode: Node,
-  node: Node
+  rootNode: GraphNode,
+  node: GraphNode
 ): Promise<number> {
   const key = `calculateRetainedTreeSize:${rootNode.id}:${node.id}`
 

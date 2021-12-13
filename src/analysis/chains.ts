@@ -1,21 +1,22 @@
-import type { Graph, Node, NodeID } from "./graph"
+import { isEdgeEnabled } from "./dependencies"
+import type { Graph, GraphEdge, GraphNode, GraphNodeID } from "./graph"
 import { getNode } from "./graph"
 
-export type EdgeChain = NodeID[]
+export type EdgeChain = GraphNodeID[]
 
 async function gatherChains(
   graph: Graph,
-  node: Node,
-  toId: NodeID,
-  path: NodeID[],
+  node: GraphNode,
+  toId: GraphNodeID,
+  path: GraphNodeID[],
   options: {
     visited: {
-      [k in NodeID]: Node
+      [k in GraphNodeID]: GraphNode
     }
-    nodesKey: "children" | "allChildren"
+    filter?: (e: GraphEdge) => boolean
   }
-): Promise<NodeID[][]> {
-  const { nodesKey, visited } = options
+): Promise<GraphNodeID[][]> {
+  const { filter, visited } = options
 
   const currentPath = [...path, node.id]
   if (node.id === toId) return [currentPath]
@@ -24,16 +25,17 @@ async function gatherChains(
   const paths = []
 
   // prefer shortest paths first
-  if (node[nodesKey].indexOf(toId) >= 0) {
+  if (node.children.find((e) => e.to.id === toId && (!filter || filter(e)))) {
     paths.push([...currentPath, toId])
   }
 
-  for (const childId of node[nodesKey]) {
-    if (visited[childId]) continue
-    if (childId === toId) continue
+  for (const edge of node.children) {
+    if (visited[edge.to.id]) continue
+    if (edge.to.id === toId) continue
+    if (filter && !filter(edge)) continue
     const result = await gatherChains(
       graph,
-      getNode(graph, childId),
+      edge.to,
       toId,
       currentPath,
       options
@@ -48,14 +50,14 @@ async function gatherChains(
 
 export async function findChains(
   graph: Graph,
-  fromNode: Node,
-  toNode: Node
+  fromNode: GraphNode,
+  toNode: GraphNode
 ): Promise<EdgeChain[]> {
   const key = `findChains:${fromNode.id}:${toNode.id}`
   if (!graph.cache[key]) {
     graph.cache[key] = gatherChains(graph, fromNode, toNode.id, [], {
       visited: {},
-      nodesKey: "children",
+      filter: isEdgeEnabled,
     })
   }
   return graph.cache[key]
@@ -63,14 +65,13 @@ export async function findChains(
 
 export async function findAllChains(
   graph: Graph,
-  fromNode: Node,
-  toNode: Node
+  fromNode: GraphNode,
+  toNode: GraphNode
 ): Promise<EdgeChain[]> {
   const key = `findAllChains:${fromNode.id}:${toNode.id}`
   if (!graph.cache[key]) {
     graph.cache[key] = gatherChains(graph, fromNode, toNode.id, [], {
       visited: {},
-      nodesKey: "allChildren",
     })
   }
   return graph.cache[key]

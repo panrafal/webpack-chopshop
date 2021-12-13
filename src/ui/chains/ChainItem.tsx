@@ -1,4 +1,4 @@
-import type { Graph, NodeID } from "../../analysis/graph"
+import type { Graph, GraphNodeID } from "../../analysis/graph"
 
 import * as React from "react"
 import { withStyles, ListItem, ListItemText } from "@material-ui/core"
@@ -8,8 +8,8 @@ import NodeName from "./NodeName"
 
 type Props = {
   graph: Graph
-  chain: ReadonlyArray<NodeID>
-  through: ReadonlyArray<NodeID>
+  chain: ReadonlyArray<GraphNodeID>
+  through: ReadonlyArray<GraphNodeID>
   checked?: boolean
   onClick: React.MouseEventHandler<HTMLDivElement>
   style: any

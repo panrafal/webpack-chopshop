@@ -1,4 +1,4 @@
-import type { Graph, Node, NodeID } from "../../analysis/graph"
+import type { Graph, GraphNode, GraphNodeID } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
@@ -10,12 +10,12 @@ export type Props = {
   baseGraph: Graph
   graph: Graph
   checked?: boolean
-  node: Node
+  node: GraphNode
   hidePackage?: boolean
-  retainerRootNode?: Node | null
+  retainerRootNode?: GraphNode | null
   children?: React.ReactNode
-  selectFromNode?: (node: NodeID) => void
-  selectToNode?: (node: NodeID) => void
+  selectFromNode?: (node: GraphNodeID) => void
+  selectToNode?: (node: GraphNodeID) => void
   onClick?: () => void
   style?: any
   classes: any

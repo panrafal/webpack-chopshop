@@ -1,4 +1,4 @@
-import type { Node, NodeID, Graph } from "../../analysis/graph"
+import type { GraphNode, GraphNodeID, Graph } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
@@ -18,10 +18,10 @@ import { calculateTreeSize } from "../../analysis/size"
 type Props = {
   baseGraph: Graph
   graph: Graph
-  fromNode: Node | undefined | null
-  pinned: ReadonlyArray<NodeID>
-  toNode: Node | undefined | null
-  onNodeSelect: (a: NodeID) => void
+  fromNode: GraphNode | undefined | null
+  pinned: ReadonlyArray<GraphNodeID>
+  toNode: GraphNode | undefined | null
+  onNodeSelect: (a: GraphNodeID) => void
   className?: string
   classes: any
 }
@@ -41,7 +41,7 @@ const prepareEntryNodes = async (graph, nodes) => {
   return nodes
 }
 
-class ParentsExplorer extends React.PureComponent<Props> {
+class ParentsExplorer extends React.Component<Props> {
   allNodesSelector = createSelector(
     (_, p) => p.graph,
     (graph) => getAllNodes(graph)

@@ -1,11 +1,11 @@
-import type { Edge } from "../../analysis/graph"
+import type { GraphEdge } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
 import { withStyles, Icon, IconButton, Tooltip } from "@material-ui/core"
 
 type Props = {
-  edge: Edge
+  edge: GraphEdge
   onClick: React.MouseEventHandler<HTMLButtonElement>
   classes: any
   className?: string
@@ -15,7 +15,7 @@ const styles = (theme) => ({
   root: {},
 })
 
-class EdgeLinkButton extends React.PureComponent<Props> {
+class EdgeLinkButton extends React.Component<Props> {
   render() {
     const { classes, className, edge, onClick } = this.props
 

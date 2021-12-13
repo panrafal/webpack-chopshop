@@ -1,4 +1,4 @@
-import type { Graph, NodeID } from "../../analysis/graph"
+import type { Graph, GraphNodeID } from "../../analysis/graph"
 import type { Change } from "../../analysis/changes"
 
 import * as React from "react"
@@ -22,7 +22,7 @@ import { encodeUrlStateHash, decodeUrlStateHash } from "../../history"
 type Props = {
   graph: Graph
   changes: ReadonlyArray<Change>
-  pinned: ReadonlyArray<NodeID>
+  pinned: ReadonlyArray<GraphNodeID>
   onChangesUpdate: (a: ReadonlyArray<Change>) => void
   classes: any
 }
@@ -36,7 +36,7 @@ const styles = (theme) => ({
   delete: {},
 })
 
-class ChangesView extends React.PureComponent<Props> {
+class ChangesView extends React.Component<Props> {
   render() {
     const { classes, graph, changes, pinned, onChangesUpdate } = this.props
     const textsToCopy = []
@@ -56,8 +56,8 @@ class ChangesView extends React.PureComponent<Props> {
             .map((change, index) => {
               const edge = resolveEdgeForNodes(graph, change.from, change.to)
               if (!edge) return null
-              const fromNode = getNode(graph, edge.from)
-              const toNode = getNode(graph, edge.to)
+              const fromNode = edge.from
+              const toNode = edge.to
               const fromName = fromNode.file || fromNode.name || fromNode.id
               const toName = edge.name || toNode.name || toNode.id
               textsToCopy.push(

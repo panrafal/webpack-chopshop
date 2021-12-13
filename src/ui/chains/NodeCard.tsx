@@ -1,4 +1,4 @@
-import type { Graph, Node, Edge } from "../../analysis/graph"
+import type { Graph, GraphNode, GraphEdge } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
@@ -19,9 +19,9 @@ import NodeName from "./NodeName"
 type Props = {
   baseGraph: Graph
   graph: Graph
-  node: Node
-  retainerRootNode?: Node | null
-  edge?: Edge | null
+  node: GraphNode
+  retainerRootNode?: GraphNode | null
+  edge?: GraphEdge | null
   actions?: React.ReactNode
   classes: any
   className?: string
@@ -64,7 +64,7 @@ type State = {
   expanded: boolean
 }
 
-class NodeCard extends React.PureComponent<Props, State> {
+class NodeCard extends React.Component<Props, State> {
   state = {
     expanded: false,
   }

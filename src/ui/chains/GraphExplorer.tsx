@@ -1,4 +1,4 @@
-import type { Graph, Node, NodeID } from "../../analysis/graph"
+import type { Graph, GraphNode, GraphNodeID } from "../../analysis/graph"
 import type { Props as NodeListProps } from "./NodeList"
 import type { Props as NodeItemProps } from "./NodeItem"
 
@@ -23,7 +23,7 @@ import NodeItem from "./NodeItem"
 import NodeList from "./NodeList"
 
 export type Mode = {
-  getNodes: () => ReadonlyArray<Node> | Promise<ReadonlyArray<Node>>
+  getNodes: () => ReadonlyArray<GraphNode> | Promise<ReadonlyArray<GraphNode>>
   renderTitle: () => React.ReactNode
   renderInfo: () => React.ReactNode
   renderEmpty: () => string
@@ -38,12 +38,12 @@ export type Modes = {
 export type Props = {
   baseGraph: Graph
   graph: Graph
-  pinned: ReadonlyArray<NodeID>
-  selected: Node | undefined | null
-  retainerRootNode?: Node | null
+  pinned: ReadonlyArray<GraphNodeID>
+  selected: GraphNode | undefined | null
+  retainerRootNode?: GraphNode | null
   modes: Modes
   defaultMode: string
-  onNodeSelect: (a: NodeID) => void
+  onNodeSelect: (a: GraphNodeID) => void
   classes: any
   className?: string
 }

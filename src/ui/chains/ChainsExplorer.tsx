@@ -1,4 +1,4 @@
-import type { Graph, Node, NodeID } from "../../analysis/graph"
+import type { Graph, GraphNode, GraphNodeID } from "../../analysis/graph"
 import type { Change } from "../../analysis/changes"
 import classNames from "classnames"
 
@@ -24,19 +24,19 @@ import ChainsList from "./ChainsList"
 type Props = {
   baseGraph: Graph
   graph: Graph
-  fromNode: Node | undefined | null
-  toNode: Node | undefined | null
-  pinned: ReadonlyArray<NodeID>
-  onPinnedToggle: (a: NodeID) => any
+  fromNode: GraphNode | undefined | null
+  toNode: GraphNode | undefined | null
+  pinned: ReadonlyArray<GraphNodeID>
+  onPinnedToggle: (a: GraphNodeID) => any
   onAddChange: (a: Change) => any
-  onFromNodeSelect: (a: NodeID) => any
-  onToNodeSelect: (a: NodeID) => any
+  onFromNodeSelect: (a: GraphNodeID) => any
+  onToNodeSelect: (a: GraphNodeID) => any
   classes: any
   className?: string
 }
 
 type State = {
-  selectedChain: ReadonlyArray<NodeID> | undefined | null
+  selectedChain: ReadonlyArray<GraphNodeID> | undefined | null
 }
 
 const styles = (theme) => ({
@@ -74,7 +74,7 @@ const styles = (theme) => ({
   },
 })
 
-class ChainsExplorer extends React.PureComponent<Props, State> {
+class ChainsExplorer extends React.Component<Props, State> {
   state = {
     selectedChain: null,
   }
@@ -138,14 +138,14 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
     if (!selectedChain) return null
     const nodes = getNodes(graph, selectedChain)
 
-    return nodes.map((node: Node, index) => {
+    return nodes.map((node: GraphNode, index) => {
       const isFirst = index === 0
       const isLast = index === nodes.length - 1
       if (isFirst) return null
       const prevNode = nodes[index - 1]
       const edge = resolveEdgeForNodes(graph, prevNode.id, node.id) || {
-        from: prevNode.id,
-        to: node.id,
+        from: prevNode,
+        to: node,
         kind: "",
         enabled: false,
       }
@@ -165,8 +165,8 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
                   onClick={() =>
                     onAddChange({
                       change: "edge",
-                      from: edge.from,
-                      to: edge.to,
+                      from: edge.from.id,
+                      to: edge.to.id,
                       enabled: !edge.enabled,
                     })
                   }

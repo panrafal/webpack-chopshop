@@ -1,39 +1,75 @@
 import { difference } from "lodash"
-import type { Graph, Node, NodeID } from "./graph"
+import type {
+  Graph,
+  GraphEdge,
+  GraphEdgeID,
+  GraphNode,
+  GraphNodeID,
+} from "./graph"
 import { getNode } from "./graph"
 
-async function walkGraph(
+async function collectNodes(
   graph: Graph,
-  node: Node,
+  node: GraphNode,
   options: {
     visited: {
-      [k in NodeID]: Node
+      [k in GraphNodeID]: GraphNode
     }
-    nodesKey: "children" | "parents" | "allChildren"
+    direction: "children" | "parents"
+    filter?: (e: GraphEdge) => boolean
   }
 ) {
-  const { nodesKey, visited } = options
+  const { direction, visited, filter } = options
   visited[node.id] = node
 
-  for (const childId of node[nodesKey]) {
-    if (visited[childId]) continue
-    await walkGraph(graph, getNode(graph, childId), options)
+  for (const edge of node[direction]) {
+    if (visited[edge.to.id]) continue
+    if (filter && !filter(edge)) continue
+    await collectNodes(
+      graph,
+      direction === "children" ? edge.to : edge.from,
+      options
+    )
+    await graph.idle()
+  }
+}
+
+async function collectEdges(
+  graph: Graph,
+  node: GraphNode,
+  options: {
+    visited: {
+      [k in GraphEdgeID]: GraphEdge
+    }
+    direction: "children" | "parents"
+    filter: (e: GraphEdge) => boolean
+  }
+) {
+  const { direction, visited, filter } = options
+
+  for (const edge of node[direction]) {
+    if (visited[edge.to.id]) continue
+    if (filter && !filter(edge)) continue
+    await collectEdges(
+      graph,
+      direction === "children" ? edge.to : edge.from,
+      options
+    )
     await graph.idle()
   }
 }
 
 export function getDeepNodeChildren(
   graph: Graph,
-  node: Node
-): Promise<ReadonlyArray<NodeID>> {
+  node: GraphNode
+): Promise<ReadonlyArray<GraphNodeID>> {
   const key = `getDeepNodeChildren:${node.id}`
   if (!graph.cache[key]) {
     const visited = {}
-    graph.cache[key] = walkGraph(graph, node, {
+    graph.cache[key] = collectNodes(graph, node, {
       visited,
-      nodesKey: "children",
+      direction: "children",
     }).then(() => {
-      // $FlowFixMe
       delete visited[node.id]
       return Object.keys(visited)
     })
@@ -43,50 +79,17 @@ export function getDeepNodeChildren(
 
 export function getDeepNodeParents(
   graph: Graph,
-  node: Node
-): Promise<ReadonlyArray<NodeID>> {
+  node: GraphNode
+): Promise<ReadonlyArray<GraphNodeID>> {
   const key = `getDeepNodeParents:${node.id}`
   if (!graph.cache[key]) {
     const visited = {}
-    graph.cache[key] = walkGraph(graph, node, {
+    graph.cache[key] = collectNodes(graph, node, {
       visited,
-      nodesKey: "parents",
+      direction: "parents",
     }).then(() => {
-      // $FlowFixMe
       delete visited[node.id]
       return Object.keys(visited)
-    })
-  }
-  return graph.cache[key]
-}
-
-// Returns all children nodes, whose edge is disabled. It doesn't go into the disabled
-// nodes, so it's useful to find first nodes where dependency chain was broken apart.
-export function getDisabledLeafChildren(
-  graph: Graph,
-  node: Node
-): Promise<ReadonlyArray<NodeID>> {
-  const key = `getDisabledLeafChildren:${node.id}`
-  if (!graph.cache[key]) {
-    const visited = {}
-
-    // Get all accessible children
-    graph.cache[key] = walkGraph(graph, node, {
-      visited,
-      nodesKey: "children",
-    }).then(() => {
-      const children: Node[] = Object.values(visited) as any
-      const found = {}
-      // Gather all children. If they were not visited in the first pass,
-      // then they HAVE to be disabled
-      for (const child of children) {
-        for (const deepChildId of child.allChildren) {
-          if (!visited[deepChildId]) {
-            found[deepChildId] = true
-          }
-        }
-      }
-      return Object.keys(found)
     })
   }
   return graph.cache[key]
@@ -97,18 +100,18 @@ export function getDisabledLeafChildren(
 // Does not include the node itself
 export function getRetainedNodes(
   graph: Graph,
-  rootNode: Node,
-  node: Node
-): Promise<ReadonlyArray<NodeID>> {
+  rootNode: GraphNode,
+  node: GraphNode
+): Promise<ReadonlyArray<GraphNodeID>> {
   const key = `getRetainedNodes:${rootNode.id}:${node.id}`
   if (!graph.cache[key]) {
     const visited = {
       [node.id]: node,
     }
     const allChildrenPromise = getDeepNodeChildren(graph, rootNode)
-    const rootsChildrenPromise = walkGraph(graph, rootNode, {
+    const rootsChildrenPromise = collectNodes(graph, rootNode, {
       visited,
-      nodesKey: "children",
+      direction: "children",
     }).then(() => {
       return Object.keys(visited)
     })
@@ -129,18 +132,26 @@ export function getRetainedNodes(
   return graph.cache[key]
 }
 
-export function keepOnlyEntryModules(graph: Graph, nodes: ReadonlyArray<Node>) {
-  return nodes.filter((node: Node) => {
+export function keepOnlyEntryModules(
+  graph: Graph,
+  nodes: ReadonlyArray<GraphNode>
+) {
+  return nodes.filter((node: GraphNode) => {
     if (node.kind !== "module") return false
-    return node.parents.every(
-      (parentId) => getNode(graph, parentId).kind !== "module"
-    )
+    return node.parents.every((edge) => edge.from.kind !== "module")
   })
 }
 
-export function keepOnlyLeafModules(graph: Graph, nodes: ReadonlyArray<Node>) {
-  return nodes.filter((node: Node) => {
+export function keepOnlyLeafModules(
+  graph: Graph,
+  nodes: ReadonlyArray<GraphNode>
+) {
+  return nodes.filter((node: GraphNode) => {
     if (node.kind !== "module") return false
     return node.children.length === 0
   })
+}
+
+export function isEdgeEnabled(edge: GraphEdge) {
+  return edge.enabled
 }

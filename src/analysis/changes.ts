@@ -1,12 +1,12 @@
-import type { Graph, NodeID } from "./graph"
+import type { Graph, GraphNodeID } from "./graph"
 
 import { reject, pick } from "lodash"
 import { toggleEdge, addEdge, resolveEdgeForNodes } from "./graph"
 
 export type EdgeChange = {
   change: "edge"
-  from: NodeID
-  to: NodeID
+  from: GraphNodeID
+  to: GraphNodeID
   enabled: boolean
 }
 
@@ -49,12 +49,7 @@ export function applyChanges(graph: Graph, changes: ReadonlyArray<Change>) {
 
       let edge = resolveEdgeForNodes(graph, change.from, change.to)
       if (!edge) {
-        edge = addEdge(graph, {
-          from: change.from,
-          to: change.to,
-          enabled: change.enabled,
-          kind: MOCKED_EDGE_KIND,
-        })
+        console.warn(`Edge ${change.from} -> ${change.to} doesnt exist`)
       }
       toggleEdge(graph, edge, change.enabled)
     }
