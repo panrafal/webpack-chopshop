@@ -19,11 +19,11 @@ import {
 import WarningBar from "./ui/WarningBar";
 import ErrorBar from "./ui/ErrorBar";
 import EmptyBox from "./ui/EmptyBox";
-import ParentsExplorer from "./ui/graph/ParentsExplorer";
-import ChildrenExplorer from "./ui/graph/ChildrenExplorer";
+import ParentsExplorer from "./ui/chains/ParentsExplorer";
+import ChildrenExplorer from "./ui/chains/ChildrenExplorer";
 
-const ChainsExplorer = React.lazy(() => import('./ui/graph/ChainsExplorer'))
-const ChangesView = React.lazy(() => import('./ui/graph/ChangesView'))
+const ChainsExplorer = React.lazy(() => import('./ui/chains/ChainsExplorer'))
+const ChangesView = React.lazy(() => import('./ui/chains/ChangesView'))
 
 type Props = {
   loading: boolean;
@@ -238,7 +238,7 @@ class AppUI extends React.Component<Props> {
               >
                 <EmptyBox
                   icon={
-                    <Icon color="inherit" fontSize="default">
+                    <Icon color="inherit" fontSize="medium">
                       open_in_browser
                     </Icon>
                   }
