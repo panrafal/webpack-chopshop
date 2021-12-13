@@ -4,6 +4,26 @@
   "private": true,
   "homepage": "https://panrafal.github.io/webpack-chopshop",
   "license": "MIT",
+  "scripts": {
+    "analyze": "source-map-explorer build/static/js/main.*",
+    "start": "react-scripts start",
+    "start:production": "PUBLIC_URL=/ yarn build && serve -s build",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "flow": "flow",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
+  },
+    "husky": {
+      "hooks": {
+        "pre-commit": "lint-staged"
+      }
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+          "prettier --write"
+        ]
+      }    ,
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@types/jest": "^27.0.3",
@@ -15,9 +35,12 @@
     "flow-bin": "^0.78.0",
     "fuse.js": "^3.2.1",
     "gh-pages": "^1.2.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.2",
     "lodash": "^4.17.21",
     "numeral": "^2.0.6",
     "pako": "^1.0.6",
+    "prettier": "^2.5.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.4",
     "react-dom": "^17.0.2",
@@ -30,19 +53,6 @@
     "reselect": "^3.0.1",
     "source-map-explorer": "^1.5.0",
     "typescript": "^4.5.3"
-  },
-  "devDependencies": {
-    "prettier-eslint": "^13.0.0"
-  },
-  "scripts": {
-    "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "react-scripts start",
-    "start:production": "PUBLIC_URL=/ yarn build && serve -s build",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "flow": "flow",
-    "predeploy": "yarn run build",
-    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
