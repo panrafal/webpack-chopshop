@@ -21,6 +21,7 @@ import ErrorBar from "./ui/ErrorBar"
 import EmptyBox from "./ui/EmptyBox"
 import ParentsExplorer from "./ui/chains/ParentsExplorer"
 import ChildrenExplorer from "./ui/chains/ChildrenExplorer"
+import ChainsPage from "./ui/chains/ChainsPage"
 
 const ChainsExplorer = React.lazy(() => import("./ui/chains/ChainsExplorer"))
 const ChangesView = React.lazy(() => import("./ui/chains/ChangesView"))
@@ -64,29 +65,6 @@ const styles = (theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
   },
-  panes: {
-    display: "flex",
-    flexDirection: "row",
-    flexGrow: 1,
-    justifyContent: "space-between",
-    padding: "24px 24px 0 24px",
-  },
-  parentsExplorer: {
-    width: 250,
-    flexShrink: 0,
-    flexGrow: 0.2,
-    marginRight: 48,
-  },
-  pathsExplorer: {
-    flexShrink: 1,
-    flexGrow: 1,
-    marginRight: 48,
-  },
-  childrenExplorer: {
-    width: 250,
-    flexShrink: 0,
-    flexGrow: 0.2,
-  },
   title: {
     marginLeft: "auto",
     textTransform: "uppercase",
@@ -125,42 +103,18 @@ class AppUI extends React.Component<Props> {
     } = this.props
     if (!graph || !baseGraph) return null
     return (
-      <div className={classNames(classes.container, classes.panes)}>
-        <ParentsExplorer
-          className={classes.parentsExplorer}
-          baseGraph={baseGraph}
-          graph={graph}
-          pinned={pinned}
-          toNode={toNode}
-          fromNode={fromNode}
-          onNodeSelect={onFromNodeSelect}
-        />
-        {fromNode && toNode ? (
-          <ChainsExplorer
-            className={classes.pathsExplorer}
-            baseGraph={baseGraph}
-            graph={graph}
-            pinned={pinned}
-            fromNode={fromNode}
-            toNode={toNode}
-            onFromNodeSelect={onFromNodeSelect}
-            onToNodeSelect={onToNodeSelect}
-            onAddChange={onAddChange}
-            onPinnedToggle={onPinnedToggle}
-          />
-        ) : null}
-        {fromNode ? (
-          <ChildrenExplorer
-            className={classes.childrenExplorer}
-            baseGraph={baseGraph}
-            graph={graph}
-            pinned={pinned}
-            toNode={toNode}
-            fromNode={fromNode}
-            onNodeSelect={onToNodeSelect}
-          />
-        ) : null}
-      </div>
+      <ChainsPage
+        className={classes.container}
+        baseGraph={baseGraph}
+        graph={graph}
+        fromNode={fromNode}
+        toNode={toNode}
+        pinned={pinned}
+        onFromNodeSelect={onFromNodeSelect}
+        onToNodeSelect={onToNodeSelect}
+        onAddChange={onAddChange}
+        onPinnedToggle={onPinnedToggle}
+      />
     )
   }
 
