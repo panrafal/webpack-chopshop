@@ -1,11 +1,11 @@
-import * as React from "react";
-import { withStyles } from "@material-ui/core";
+import * as React from "react"
+import { withStyles } from "@material-ui/core"
 
 type Props = {
-  children: React.ReactNode;
-  icon: React.ReactNode;
-  classes: any;
-};
+  children: React.ReactNode
+  icon: React.ReactNode
+  classes: any
+}
 
 const styles = (theme) => ({
   root: {
@@ -21,14 +21,14 @@ const styles = (theme) => ({
   icon: {
     "margin-bottom": 8,
   },
-});
+})
 
 const EmptyBox = ({ classes, children, icon }: Props) => (
   <div className={classes.root}>
     <div className={classes.icon}>{icon}</div>
     <div>{children}</div>
   </div>
-);
+)
 
 // @ts-expect-error mui
-export default withStyles(styles)(EmptyBox);
+export default withStyles(styles)(EmptyBox)

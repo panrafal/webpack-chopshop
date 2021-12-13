@@ -1,10 +1,10 @@
-import * as React from "react";
-import { withStyles } from "@material-ui/core";
+import * as React from "react"
+import { withStyles } from "@material-ui/core"
 
 type Props = {
-  classes: any;
-  children: React.ReactNode;
-};
+  classes: any
+  children: React.ReactNode
+}
 
 const styles = (theme) => ({
   root: {
@@ -19,11 +19,11 @@ const styles = (theme) => ({
     borderRadius: "100%",
     textAlign: "center",
   },
-});
+})
 
 const Dot = ({ classes, children }: Props) => (
   <div className={classes.root}>{children}</div>
-);
+)
 
 // @ts-expect-error mui
-export default withStyles(styles)(Dot);
+export default withStyles(styles)(Dot)

@@ -1,23 +1,23 @@
-import type { Edge } from "../../analysis/graph";
+import type { Edge } from "../../analysis/graph"
 
-import * as React from "react";
-import classNames from "classnames";
-import { withStyles, Icon, IconButton, Tooltip } from "@material-ui/core";
+import * as React from "react"
+import classNames from "classnames"
+import { withStyles, Icon, IconButton, Tooltip } from "@material-ui/core"
 
 type Props = {
-  edge: Edge;
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-  classes: any;
-  className?: string;
-};
+  edge: Edge
+  onClick: React.MouseEventHandler<HTMLButtonElement>
+  classes: any
+  className?: string
+}
 
 const styles = (theme) => ({
   root: {},
-});
+})
 
 class EdgeLinkButton extends React.PureComponent<Props> {
   render() {
-    const { classes, className, edge, onClick } = this.props;
+    const { classes, className, edge, onClick } = this.props
 
     return (
       <Tooltip
@@ -35,8 +35,8 @@ class EdgeLinkButton extends React.PureComponent<Props> {
           <Icon>{edge.enabled ? "link_off" : "link"}</Icon>
         </IconButton>
       </Tooltip>
-    );
+    )
   }
 }
 
-export default withStyles(styles)(EdgeLinkButton);
+export default withStyles(styles)(EdgeLinkButton)

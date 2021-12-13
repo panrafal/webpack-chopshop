@@ -1,9 +1,9 @@
-import type { Graph, NodeID } from "../../analysis/graph";
-import type { Change } from "../../analysis/changes";
+import type { Graph, NodeID } from "../../analysis/graph"
+import type { Change } from "../../analysis/changes"
 
-import * as React from "react";
-import { without } from "lodash";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import * as React from "react"
+import { without } from "lodash"
+import { CopyToClipboard } from "react-copy-to-clipboard"
 import {
   withStyles,
   IconButton,
@@ -14,18 +14,18 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-} from "@material-ui/core";
-import { resolveEdgeForNodes, getNode } from "../../analysis/graph";
-import EmptyBox from "../EmptyBox";
-import { encodeUrlStateHash, decodeUrlStateHash } from "../../history";
+} from "@material-ui/core"
+import { resolveEdgeForNodes, getNode } from "../../analysis/graph"
+import EmptyBox from "../EmptyBox"
+import { encodeUrlStateHash, decodeUrlStateHash } from "../../history"
 
 type Props = {
-  graph: Graph;
-  changes: ReadonlyArray<Change>;
-  pinned: ReadonlyArray<NodeID>;
-  onChangesUpdate: (a: ReadonlyArray<Change>) => void;
-  classes: any;
-};
+  graph: Graph
+  changes: ReadonlyArray<Change>
+  pinned: ReadonlyArray<NodeID>
+  onChangesUpdate: (a: ReadonlyArray<Change>) => void
+  classes: any
+}
 
 const styles = (theme) => ({
   root: {},
@@ -34,37 +34,37 @@ const styles = (theme) => ({
     overflowY: "auto",
   },
   delete: {},
-});
+})
 
 class ChangesView extends React.PureComponent<Props> {
   render() {
-    const { classes, graph, changes, pinned, onChangesUpdate } = this.props;
-    const textsToCopy = [];
+    const { classes, graph, changes, pinned, onChangesUpdate } = this.props
+    const textsToCopy = []
     // Generate new url with pins and most current changes
-    const { origin, pathname, hash } = window.location;
-    const currentUrlState = decodeUrlStateHash(hash.slice(1));
+    const { origin, pathname, hash } = window.location
+    const currentUrlState = decodeUrlStateHash(hash.slice(1))
     const shareUrl = `${origin}${pathname}#${encodeUrlStateHash({
       ...currentUrlState,
       changes,
       pinned,
-    })}`;
-    textsToCopy.push(shareUrl);
+    })}`
+    textsToCopy.push(shareUrl)
     return (
       <div>
         <List className={classes.list}>
           {changes
             .map((change, index) => {
-              const edge = resolveEdgeForNodes(graph, change.from, change.to);
-              if (!edge) return null;
-              const fromNode = getNode(graph, edge.from);
-              const toNode = getNode(graph, edge.to);
-              const fromName = fromNode.file || fromNode.name || fromNode.id;
-              const toName = edge.name || toNode.name || toNode.id;
+              const edge = resolveEdgeForNodes(graph, change.from, change.to)
+              if (!edge) return null
+              const fromNode = getNode(graph, edge.from)
+              const toNode = getNode(graph, edge.to)
+              const fromName = fromNode.file || fromNode.name || fromNode.id
+              const toName = edge.name || toNode.name || toNode.id
               textsToCopy.push(
                 edge.enabled
                   ? `In "${fromName}" add "${toName}"`
                   : `In "${fromName}" remove "${toName}"`
-              );
+              )
               return (
                 <ListItem key={index}>
                   <IconButton
@@ -89,7 +89,7 @@ class ChangesView extends React.PureComponent<Props> {
                   />
                   <ListItemSecondaryAction />
                 </ListItem>
-              );
+              )
             })
             .reverse()}
           {changes.length === 0 && (
@@ -110,9 +110,9 @@ class ChangesView extends React.PureComponent<Props> {
           </CopyToClipboard>
         </Toolbar>
       </div>
-    );
+    )
   }
 }
 
 // @ts-expect-error mui
-export default withStyles(styles)(ChangesView);
+export default withStyles(styles)(ChangesView)

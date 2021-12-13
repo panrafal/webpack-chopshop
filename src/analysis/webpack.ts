@@ -1,23 +1,23 @@
-import { createGraph, addNode, getNodeId, addEdge } from "./graph";
+import { createGraph, addNode, getNodeId, addEdge } from "./graph"
 
-import type { Graph } from "./graph";
+import type { Graph } from "./graph"
 
 export async function readWebpackStats(
   stats: any,
   options: {
-    enableAllAsyncImports?: boolean;
-    includeChunks?: boolean;
-    includeAssets?: boolean;
+    enableAllAsyncImports?: boolean
+    includeChunks?: boolean
+    includeAssets?: boolean
   } = {}
 ): Promise<Graph> {
-  const graph = createGraph();
+  const graph = createGraph()
   const {
     enableAllAsyncImports = false,
     includeChunks = false,
     includeAssets = true,
-  } = options;
+  } = options
 
-  const { chunks = [], assets = [], modules = [] } = stats;
+  const { chunks = [], assets = [], modules = [] } = stats
 
   // create chunks
   if (includeChunks) {
@@ -32,8 +32,8 @@ export async function readWebpackStats(
         name: chunk.names[0],
         size: 0,
         original: chunk,
-      });
-      await graph.idle();
+      })
+      await graph.idle()
     }
   }
 
@@ -47,8 +47,8 @@ export async function readWebpackStats(
         name: asset.name,
         size: asset.size,
         original: asset,
-      });
-      await graph.idle();
+      })
+      await graph.idle()
     }
   }
 
@@ -56,11 +56,11 @@ export async function readWebpackStats(
   for (const module of modules) {
     if (module.id == null) {
       // module has been removed at optimization phase (concatenated, tree-shaken, etc)
-      continue;
+      continue
     }
-    const isConcat = module.name.indexOf(" + ") > 0;
-    const isNamespace = module.name.indexOf(" namespace object") > 0;
-    const kind = isConcat ? "concat" : isNamespace ? "namespace" : "module";
+    const isConcat = module.name.indexOf(" + ") > 0
+    const isNamespace = module.name.indexOf(" namespace object") > 0
+    const kind = isConcat ? "concat" : isNamespace ? "namespace" : "module"
     addNode(graph, {
       id: getNodeId("module", module.identifier),
       originalId: module.id,
@@ -69,15 +69,15 @@ export async function readWebpackStats(
       file: isConcat ? undefined : (module.name || "").replace(/^.*!/),
       size: module.size,
       original: module,
-    });
-    await graph.idle();
+    })
+    await graph.idle()
   }
 
   // create edges
   for (const module of modules) {
     if (module.id == null) {
       // module has been removed at optimization phase (concatenated, tree-shaken, etc)
-      continue;
+      continue
     }
     if (includeChunks) {
       for (const chunkId of module.chunks) {
@@ -86,7 +86,7 @@ export async function readWebpackStats(
           to: getNodeId("module", module.identifier),
           kind: "chunk child",
           original: module,
-        });
+        })
       }
     }
     if (includeAssets) {
@@ -96,16 +96,16 @@ export async function readWebpackStats(
           to: getNodeId("asset", assetId),
           kind: "asset child",
           original: module,
-        });
+        })
       }
     }
     for (const reason of module.reasons) {
-      const type = reason.type || "";
+      const type = reason.type || ""
       if (reason.moduleId == null) {
         // reason has been removed at optimization phase (concatenated, tree-shaken, etc)
-        continue;
+        continue
       }
-      const async = type.indexOf("import()") >= 0 && type.indexOf("eager") < 0;
+      const async = type.indexOf("import()") >= 0 && type.indexOf("eager") < 0
       addEdge(graph, {
         from: getNodeId("module", reason.moduleIdentifier),
         to: getNodeId("module", module.identifier),
@@ -114,9 +114,9 @@ export async function readWebpackStats(
         async,
         enabled: !async || enableAllAsyncImports ? true : false,
         original: reason,
-      });
+      })
     }
-    await graph.idle();
+    await graph.idle()
   }
-  return graph;
+  return graph
 }

@@ -1,10 +1,10 @@
-import type { Graph, Node, NodeID } from "../../analysis/graph";
-import type { Change } from "../../analysis/changes";
-import classNames from "classnames";
+import type { Graph, Node, NodeID } from "../../analysis/graph"
+import type { Change } from "../../analysis/changes"
+import classNames from "classnames"
 
-import * as React from "react";
-import { createSelector } from "reselect";
-import Async from "react-promise";
+import * as React from "react"
+import { createSelector } from "reselect"
+import Async from "react-promise"
 import {
   withStyles,
   Typography,
@@ -12,32 +12,32 @@ import {
   IconButton,
   Icon,
   Tooltip,
-} from "@material-ui/core";
+} from "@material-ui/core"
 
-import { findChains, findAllChains } from "../../analysis/chains";
-import ErrorBox from "../ErrorBox";
-import NodeCard from "./NodeCard";
-import { getNodes, resolveEdgeForNodes } from "../../analysis/graph";
-import EdgeLinkButton from "./EdgeLinkButton";
-import ChainsList from "./ChainsList";
+import { findChains, findAllChains } from "../../analysis/chains"
+import ErrorBox from "../ErrorBox"
+import NodeCard from "./NodeCard"
+import { getNodes, resolveEdgeForNodes } from "../../analysis/graph"
+import EdgeLinkButton from "./EdgeLinkButton"
+import ChainsList from "./ChainsList"
 
 type Props = {
-  baseGraph: Graph;
-  graph: Graph;
-  fromNode: Node | undefined | null;
-  toNode: Node | undefined | null;
-  pinned: ReadonlyArray<NodeID>;
-  onPinnedToggle: (a: NodeID) => any;
-  onAddChange: (a: Change) => any;
-  onFromNodeSelect: (a: NodeID) => any;
-  onToNodeSelect: (a: NodeID) => any;
-  classes: any;
-  className?: string;
-};
+  baseGraph: Graph
+  graph: Graph
+  fromNode: Node | undefined | null
+  toNode: Node | undefined | null
+  pinned: ReadonlyArray<NodeID>
+  onPinnedToggle: (a: NodeID) => any
+  onAddChange: (a: Change) => any
+  onFromNodeSelect: (a: NodeID) => any
+  onToNodeSelect: (a: NodeID) => any
+  classes: any
+  className?: string
+}
 
 type State = {
-  selectedChain: ReadonlyArray<NodeID> | undefined | null;
-};
+  selectedChain: ReadonlyArray<NodeID> | undefined | null
+}
 
 const styles = (theme) => ({
   root: {
@@ -72,57 +72,53 @@ const styles = (theme) => ({
   listProgress: {
     marginTop: 16,
   },
-});
+})
 
 class ChainsExplorer extends React.PureComponent<Props, State> {
   state = {
     selectedChain: null,
-  };
+  }
 
   chainsPromiseSelector = createSelector(
     (p: Props) => p.graph,
     (p: Props) => p.fromNode,
     (p: Props) => p.toNode,
     (graph, fromNode, toNode) => {
-      if (!fromNode || !toNode) return null;
-      return findChains(graph, fromNode, toNode);
+      if (!fromNode || !toNode) return null
+      return findChains(graph, fromNode, toNode)
     }
-  );
+  )
 
   componentDidMount() {
-    this.componentDidUpdate({});
+    this.componentDidUpdate({})
   }
 
-  _waitingForChainsPromise: any;
+  _waitingForChainsPromise: any
   async componentDidUpdate(prevProps) {
-    const baseGraphChanged = this.props.baseGraph !== prevProps.baseGraph;
-    const { fromNode: currentFrom, toNode: currentTo } = this.props;
-    const { fromNode: prevFrom, toNode: prevTo } = prevProps;
+    const baseGraphChanged = this.props.baseGraph !== prevProps.baseGraph
+    const { fromNode: currentFrom, toNode: currentTo } = this.props
+    const { fromNode: prevFrom, toNode: prevTo } = prevProps
     const fromToIdChanged =
       (currentFrom && currentFrom.id) !== (prevFrom && prevFrom.id) ||
-      (currentTo && currentTo.id) !== (prevTo && prevTo.id);
+      (currentTo && currentTo.id) !== (prevTo && prevTo.id)
     if (baseGraphChanged || fromToIdChanged) {
       // Select the first chain whenever nodes or base graph changes,
       // but keep it if user edits the graph
-      const chainsPromise = this.chainsPromiseSelector(this.props);
+      const chainsPromise = this.chainsPromiseSelector(this.props)
       this.setState({
         selectedChain: null,
-      });
-      this._waitingForChainsPromise = chainsPromise;
+      })
+      this._waitingForChainsPromise = chainsPromise
       if (currentFrom && currentTo && chainsPromise) {
-        let chains = await chainsPromise;
+        let chains = await chainsPromise
         if (chains.length === 0) {
           // if no chains are found, search for chains with disabled edges
-          chains = await findAllChains(
-            this.props.graph,
-            currentFrom,
-            currentTo
-          );
+          chains = await findAllChains(this.props.graph, currentFrom, currentTo)
         }
-        if (this._waitingForChainsPromise !== chainsPromise) return;
+        if (this._waitingForChainsPromise !== chainsPromise) return
         this.setState({
           selectedChain: chains[0] || [currentFrom.id, currentTo.id],
-        });
+        })
       }
     }
   }
@@ -137,22 +133,22 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
       onFromNodeSelect,
       onToNodeSelect,
       onPinnedToggle,
-    } = this.props;
-    const { selectedChain } = this.state;
-    if (!selectedChain) return null;
-    const nodes = getNodes(graph, selectedChain);
+    } = this.props
+    const { selectedChain } = this.state
+    if (!selectedChain) return null
+    const nodes = getNodes(graph, selectedChain)
 
     return nodes.map((node: Node, index) => {
-      const isFirst = index === 0;
-      const isLast = index === nodes.length - 1;
-      if (isFirst) return null;
-      const prevNode = nodes[index - 1];
+      const isFirst = index === 0
+      const isLast = index === nodes.length - 1
+      if (isFirst) return null
+      const prevNode = nodes[index - 1]
       const edge = resolveEdgeForNodes(graph, prevNode.id, node.id) || {
         from: prevNode.id,
         to: node.id,
         kind: "",
         enabled: false,
-      };
+      }
 
       return (
         <>
@@ -206,14 +202,14 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
             }
           />
         </>
-      );
-    });
-  };
+      )
+    })
+  }
 
   renderChains = (chains) => {
-    const { graph, fromNode, toNode, classes } = this.props;
-    const { selectedChain } = this.state;
-    if (!selectedChain || !fromNode || !toNode) return null;
+    const { graph, fromNode, toNode, classes } = this.props
+    const { selectedChain } = this.state
+    if (!selectedChain || !fromNode || !toNode) return null
     return (
       <ChainsList
         className={classes.chainsList}
@@ -224,8 +220,8 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
         selectedChain={selectedChain}
         onChainSelect={(chain) => this.setState({ selectedChain: chain })}
       />
-    );
-  };
+    )
+  }
 
   render() {
     const {
@@ -238,8 +234,8 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
       pinned,
       onPinnedToggle,
       onToNodeSelect,
-    } = this.props;
-    const chainsPromise = this.chainsPromiseSelector(this.props);
+    } = this.props
+    const chainsPromise = this.chainsPromiseSelector(this.props)
 
     return (
       <div className={classNames(className, classes.root)}>
@@ -292,9 +288,9 @@ class ChainsExplorer extends React.PureComponent<Props, State> {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
 // @ts-expect-error mui
-export default withStyles(styles)(ChainsExplorer);
+export default withStyles(styles)(ChainsExplorer)

@@ -1,10 +1,10 @@
-import numeral from "numeral";
+import numeral from "numeral"
 
-import * as React from "react";
-import Fuse from "fuse.js";
-import { groupBy, orderBy, map, sortBy, sumBy } from "lodash";
+import * as React from "react"
+import Fuse from "fuse.js"
+import { groupBy, orderBy, map, sortBy, sumBy } from "lodash"
 
-import { List, AutoSizer } from "react-virtualized";
+import { List, AutoSizer } from "react-virtualized"
 import {
   withStyles,
   Input,
@@ -14,35 +14,35 @@ import {
   ListItem,
   ListItemText,
   LinearProgress,
-} from "@material-ui/core";
-import classNames from "classnames";
-import { createSelector } from "reselect";
+} from "@material-ui/core"
+import classNames from "classnames"
+import { createSelector } from "reselect"
 
-import type { Node, Graph, NodeID } from "../../analysis/graph";
-import { flattenTreeToRows, toggleTreeRowState, isTreeExpanded } from "../tree";
-import { getPackageName } from "../../analysis/info";
+import type { Node, Graph, NodeID } from "../../analysis/graph"
+import { flattenTreeToRows, toggleTreeRowState, isTreeExpanded } from "../tree"
+import { getPackageName } from "../../analysis/info"
 
 export type Props = {
-  baseGraph: Graph;
-  graph: Graph;
-  nodes: ReadonlyArray<Node>;
-  renderItem: (a: any) => React.ReactNode;
-  renderEmpty: (a: any) => React.ReactNode;
-  search?: string;
-  selected?: Node | null;
-  pinned: ReadonlyArray<NodeID>;
-  groupNodesBy?: "" | "package";
-  orderNodesBy?: [any[], string[]];
-  orderGroupsBy?: [any[], string[]];
-  loading?: boolean;
-  classes: any;
-  className?: string;
-};
+  baseGraph: Graph
+  graph: Graph
+  nodes: ReadonlyArray<Node>
+  renderItem: (a: any) => React.ReactNode
+  renderEmpty: (a: any) => React.ReactNode
+  search?: string
+  selected?: Node | null
+  pinned: ReadonlyArray<NodeID>
+  groupNodesBy?: "" | "package"
+  orderNodesBy?: [any[], string[]]
+  orderGroupsBy?: [any[], string[]]
+  loading?: boolean
+  classes: any
+  className?: string
+}
 
 type State = {
-  search: string;
-  expanded: ReadonlyArray<any>;
-};
+  search: string
+  expanded: ReadonlyArray<any>
+}
 
 const styles = (theme) => ({
   root: {
@@ -58,15 +58,15 @@ const styles = (theme) => ({
   list: {
     outline: 0,
   },
-});
+})
 
-const treeOptions = { getKey: (group) => group.name };
+const treeOptions = { getKey: (group) => group.name }
 
 class NodeList extends React.PureComponent<Props, State> {
   state = {
     search: "",
     expanded: [],
-  };
+  }
   fuseSelector = createSelector(
     (_, p) => p.nodes,
     (nodes) => {
@@ -74,73 +74,74 @@ class NodeList extends React.PureComponent<Props, State> {
         keys: ["name", "id", "kind"],
         tokenize: true,
         matchAllTokens: true,
-      });
+      })
     }
-  );
+  )
   searchSelector = createSelector(
     this.fuseSelector,
     (s) => s.search,
     (_, p) => p.orderNodesBy,
     (fuse, search, orderNodesBy) => {
-      const nodes = search ? fuse.search(search) : 
-      // @ts-expect-error Fuse
-      fuse.list;
+      const nodes = search
+        ? fuse.search(search)
+        : // @ts-expect-error Fuse
+          fuse.list
       if (orderNodesBy && !search) {
-        return orderBy(nodes, ...orderNodesBy);
+        return orderBy(nodes, ...orderNodesBy)
       }
-      return nodes;
+      return nodes
     }
-  );
+  )
   pinnedSelector = createSelector(
     this.searchSelector,
     (_, p) => p.pinned,
     (nodes, pinned) => {
-      return nodes.filter((node) => pinned.indexOf(node.id) >= 0);
+      return nodes.filter((node) => pinned.indexOf(node.id) >= 0)
     }
-  );
+  )
   groupSelector = createSelector(
     this.searchSelector,
     this.pinnedSelector,
     (_, p) => p.groupNodesBy,
     (_, p) => p.orderGroupsBy,
     (nodes, pinned, groupNodesBy, orderGroupsBy) => {
-      let rows;
+      let rows
       if (groupNodesBy === "package") {
         const groups = groupBy(nodes, (node) => {
           if (node.kind === "module") {
-            return getPackageName(node) || "(root modules)";
+            return getPackageName(node) || "(root modules)"
           }
-          return `(${node.kind}s)`;
-        });
+          return `(${node.kind}s)`
+        })
         rows = map(groups, (children, name) => ({
           name,
           children: sortBy(children, "file"),
           size: sumBy(children, "size"),
           group: true,
-        }));
-        rows = orderBy(rows, ...orderGroupsBy);
+        }))
+        rows = orderBy(rows, ...orderGroupsBy)
       } else {
-        rows = nodes.slice();
+        rows = nodes.slice()
       }
-      rows.unshift(...pinned);
-      return rows;
+      rows.unshift(...pinned)
+      return rows
     }
-  );
+  )
   nodesSelector = createSelector(
     this.groupSelector,
     (s) => s.expanded,
     (tree, expanded) => {
-      return flattenTreeToRows(tree, { expanded }, treeOptions);
+      return flattenTreeToRows(tree, { expanded }, treeOptions)
     }
-  );
+  )
 
   renderList() {
     const { classes, baseGraph, graph, groupNodesBy, renderItem, renderEmpty } =
-      this.props;
+      this.props
     const nodes = this.state.search
       ? // $FlowFixMe
         this.searchSelector(this.state, this.props)
-      : this.nodesSelector(this.state, this.props);
+      : this.nodesSelector(this.state, this.props)
 
     return (
       <div className={classes.listContainer}>
@@ -153,7 +154,7 @@ class NodeList extends React.PureComponent<Props, State> {
               rowCount={nodes.length}
               rowHeight={54}
               rowRenderer={({ index, style }) => {
-                const node = nodes[index];
+                const node = nodes[index]
                 if (node.group) {
                   return (
                     <ListItem
@@ -181,7 +182,7 @@ class NodeList extends React.PureComponent<Props, State> {
                           : "expand_more"}
                       </Icon>
                     </ListItem>
-                  );
+                  )
                 }
                 return renderItem({
                   node,
@@ -190,19 +191,19 @@ class NodeList extends React.PureComponent<Props, State> {
                   graph,
                   hidePackage: Boolean(groupNodesBy),
                   style,
-                });
+                })
               }}
               noRowsRenderer={renderEmpty}
             />
           )}
         </AutoSizer>
       </div>
-    );
+    )
   }
 
   render() {
-    const { classes, className, loading } = this.props;
-    const { search } = this.state;
+    const { classes, className, loading } = this.props
+    const { search } = this.state
     return (
       <div className={classNames(className, classes.root)}>
         <Input
@@ -232,9 +233,9 @@ class NodeList extends React.PureComponent<Props, State> {
           this.renderList()
         )}
       </div>
-    );
+    )
   }
 }
 //scrollToIndex={scrollToIndex >= 0 ? scrollToIndex : null}
 // @ts-expect-error mui
-export default withStyles(styles)(NodeList);
+export default withStyles(styles)(NodeList)

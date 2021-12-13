@@ -1,10 +1,10 @@
-import type { NodeID, Node, Graph } from "./analysis/graph";
-import type { Change } from "./analysis/changes";
+import type { NodeID, Node, Graph } from "./analysis/graph"
+import type { Change } from "./analysis/changes"
 
-import * as React from "react";
-import classNames from "classnames";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import Dropzone from "react-dropzone";
+import * as React from "react"
+import classNames from "classnames"
+import LinearProgress from "@material-ui/core/LinearProgress"
+import Dropzone from "react-dropzone"
 import {
   AppBar,
   Typography,
@@ -14,39 +14,39 @@ import {
   Button,
   Drawer,
   Icon,
-} from "@material-ui/core";
+} from "@material-ui/core"
 
-import WarningBar from "./ui/WarningBar";
-import ErrorBar from "./ui/ErrorBar";
-import EmptyBox from "./ui/EmptyBox";
-import ParentsExplorer from "./ui/chains/ParentsExplorer";
-import ChildrenExplorer from "./ui/chains/ChildrenExplorer";
+import WarningBar from "./ui/WarningBar"
+import ErrorBar from "./ui/ErrorBar"
+import EmptyBox from "./ui/EmptyBox"
+import ParentsExplorer from "./ui/chains/ParentsExplorer"
+import ChildrenExplorer from "./ui/chains/ChildrenExplorer"
 
-const ChainsExplorer = React.lazy(() => import('./ui/chains/ChainsExplorer'))
-const ChangesView = React.lazy(() => import('./ui/chains/ChangesView'))
+const ChainsExplorer = React.lazy(() => import("./ui/chains/ChainsExplorer"))
+const ChangesView = React.lazy(() => import("./ui/chains/ChangesView"))
 
 type Props = {
-  loading: boolean;
-  baseGraph: Graph | undefined | null;
-  graph: Graph | undefined | null;
-  error: any;
-  fromNode: Node | undefined | null;
-  toNode: Node | undefined | null;
-  changes: ReadonlyArray<Change>;
-  showChanges: boolean;
-  pinned: ReadonlyArray<NodeID>;
-  page: string;
-  onAddChange: (a: Change) => any;
-  onFromNodeSelect: (a: NodeID) => any;
-  onToNodeSelect: (a: NodeID) => any;
-  onNodesSelectionReset: () => any;
-  onChangesUpdate: (a: ReadonlyArray<Change>) => any;
-  onFileDrop: (files: File[], rejectedFiles: File[]) => any;
-  onShowChangesToggle: () => any;
-  onPinnedToggle: (a: NodeID) => any;
-  onNavigate: (p: string) => void;
-  classes: any;
-};
+  loading: boolean
+  baseGraph: Graph | undefined | null
+  graph: Graph | undefined | null
+  error: any
+  fromNode: Node | undefined | null
+  toNode: Node | undefined | null
+  changes: ReadonlyArray<Change>
+  showChanges: boolean
+  pinned: ReadonlyArray<NodeID>
+  page: string
+  onAddChange: (a: Change) => any
+  onFromNodeSelect: (a: NodeID) => any
+  onToNodeSelect: (a: NodeID) => any
+  onNodesSelectionReset: () => any
+  onChangesUpdate: (a: ReadonlyArray<Change>) => any
+  onFileDrop: (files: File[], rejectedFiles: File[]) => any
+  onShowChangesToggle: () => any
+  onPinnedToggle: (a: NodeID) => any
+  onNavigate: (p: string) => void
+  classes: any
+}
 
 const styles = (theme) => ({
   root: {
@@ -105,10 +105,10 @@ const styles = (theme) => ({
     margin: "auto",
     cursor: "pointer",
   },
-});
+})
 
 class AppUI extends React.Component<Props> {
-  dropzone: any;
+  dropzone: any
 
   renderGraph() {
     const {
@@ -122,8 +122,8 @@ class AppUI extends React.Component<Props> {
       onToNodeSelect,
       onAddChange,
       onPinnedToggle,
-    } = this.props;
-    if (!graph || !baseGraph) return null;
+    } = this.props
+    if (!graph || !baseGraph) return null
     return (
       <div className={classNames(classes.container, classes.panes)}>
         <ParentsExplorer
@@ -161,7 +161,7 @@ class AppUI extends React.Component<Props> {
           />
         ) : null}
       </div>
-    );
+    )
   }
 
   render() {
@@ -178,7 +178,7 @@ class AppUI extends React.Component<Props> {
       onChangesUpdate,
       onFileDrop,
       onShowChangesToggle,
-    } = this.props;
+    } = this.props
     return (
       <Dropzone
         multiple={false}
@@ -189,12 +189,14 @@ class AppUI extends React.Component<Props> {
         className={classes.dropzone}
         disableClick
         ref={(node) => {
-          this.dropzone = node;
+          this.dropzone = node
         }}
       >
         <div className={classes.root}>
           <CssBaseline />
-          <React.Suspense fallback={<LinearProgress className={classes.progress} />}>
+          <React.Suspense
+            fallback={<LinearProgress className={classes.progress} />}
+          >
             <AppBar position="static">
               <Toolbar variant="regular" className={classes.container}>
                 {!loading && (
@@ -225,8 +227,8 @@ class AppUI extends React.Component<Props> {
             {loading && <LinearProgress className={classes.progress} />}
             {graph && graph.errors.length > 0 && (
               <WarningBar>
-                There where {graph.errors.length} errors found. Check the console
-                for more
+                There where {graph.errors.length} errors found. Check the
+                console for more
               </WarningBar>
             )}
             {error && <ErrorBar>{String(error)}</ErrorBar>}
@@ -274,9 +276,9 @@ class AppUI extends React.Component<Props> {
           </React.Suspense>
         </div>
       </Dropzone>
-    );
+    )
   }
 }
 
 // @ts-expect-error mui
-export default withStyles(styles)(AppUI);
+export default withStyles(styles)(AppUI)

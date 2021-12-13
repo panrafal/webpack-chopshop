@@ -1,12 +1,12 @@
-import type { Graph, Node, NodeID } from "../../analysis/graph";
-import type { Props as NodeListProps } from "./NodeList";
-import type { Props as NodeItemProps } from "./NodeItem";
+import type { Graph, Node, NodeID } from "../../analysis/graph"
+import type { Props as NodeListProps } from "./NodeList"
+import type { Props as NodeItemProps } from "./NodeItem"
 
-import * as React from "react";
-import classNames from "classnames";
-import { map } from "lodash";
-import { createSelector } from "reselect";
-import Async from "react-promise";
+import * as React from "react"
+import classNames from "classnames"
+import { map } from "lodash"
+import { createSelector } from "reselect"
+import Async from "react-promise"
 import {
   withStyles,
   Icon,
@@ -16,42 +16,42 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-} from "@material-ui/core";
+} from "@material-ui/core"
 
-import EmptyBox from "../EmptyBox";
-import NodeItem from "./NodeItem";
-import NodeList from "./NodeList";
+import EmptyBox from "../EmptyBox"
+import NodeItem from "./NodeItem"
+import NodeList from "./NodeList"
 
 export type Mode = {
-  getNodes: () => ReadonlyArray<Node> | Promise<ReadonlyArray<Node>>;
-  renderTitle: () => React.ReactNode;
-  renderInfo: () => React.ReactNode;
-  renderEmpty: () => string;
-  listProps?: () => Partial<NodeListProps>;
-  itemProps?: (a: any) => Partial<NodeItemProps>;
-};
+  getNodes: () => ReadonlyArray<Node> | Promise<ReadonlyArray<Node>>
+  renderTitle: () => React.ReactNode
+  renderInfo: () => React.ReactNode
+  renderEmpty: () => string
+  listProps?: () => Partial<NodeListProps>
+  itemProps?: (a: any) => Partial<NodeItemProps>
+}
 
 export type Modes = {
-  [x: string]: Mode;
+  [x: string]: Mode
 }
 
 export type Props = {
-  baseGraph: Graph;
-  graph: Graph;
-  pinned: ReadonlyArray<NodeID>;
-  selected: Node | undefined | null;
-  retainerRootNode?: Node | null;
-  modes: Modes;
-  defaultMode: string;
-  onNodeSelect: (a: NodeID) => void;
-  classes: any;
-  className?: string;
-};
+  baseGraph: Graph
+  graph: Graph
+  pinned: ReadonlyArray<NodeID>
+  selected: Node | undefined | null
+  retainerRootNode?: Node | null
+  modes: Modes
+  defaultMode: string
+  onNodeSelect: (a: NodeID) => void
+  classes: any
+  className?: string
+}
 
 type State = {
-  modeId: string | undefined | null;
-  modeMenuAnchor: any;
-};
+  modeId: string | undefined | null
+  modeMenuAnchor: any
+}
 
 const styles = (theme) => ({
   root: {
@@ -69,34 +69,34 @@ const styles = (theme) => ({
   modeMenuItem: {
     width: 300,
   },
-});
+})
 
 class GraphExplorer extends React.Component<Props, State> {
-  state = { modeId: null, modeMenuAnchor: null };
+  state = { modeId: null, modeMenuAnchor: null }
 
-  modeSelector = (s, p) => p.modes[s.modeId || ""] || p.modes[p.defaultMode];
-  nodesSelector = (s, p) => this.modeSelector(s, p).getNodes();
+  modeSelector = (s, p) => p.modes[s.modeId || ""] || p.modes[p.defaultMode]
+  nodesSelector = (s, p) => this.modeSelector(s, p).getNodes()
 
   nodesPromiseSelector = createSelector(
     this.nodesSelector,
     // Needed so we don't recreate the promise on every render
     (nodes) => Promise.resolve(nodes)
-  );
+  )
 
   static getDerivedStateFromProps({ modes = {} }, state: State) {
     if (!modes[state.modeId]) {
       // If selected mode is not available anymore, switch to default
-      return { modeId: null };
+      return { modeId: null }
     }
-    return null;
+    return null
   }
 
   handleModeMenuOpen = (event) => {
-    this.setState({ modeMenuAnchor: event.currentTarget });
-  };
+    this.setState({ modeMenuAnchor: event.currentTarget })
+  }
   handleModeMenuClose = () => {
-    this.setState({ modeMenuAnchor: null });
-  };
+    this.setState({ modeMenuAnchor: null })
+  }
 
   renderList(nodes) {
     const {
@@ -107,9 +107,9 @@ class GraphExplorer extends React.Component<Props, State> {
       selected,
       pinned,
       onNodeSelect,
-    } = this.props;
-    const mode = this.modeSelector(this.state, this.props);
-    const listProps = mode.listProps ? mode.listProps() : {};
+    } = this.props
+    const mode = this.modeSelector(this.state, this.props)
+    const listProps = mode.listProps ? mode.listProps() : {}
     return (
       <NodeList
         className={classes.list}
@@ -144,13 +144,13 @@ class GraphExplorer extends React.Component<Props, State> {
         )}
         {...listProps}
       />
-    );
+    )
   }
 
   renderModeMenu() {
-    const { classes, modes, defaultMode } = this.props;
-    const { modeMenuAnchor, modeId } = this.state;
-    const currentModeId = modeId || defaultMode;
+    const { classes, modes, defaultMode } = this.props
+    const { modeMenuAnchor, modeId } = this.state
+    const currentModeId = modeId || defaultMode
     return (
       <Menu
         id="lock-menu"
@@ -169,14 +169,14 @@ class GraphExplorer extends React.Component<Props, State> {
           </MenuItem>
         ))}
       </Menu>
-    );
+    )
   }
 
   render() {
-    const { className, classes } = this.props;
+    const { className, classes } = this.props
 
-    const mode = this.modeSelector(this.state, this.props);
-    const nodesPromise = this.nodesPromiseSelector(this.state, this.props);
+    const mode = this.modeSelector(this.state, this.props)
+    const nodesPromise = this.nodesPromiseSelector(this.state, this.props)
 
     return (
       <div className={classNames(className, classes.root)}>
@@ -203,9 +203,9 @@ class GraphExplorer extends React.Component<Props, State> {
           pending={() => this.renderList(null)}
         />
       </div>
-    );
+    )
   }
 }
 
 // @ts-expect-error mui
-export default withStyles(styles)(GraphExplorer);
+export default withStyles(styles)(GraphExplorer)

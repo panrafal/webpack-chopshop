@@ -14,16 +14,16 @@
     "predeploy": "yarn run build",
     "deploy": "gh-pages -d build"
   },
-    "husky": {
-      "hooks": {
-        "pre-commit": "lint-staged"
-      }
-    },
-    "lint-staged": {
-        "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-          "prettier --write"
-        ]
-      }    ,
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@types/jest": "^27.0.3",
@@ -58,6 +58,9 @@
     "extends": [
       "react-app"
     ]
+  },
+  "prettier": {
+    "semi": false
   },
   "browserslist": {
     "development": [

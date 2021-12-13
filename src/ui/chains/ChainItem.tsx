@@ -1,20 +1,20 @@
-import type { Graph, NodeID } from "../../analysis/graph";
+import type { Graph, NodeID } from "../../analysis/graph"
 
-import * as React from "react";
-import { withStyles, ListItem, ListItemText } from "@material-ui/core";
+import * as React from "react"
+import { withStyles, ListItem, ListItemText } from "@material-ui/core"
 
-import { getNode } from "../../analysis/graph";
-import NodeName from "./NodeName";
+import { getNode } from "../../analysis/graph"
+import NodeName from "./NodeName"
 
 type Props = {
-  graph: Graph;
-  chain: ReadonlyArray<NodeID>;
-  through: ReadonlyArray<NodeID>;
-  checked?: boolean;
-  onClick: React.MouseEventHandler<HTMLDivElement>;
-  style: any;
-  classes: any;
-};
+  graph: Graph
+  chain: ReadonlyArray<NodeID>
+  through: ReadonlyArray<NodeID>
+  checked?: boolean
+  onClick: React.MouseEventHandler<HTMLDivElement>
+  style: any
+  classes: any
+}
 
 const styles = (theme) => ({
   root: {},
@@ -32,7 +32,7 @@ const styles = (theme) => ({
     left: -24,
     top: 0,
   },
-});
+})
 
 function ChainItem({
   graph,
@@ -69,8 +69,8 @@ function ChainItem({
         />
       </ListItem>
     </div>
-  );
+  )
 }
 
 // @ts-expect-error mui
-export default withStyles(styles)(ChainItem);
+export default withStyles(styles)(ChainItem)

@@ -1,20 +1,20 @@
-import type { Node } from "../../analysis/graph";
+import type { Node } from "../../analysis/graph"
 
-import * as React from "react";
-import classNames from "classnames";
-import { withStyles, Tooltip } from "@material-ui/core";
+import * as React from "react"
+import classNames from "classnames"
+import { withStyles, Tooltip } from "@material-ui/core"
 
-import { getModuleInfo } from "../../analysis/info";
+import { getModuleInfo } from "../../analysis/info"
 
 type Props = {
-  node: Node;
-  hidePackage?: boolean;
-  onlyPackage?: boolean;
-  tooltip?: boolean | string;
-  children?: React.ReactNode;
-  classes: any;
-  className?: string;
-};
+  node: Node
+  hidePackage?: boolean
+  onlyPackage?: boolean
+  tooltip?: boolean | string
+  children?: React.ReactNode
+  classes: any
+  className?: string
+}
 
 const styles = (theme) => ({
   root: {
@@ -43,7 +43,7 @@ const styles = (theme) => ({
   extension: {
     flexShrink: 0,
   },
-});
+})
 
 function NodeName({
   node,
@@ -57,11 +57,11 @@ function NodeName({
   // {selectFromNode && <a onClick={() => selectFromNode(node.id)}>From</a>}
   // {selectToNode && <a onClick={() => selectToNode(node.id)}>To</a>}
 
-  const info = getModuleInfo(node);
+  const info = getModuleInfo(node)
 
-  const packageName = hidePackage ? "" : info.packageName;
-  const path = onlyPackage ? "" : (info.path || "").replace(/^\/|\/$/g, "");
-  const name = onlyPackage ? "" : (info.name || "") + (info.extension || "");
+  const packageName = hidePackage ? "" : info.packageName
+  const path = onlyPackage ? "" : (info.path || "").replace(/^\/|\/$/g, "")
+  const name = onlyPackage ? "" : (info.name || "") + (info.extension || "")
 
   const text = (
     <span className={classNames(className, classes.root)}>
@@ -75,7 +75,7 @@ function NodeName({
       {(packageName || name) && children ? <span>,&nbsp;</span> : ""}
       {children && <span className={classes.children}>{children}</span>}
     </span>
-  );
+  )
 
   if (tooltip) {
     return (
@@ -91,11 +91,11 @@ function NodeName({
       >
         {text}
       </Tooltip>
-    );
+    )
   }
 
-  return text;
+  return text
 }
 
 // @ts-expect-error mui
-export default withStyles(styles)(NodeName);
+export default withStyles(styles)(NodeName)

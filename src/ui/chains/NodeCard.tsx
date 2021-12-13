@@ -1,7 +1,7 @@
-import type { Graph, Node, Edge } from "../../analysis/graph";
+import type { Graph, Node, Edge } from "../../analysis/graph"
 
-import * as React from "react";
-import classNames from "classnames";
+import * as React from "react"
+import classNames from "classnames"
 import {
   withStyles,
   Typography,
@@ -11,21 +11,21 @@ import {
   CardContent,
   Collapse,
   CardActions,
-} from "@material-ui/core";
+} from "@material-ui/core"
 
-import NodeSize from "./NodeSize";
-import NodeName from "./NodeName";
+import NodeSize from "./NodeSize"
+import NodeName from "./NodeName"
 
 type Props = {
-  baseGraph: Graph;
-  graph: Graph;
-  node: Node;
-  retainerRootNode?: Node | null;
-  edge?: Edge | null;
-  actions?: React.ReactNode;
-  classes: any;
-  className?: string;
-};
+  baseGraph: Graph
+  graph: Graph
+  node: Node
+  retainerRootNode?: Node | null
+  edge?: Edge | null
+  actions?: React.ReactNode
+  classes: any
+  className?: string
+}
 
 const styles = (theme) => ({
   root: {
@@ -58,16 +58,16 @@ const styles = (theme) => ({
   expandOpen: {
     transform: "rotate(180deg)",
   },
-});
+})
 
 type State = {
-  expanded: boolean;
-};
+  expanded: boolean
+}
 
 class NodeCard extends React.PureComponent<Props, State> {
   state = {
     expanded: false,
-  };
+  }
   render() {
     const {
       classes,
@@ -78,8 +78,8 @@ class NodeCard extends React.PureComponent<Props, State> {
       retainerRootNode,
       edge,
       actions,
-    } = this.props;
-    const { expanded } = this.state;
+    } = this.props
+    const { expanded } = this.state
 
     return (
       <div className={classNames(className, classes.root)}>
@@ -152,9 +152,9 @@ class NodeCard extends React.PureComponent<Props, State> {
           </Collapse>
         </Card>
       </div>
-    );
+    )
   }
 }
 
 // @ts-expect-error mui
-export default withStyles(styles)(NodeCard);
+export default withStyles(styles)(NodeCard)

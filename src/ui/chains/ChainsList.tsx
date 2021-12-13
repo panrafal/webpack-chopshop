@@ -1,24 +1,24 @@
-import type { Graph, Node, NodeID } from "../../analysis/graph";
+import type { Graph, Node, NodeID } from "../../analysis/graph"
 
-import * as React from "react";
-import classNames from "classnames";
-import { difference } from "lodash";
-import { List, AutoSizer } from "react-virtualized";
-import { withStyles, Icon } from "@material-ui/core";
+import * as React from "react"
+import classNames from "classnames"
+import { difference } from "lodash"
+import { List, AutoSizer } from "react-virtualized"
+import { withStyles, Icon } from "@material-ui/core"
 
-import ChainItem from "./ChainItem";
-import EmptyBox from "../EmptyBox";
+import ChainItem from "./ChainItem"
+import EmptyBox from "../EmptyBox"
 
 type Props = {
-  graph: Graph;
-  fromNode: Node;
-  toNode: Node;
-  chains: ReadonlyArray<ReadonlyArray<NodeID>>;
-  selectedChain: ReadonlyArray<NodeID>;
-  onChainSelect: (nodes: ReadonlyArray<NodeID>) => void;
-  classes: any;
-  className?: string;
-};
+  graph: Graph
+  fromNode: Node
+  toNode: Node
+  chains: ReadonlyArray<ReadonlyArray<NodeID>>
+  selectedChain: ReadonlyArray<NodeID>
+  onChainSelect: (nodes: ReadonlyArray<NodeID>) => void
+  classes: any
+  className?: string
+}
 
 const styles = (theme) => ({
   root: {
@@ -27,7 +27,7 @@ const styles = (theme) => ({
   list: {
     outline: 0,
   },
-});
+})
 
 function ChainsList(props: Props) {
   const {
@@ -39,13 +39,13 @@ function ChainsList(props: Props) {
     toNode,
     selectedChain,
     onChainSelect,
-  } = props;
-  const usedIds = [fromNode.id, toNode.id];
+  } = props
+  const usedIds = [fromNode.id, toNode.id]
   const finalChains = chains.map((chain) => {
-    const through = difference(chain, usedIds);
-    usedIds.push(...through);
-    return { through, chain };
-  });
+    const through = difference(chain, usedIds)
+    usedIds.push(...through)
+    return { through, chain }
+  })
 
   return (
     <div className={classNames(className, classes.root)}>
@@ -58,7 +58,7 @@ function ChainsList(props: Props) {
             rowCount={finalChains.length}
             rowHeight={54}
             rowRenderer={({ index, style }) => {
-              const { chain, through } = finalChains[index];
+              const { chain, through } = finalChains[index]
               return (
                 <ChainItem
                   key={index}
@@ -71,7 +71,7 @@ function ChainsList(props: Props) {
                     (id, index) => chain[index] === id
                   )}
                 />
-              );
+              )
             }}
             noRowsRenderer={() => (
               <EmptyBox icon={<Icon>link_off</Icon>}>
@@ -82,8 +82,8 @@ function ChainsList(props: Props) {
         )}
       </AutoSizer>
     </div>
-  );
+  )
 }
 
 // @ts-expect-error mui
-export default withStyles(styles)(ChainsList);
+export default withStyles(styles)(ChainsList)

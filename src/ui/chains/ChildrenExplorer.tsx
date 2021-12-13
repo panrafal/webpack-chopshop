@@ -1,119 +1,119 @@
-import type { Node, NodeID, Graph } from "../../analysis/graph";
+import type { Node, NodeID, Graph } from "../../analysis/graph"
 
-import * as React from "react";
-import classNames from "classnames";
-import { without } from "lodash";
-import { createSelector } from "reselect";
-import { withStyles } from "@material-ui/core";
+import * as React from "react"
+import classNames from "classnames"
+import { without } from "lodash"
+import { createSelector } from "reselect"
+import { withStyles } from "@material-ui/core"
 
-import { getNodes, getAllNodes } from "../../analysis/graph";
-import GraphExplorer, { Mode } from "./GraphExplorer";
-import NodeName from "./NodeName";
+import { getNodes, getAllNodes } from "../../analysis/graph"
+import GraphExplorer, { Mode } from "./GraphExplorer"
+import NodeName from "./NodeName"
 import {
   keepOnlyLeafModules,
   getDeepNodeChildren,
   getRetainedNodes,
   getDisabledLeafChildren,
-} from "../../analysis/dependencies";
-import { calculateRetainedTreeSize } from "../../analysis/size";
+} from "../../analysis/dependencies"
+import { calculateRetainedTreeSize } from "../../analysis/size"
 
 type Props = {
-  baseGraph: Graph;
-  graph: Graph;
-  pinned: ReadonlyArray<NodeID>;
-  fromNode: Node | undefined | null;
-  toNode: Node | undefined | null;
-  onNodeSelect: (a: NodeID) => void;
-  className?: string;
-  classes: any;
-};
+  baseGraph: Graph
+  graph: Graph
+  pinned: ReadonlyArray<NodeID>
+  fromNode: Node | undefined | null
+  toNode: Node | undefined | null
+  onNodeSelect: (a: NodeID) => void
+  className?: string
+  classes: any
+}
 
 const styles = {
   root: {},
-};
+}
 
 class ChildrenExplorer extends React.PureComponent<Props> {
   allNodesSelector = createSelector(
     (_, p) => p.graph,
     (graph) => getAllNodes(graph)
-  );
-  getAllNodes = () => this.allNodesSelector(this.state, this.props);
+  )
+  getAllNodes = () => this.allNodesSelector(this.state, this.props)
 
   leafNodesSelector = createSelector(
     (_, p) => p.graph,
     (graph) => keepOnlyLeafModules(graph, getAllNodes(graph))
-  );
-  getLeafNodes = () => this.leafNodesSelector(this.state, this.props);
+  )
+  getLeafNodes = () => this.leafNodesSelector(this.state, this.props)
 
   directChildrenNodesSelector = createSelector(
     (_, p) => p.graph,
     (_, p) => p.fromNode,
     (_, p) => p.toNode,
     async (graph, fromNode, toNode) => {
-      if (!fromNode || !toNode) return [];
-      let nodes = await getNodes(graph, toNode.children);
+      if (!fromNode || !toNode) return []
+      let nodes = await getNodes(graph, toNode.children)
       nodes = await Promise.all(
         nodes.map(async (node) => ({
           ...node,
           treeSize: await calculateRetainedTreeSize(graph, fromNode, node),
         }))
-      );
-      return nodes;
+      )
+      return nodes
     }
-  );
+  )
   getDirectChildrenNodes = () =>
-    this.directChildrenNodesSelector(this.state, this.props);
+    this.directChildrenNodesSelector(this.state, this.props)
 
   retainedChildrenNodesSelector = createSelector(
     (_, p) => p.graph,
     (_, p) => p.fromNode,
     (_, p) => p.toNode,
     (graph, fromNode, toNode) => {
-      if (!fromNode || !toNode) return [];
-      if (fromNode === toNode) return this.getChildrenNodes();
+      if (!fromNode || !toNode) return []
+      if (fromNode === toNode) return this.getChildrenNodes()
       return getRetainedNodes(graph, fromNode, toNode).then((ids) =>
         getNodes(graph, without(ids, toNode.id))
-      );
+      )
     }
-  );
+  )
   getRetainedChildrenNodes = () =>
-    this.retainedChildrenNodesSelector(this.state, this.props);
+    this.retainedChildrenNodesSelector(this.state, this.props)
 
   childrenNodesSelector = createSelector(
     (_, p) => p.graph,
     (_, p) => p.fromNode,
     (graph, fromNode) => {
-      if (!fromNode) return [];
+      if (!fromNode) return []
       return getDeepNodeChildren(graph, fromNode).then((ids) =>
         getNodes(graph, ids)
-      );
+      )
     }
-  );
-  getChildrenNodes = () => this.childrenNodesSelector(this.state, this.props);
+  )
+  getChildrenNodes = () => this.childrenNodesSelector(this.state, this.props)
 
   childAsyncNodesSelector = createSelector(
     (_, p) => p.graph,
     (_, p) => p.fromNode,
     (graph, fromNode) => {
-      if (!fromNode) return [];
+      if (!fromNode) return []
       return getDisabledLeafChildren(graph, fromNode).then((ids) =>
         getNodes(graph, ids)
-      );
+      )
     }
-  );
+  )
   getChildAsyncNodes = () =>
-    this.childAsyncNodesSelector(this.state, this.props);
+    this.childAsyncNodesSelector(this.state, this.props)
 
   childLeafNodesSelector = createSelector(
     (_, p) => p.graph,
     this.childrenNodesSelector,
     async (graph, nodes) => {
-      return keepOnlyLeafModules(graph, await nodes);
+      return keepOnlyLeafModules(graph, await nodes)
     }
-  );
-  getChildLeafNodes = () => this.childLeafNodesSelector(this.state, this.props);
+  )
+  getChildLeafNodes = () => this.childLeafNodesSelector(this.state, this.props)
 
-  modes: {[key: string]: Mode} = {
+  modes: { [key: string]: Mode } = {
     all: {
       getNodes: this.getAllNodes,
       renderTitle: () => "All Nodes",
@@ -124,13 +124,13 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       getNodes: this.getChildrenNodes,
       renderTitle: () => "All Children",
       renderInfo: () => {
-        const { fromNode } = this.props;
-        if (!fromNode) return null;
+        const { fromNode } = this.props
+        if (!fromNode) return null
         return (
           <>
             Move down to children of <NodeName node={fromNode} />
           </>
-        );
+        )
       },
       renderEmpty: () => "No children found",
     },
@@ -138,13 +138,13 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       getNodes: this.getRetainedChildrenNodes,
       renderTitle: () => "Retained Children",
       renderInfo: () => {
-        const { toNode } = this.props;
-        if (!toNode) return null;
+        const { toNode } = this.props
+        if (!toNode) return null
         return (
           <>
             Move down to children retained by <NodeName node={toNode} />
           </>
-        );
+        )
       },
       renderEmpty: () => "No children found",
     },
@@ -152,13 +152,13 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       getNodes: this.getDirectChildrenNodes,
       renderTitle: () => "Direct Children",
       renderInfo: () => {
-        const { toNode } = this.props;
-        if (!toNode) return null;
+        const { toNode } = this.props
+        if (!toNode) return null
         return (
           <>
             Move down to direct children of <NodeName node={toNode} />
           </>
-        );
+        )
       },
       renderEmpty: () => "No children found",
       listProps: () => ({
@@ -170,13 +170,13 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       getNodes: this.getChildAsyncNodes,
       renderTitle: () => "Child Async Modules",
       renderInfo: () => {
-        const { fromNode } = this.props;
-        if (!fromNode) return null;
+        const { fromNode } = this.props
+        if (!fromNode) return null
         return (
           <>
             Move down to child async modules of <NodeName node={fromNode} />
           </>
-        );
+        )
       },
       renderEmpty: () => "No modules found",
       listProps: () => ({
@@ -191,13 +191,13 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       getNodes: this.getChildLeafNodes,
       renderTitle: () => "Child Leaf Modules",
       renderInfo: () => {
-        const { fromNode } = this.props;
-        if (!fromNode) return null;
+        const { fromNode } = this.props
+        if (!fromNode) return null
         return (
           <>
             Move down to child leaf modules of <NodeName node={fromNode} />
           </>
-        );
+        )
       },
       renderEmpty: () => "No modules found",
     },
@@ -207,7 +207,7 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       renderInfo: () => "Select leaf module to finish at",
       renderEmpty: () => "No modules found",
     },
-  };
+  }
 
   render() {
     const {
@@ -219,7 +219,7 @@ class ChildrenExplorer extends React.PureComponent<Props> {
       graph,
       pinned,
       onNodeSelect,
-    } = this.props;
+    } = this.props
 
     return (
       <GraphExplorer
@@ -233,8 +233,8 @@ class ChildrenExplorer extends React.PureComponent<Props> {
         selected={toNode}
         retainerRootNode={fromNode}
       />
-    );
+    )
   }
 }
 
-export default withStyles(styles)(ChildrenExplorer);
+export default withStyles(styles)(ChildrenExplorer)

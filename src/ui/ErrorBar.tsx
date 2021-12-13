@@ -1,10 +1,10 @@
-import * as React from "react";
-import { withStyles, Icon } from "@material-ui/core";
+import * as React from "react"
+import { withStyles, Icon } from "@material-ui/core"
 
 type Props = {
-  children: React.ReactNode;
-  classes: any;
-};
+  children: React.ReactNode
+  classes: any
+}
 
 const styles = (theme) => ({
   root: {
@@ -19,13 +19,13 @@ const styles = (theme) => ({
   icon: {
     "margin-right": 8,
   },
-});
+})
 
 const ErrorBar = ({ classes, children }: Props) => (
   <div className={classes.root}>
     <Icon className={classes.icon}>error</Icon>
     <span className={classes.label}>{children}</span>
   </div>
-);
+)
 
-export default withStyles(styles)(ErrorBar);
+export default withStyles(styles)(ErrorBar)

@@ -1,24 +1,24 @@
-import type { Graph, Node } from "../../analysis/graph";
+import type { Graph, Node } from "../../analysis/graph"
 
-import * as React from "react";
-import numeral from "numeral";
-import Async from "react-promise";
-import { withStyles, Tooltip } from "@material-ui/core";
-import red from "@material-ui/core/colors/red";
-import green from "@material-ui/core/colors/green";
+import * as React from "react"
+import numeral from "numeral"
+import Async from "react-promise"
+import { withStyles, Tooltip } from "@material-ui/core"
+import red from "@material-ui/core/colors/red"
+import green from "@material-ui/core/colors/green"
 
 import {
   calculateTreeSize,
   calculateRetainedTreeSize,
-} from "../../analysis/size";
+} from "../../analysis/size"
 
 type Props = {
-  baseGraph: Graph;
-  graph: Graph;
-  retainerRootNode?: Node | null;
-  node: Node;
-  classes: any;
-};
+  baseGraph: Graph
+  graph: Graph
+  retainerRootNode?: Node | null
+  node: Node
+  classes: any
+}
 
 const styles = (theme) => ({
   bigger: {
@@ -27,7 +27,7 @@ const styles = (theme) => ({
   smaller: {
     color: green.A700,
   },
-});
+})
 
 function NodeSize({
   baseGraph,
@@ -38,7 +38,7 @@ function NodeSize({
 }: Props) {
   const treeSizeCalculator = retainerRootNode
     ? (g) => calculateRetainedTreeSize(g, retainerRootNode, node)
-    : (g) => calculateTreeSize(g, node);
+    : (g) => calculateTreeSize(g, node)
   return (
     <Async
       promise={Promise.all([
@@ -85,6 +85,6 @@ function NodeSize({
       )}
       pending={"..."}
     />
-  );
+  )
 }
-export default withStyles(styles)(NodeSize);
+export default withStyles(styles)(NodeSize)
