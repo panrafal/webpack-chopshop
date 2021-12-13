@@ -69,7 +69,7 @@ class NodeList extends React.PureComponent<Props, State> {
   }
   fuseSelector = createSelector(
     (_, p) => p.nodes,
-    (nodes) => {
+    (nodes: ReadonlyArray<Node>) => {
       return new Fuse(nodes, {
         keys: ["name", "id", "kind"],
         tokenize: true,
@@ -82,10 +82,7 @@ class NodeList extends React.PureComponent<Props, State> {
     (s) => s.search,
     (_, p) => p.orderNodesBy,
     (fuse, search, orderNodesBy) => {
-      const nodes = search
-        ? fuse.search(search)
-        : // @ts-expect-error Fuse
-          fuse.list
+      const nodes = search ? fuse.search(search) : fuse.list
       if (orderNodesBy && !search) {
         return orderBy(nodes, ...orderNodesBy)
       }
