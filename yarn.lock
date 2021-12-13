@@ -7436,10 +7436,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fuse.js@npm:^3.6.1":
-  version: 3.6.1
-  resolution: "fuse.js@npm:3.6.1"
-  checksum: 958aa877ace65dc900df776becd39a03df68d7eebc7890b5fd2fc8c5d88e2fff238f60c37f80013ce70e9d9e7ac8efa9f503695fdd23d1eca3cc983797b50191
+"fuse.js@npm:^6.4.6":
+  version: 6.4.6
+  resolution: "fuse.js@npm:6.4.6"
+  checksum: 012dfacdc9a3c065d05d031b4eaaad7dd460f66dca100fcef182ed4e70a6b763b6753071702589d0b28def34b48ad077f01426d4ac1d75ef374564f6baa943fd
   languageName: node
   linkType: hard
 
@@ -16078,7 +16078,7 @@ __metadata:
     "@types/react": ^17.0.37
     "@types/react-dom": ^17.0.11
     classnames: ^2.3.1
-    fuse.js: ^3.6.1
+    fuse.js: ^6.4.6
     gh-pages: ^3.2.3
     husky: ^7.0.4
     lint-staged: ^12.1.2

@@ -34,7 +34,7 @@ class App extends React.Component<{}, AppState> {
     changes: [],
     showChanges: false,
     pinned: [],
-    page: "chains",
+    page: "tree",
   }
 
   async componentDidMount() {

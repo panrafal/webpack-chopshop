@@ -1,9 +1,9 @@
-type TreeState = {
+export type TreeState = {
   expanded: ReadonlyArray<any>
 }
 
-type TreeOptions = {
-  getChildren?: (a: any) => ReadonlyArray<any>
+export type TreeOptions<T> = {
+  getChildren?: (a: any) => ReadonlyArray<T>
   getKey?: (a: any) => any
 }
 
@@ -13,18 +13,18 @@ const defaultGetKey = (row) => row
 export function isTreeExpanded(
   state: TreeState,
   row: any,
-  options: TreeOptions = {}
+  options: TreeOptions<any> = {}
 ): boolean {
   const { getKey = defaultGetKey } = options
   return state.expanded.indexOf(getKey(row)) >= 0
 }
 
 // Flattens a tree of items into a flat set of rows, which can be then used in any list rendering lib
-export function flattenTreeToRows(
-  tree: any,
+export function flattenTreeToRows<T>(
+  tree: ReadonlyArray<T>,
   state: TreeState,
-  options: TreeOptions = {}
-): ReadonlyArray<any> {
+  options: TreeOptions<T> = {}
+): ReadonlyArray<T> {
   const result = []
   const { getChildren = defaultGetChildren } = options
   for (const row of tree) {
@@ -40,7 +40,7 @@ export function flattenTreeToRows(
 export function toggleTreeRow(
   state: TreeState,
   row: any,
-  options: TreeOptions = {},
+  options: TreeOptions<any> = {},
   expand?: boolean
 ): TreeState {
   const current = isTreeExpanded(state, row, options)
@@ -58,6 +58,6 @@ export function toggleTreeRow(
 }
 
 export const toggleTreeRowState =
-  (row: any, options: TreeOptions = {}) =>
+  (row: any, options: TreeOptions<any> = {}) =>
   (state: TreeState) =>
     toggleTreeRow(state, row, options)

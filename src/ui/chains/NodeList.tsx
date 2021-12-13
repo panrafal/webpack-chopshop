@@ -72,8 +72,6 @@ class NodeList extends React.Component<Props, State> {
     (nodes: ReadonlyArray<GraphNode>) => {
       return new Fuse(nodes, {
         keys: ["name", "id", "kind"],
-        tokenize: true,
-        matchAllTokens: true,
       })
     }
   )
@@ -82,6 +80,7 @@ class NodeList extends React.Component<Props, State> {
     (s) => s.search,
     (_, p) => p.orderNodesBy,
     (fuse, search, orderNodesBy) => {
+      // @ts-expect-error Fuse
       const nodes = search ? fuse.search(search) : fuse.list
       if (orderNodesBy && !search) {
         return orderBy(nodes, ...orderNodesBy)
@@ -205,7 +204,6 @@ class NodeList extends React.Component<Props, State> {
       <div className={classNames(className, classes.root)}>
         <Input
           className={classes.search}
-          id="adornment-password"
           type="text"
           value={search}
           onChange={(el) => this.setState({ search: el.target.value })}

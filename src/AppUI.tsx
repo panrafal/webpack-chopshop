@@ -105,7 +105,6 @@ class AppUI extends React.Component<Props> {
         return (
           <TreePage
             className={classes.container}
-            baseGraph={baseGraph}
             graph={graph}
             toNode={toNode}
             pinned={pinned}
