@@ -1,4 +1,4 @@
-import { createGraph, addNode, getNodeId, addEdge } from "./graph"
+import { createGraph, addNode, getNodeId, addEdge, ROOT_NODE_ID } from "./graph"
 
 import type { Graph } from "./graph"
 
@@ -13,7 +13,7 @@ export async function readWebpackStats(
   const graph = createGraph()
   const {
     enableAllAsyncImports = false,
-    includeChunks = false,
+    includeChunks = true,
     includeAssets = true,
   } = options
 
@@ -101,13 +101,17 @@ export async function readWebpackStats(
     }
     for (const reason of module.reasons) {
       const type = reason.type || ""
-      if (reason.moduleId == null) {
+      const isEntry = type.includes("entry")
+      if (reason.moduleId == null && !isEntry) {
         // reason has been removed at optimization phase (concatenated, tree-shaken, etc)
         continue
       }
-      const async = type.indexOf("import()") >= 0 && type.indexOf("eager") < 0
+      const async =
+        isEntry || (type.includes("import()") && !type.includes("eager"))
       addEdge(graph, {
-        from: getNodeId("module", reason.moduleIdentifier),
+        from: isEntry
+          ? ROOT_NODE_ID
+          : getNodeId("module", reason.moduleIdentifier),
         to: getNodeId("module", module.identifier),
         kind: type,
         name: reason.userRequest,

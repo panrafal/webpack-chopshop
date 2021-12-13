@@ -1,6 +1,7 @@
 import { mapValues } from "lodash"
 import { BackgroundProcessor, backgroundProcessor } from "./utils"
 
+export const ROOT_NODE_ID = "root"
 export type NodeID = string
 export type EdgeID = string
 export type NodeKind = string
@@ -42,6 +43,7 @@ export type Node = {
 } & NodeSpec
 
 export type Graph = {
+  root: Node
   nodes: {
     [k in NodeID]: Node
   }
@@ -53,14 +55,26 @@ export type Graph = {
   idle: BackgroundProcessor
 }
 
+function createNode(_node: NodeSpec): Node {
+  return { parents: [], children: [], allChildren: [], ..._node }
+}
+
 export function createGraph(): Graph {
-  return {
-    nodes: {},
+  const root = createNode({
+    id: ROOT_NODE_ID,
+    originalId: ROOT_NODE_ID,
+    kind: "compilation",
+    size: 0,
+  })
+  const graph = {
+    root,
+    nodes: { [ROOT_NODE_ID]: root },
     edges: {},
     errors: [],
     cache: {},
     idle: backgroundProcessor(),
   }
+  return graph
 }
 
 export function getNodeId(kind: string, id: string): NodeID {
@@ -140,7 +154,7 @@ export function getParents(graph: Graph, node: Node): ReadonlyArray<Edge> {
 }
 
 export function addNode(graph: Graph, _node: NodeSpec): Node {
-  const node = { parents: [], children: [], allChildren: [], ..._node }
+  const node = createNode(_node)
   if (graph.nodes[node.id]) throw new Error(`Node ${node.id} already in graph`)
   graph.nodes[node.id] = node
   return node
@@ -187,13 +201,15 @@ export function abortGraph(graph: Graph) {
 }
 
 export function cloneGraph(graph: Graph): Graph {
+  const cloneNode = (node) => ({
+    ...node,
+    parents: [...node.parents],
+    children: [...node.children],
+    allChildren: [...node.allChildren],
+  })
   const newGraph = {
-    nodes: mapValues(graph.nodes, (node) => ({
-      ...node,
-      parents: [...node.parents],
-      children: [...node.children],
-      allChildren: [...node.allChildren],
-    })),
+    root: cloneNode(graph.root),
+    nodes: mapValues(graph.nodes, cloneNode),
     edges: mapValues(graph.edges, (edge) => ({ ...edge })),
     errors: [...graph.errors],
     cache: {},

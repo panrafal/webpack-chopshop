@@ -12,7 +12,7 @@ async function gatherChains(
     visited: {
       [k in NodeID]: Node
     }
-    nodesKey: string
+    nodesKey: "children" | "allChildren"
   }
 ): Promise<NodeID[][]> {
   const { nodesKey, visited } = options

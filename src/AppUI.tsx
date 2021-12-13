@@ -2,7 +2,6 @@ import type { NodeID, Node, Graph } from "./analysis/graph"
 import type { Change } from "./analysis/changes"
 
 import * as React from "react"
-import classNames from "classnames"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import Dropzone from "react-dropzone"
 import {
@@ -19,11 +18,9 @@ import {
 import WarningBar from "./ui/WarningBar"
 import ErrorBar from "./ui/ErrorBar"
 import EmptyBox from "./ui/EmptyBox"
-import ParentsExplorer from "./ui/chains/ParentsExplorer"
-import ChildrenExplorer from "./ui/chains/ChildrenExplorer"
-import ChainsPage from "./ui/chains/ChainsPage"
 
-const ChainsExplorer = React.lazy(() => import("./ui/chains/ChainsExplorer"))
+const ChainsPage = React.lazy(() => import("./ui/chains/ChainsPage"))
+const TreePage = React.lazy(() => import("./ui/tree/TreePage"))
 const ChangesView = React.lazy(() => import("./ui/chains/ChangesView"))
 
 type Props = {
@@ -90,6 +87,7 @@ class AppUI extends React.Component<Props> {
 
   renderGraph() {
     const {
+      page,
       baseGraph,
       graph,
       fromNode,
@@ -102,20 +100,38 @@ class AppUI extends React.Component<Props> {
       onPinnedToggle,
     } = this.props
     if (!graph || !baseGraph) return null
-    return (
-      <ChainsPage
-        className={classes.container}
-        baseGraph={baseGraph}
-        graph={graph}
-        fromNode={fromNode}
-        toNode={toNode}
-        pinned={pinned}
-        onFromNodeSelect={onFromNodeSelect}
-        onToNodeSelect={onToNodeSelect}
-        onAddChange={onAddChange}
-        onPinnedToggle={onPinnedToggle}
-      />
-    )
+    switch (page) {
+      case "tree":
+        return (
+          <TreePage
+            className={classes.container}
+            baseGraph={baseGraph}
+            graph={graph}
+            toNode={toNode}
+            pinned={pinned}
+            onToNodeSelect={onToNodeSelect}
+            onAddChange={onAddChange}
+            onPinnedToggle={onPinnedToggle}
+          />
+        )
+      case "chains":
+        return (
+          <ChainsPage
+            className={classes.container}
+            baseGraph={baseGraph}
+            graph={graph}
+            fromNode={fromNode}
+            toNode={toNode}
+            pinned={pinned}
+            onFromNodeSelect={onFromNodeSelect}
+            onToNodeSelect={onToNodeSelect}
+            onAddChange={onAddChange}
+            onPinnedToggle={onPinnedToggle}
+          />
+        )
+      default:
+        return null
+    }
   }
 
   render() {

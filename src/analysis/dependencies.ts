@@ -9,7 +9,7 @@ async function walkGraph(
     visited: {
       [k in NodeID]: Node
     }
-    nodesKey: string
+    nodesKey: "children" | "parents" | "allChildren"
   }
 ) {
   const { nodesKey, visited } = options
