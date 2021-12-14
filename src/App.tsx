@@ -171,7 +171,7 @@ export default function App({ className, trackLoading }: Props) {
         graph={graph}
         pinned={pinned}
         updateChanges={updateChanges}
-        trackLoading={() => {}}
+        trackLoading={trackLoading}
       />
     ) : graph && page === "chains" ? null : null // /> //   onPinnedToggle={onPinnedToggle} //   onAddChange={onAddChange} //   onToNodeSelect={onToNodeSelect} //   onFromNodeSelect={onFromNodeSelect} //   pinned={pinned} //   toNode={toNode} //   fromNode={fromNode} //   graph={graph} //   baseGraph={baseGraph} //   className={classes.container} // <ChainsPage
 

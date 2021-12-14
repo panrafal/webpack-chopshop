@@ -1,6 +1,20 @@
 import { DebouncedFunc, throttle } from "lodash"
 
-export const ABORTED = "[ABORTED]"
+export class AbortSignal {
+  message: string
+  constructor(message: string = "Aborted") {
+    this.message = message
+  }
+  toString() {
+    return this.message
+  }
+}
+
+export function isAbortSignal(e) {
+  return e instanceof AbortSignal
+}
+
+export const ABORTED = new AbortSignal()
 
 export type BackgroundProcessor = DebouncedFunc<() => Promise<void>> & {
   abort: (err: any) => Promise<void>

@@ -1,4 +1,4 @@
-import { BackgroundProcessor, backgroundProcessor } from "./utils"
+import { AbortSignal, BackgroundProcessor, backgroundProcessor } from "./utils"
 
 export const ROOT_NODE_ID = "root"
 export type GraphNodeID = string
@@ -171,7 +171,7 @@ export async function modifyGraph(
   graph: Graph,
   fn: (graph: Graph) => void | Promise<void>
 ): Promise<Graph> {
-  await graph.idle.abort(`[ABORT ${graph.version}]`)
+  await graph.idle.abort(new AbortSignal(`Abort v${graph.version}`))
   const newGraph = {
     ...graph,
     version: graph.version + 1,
