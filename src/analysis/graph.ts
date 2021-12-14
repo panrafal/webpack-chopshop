@@ -49,6 +49,7 @@ export type Graph = {
   errors: Array<any>
   cache: any
   idle: BackgroundProcessor
+  revert: Array<() => void>
 }
 
 function createNode(_node: GraphNodeSpec): GraphNode {
@@ -69,6 +70,7 @@ export function createGraph(): Graph {
     errors: [],
     cache: {},
     idle: backgroundProcessor(),
+    revert: [],
   }
   return graph
 }

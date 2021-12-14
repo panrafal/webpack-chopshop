@@ -1,12 +1,13 @@
 import * as React from "react"
-import { withStyles, Icon } from "@material-ui/core"
+import { Icon, makeStyles } from "@material-ui/core"
+import classNames from "classnames"
 
 type Props = {
   children: React.ReactNode
-  classes: any
+  className?: string
 }
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.error.dark,
     color: theme.palette.error.contrastText,
@@ -19,13 +20,14 @@ const styles = (theme) => ({
   icon: {
     "margin-right": 8,
   },
-})
+}))
 
-const ErrorBar = ({ classes, children }: Props) => (
-  <div className={classes.root}>
-    <Icon className={classes.icon}>error</Icon>
-    <span className={classes.label}>{children}</span>
-  </div>
-)
-
-export default withStyles(styles)(ErrorBar)
+export default function ErrorBar({ className, children }: Props) {
+  const classes = useStyles()
+  return (
+    <div className={classNames(className, classes.root)}>
+      <Icon className={classes.icon}>error</Icon>
+      <span>{children}</span>
+    </div>
+  )
+}

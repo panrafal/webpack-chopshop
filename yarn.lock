@@ -3673,12 +3673,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"attr-accept@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "attr-accept@npm:1.1.3"
-  dependencies:
-    core-js: ^2.5.0
-  checksum: 836c0e863719c0355e8ad4214e4c81f24dd9e724233153200189732da691f73e6f13316b8ac456d75749a89780f0da67e44387e46dfc3fd9a517a84a0e45acbc
+"attr-accept@npm:^2.2.1":
+  version: 2.2.2
+  resolution: "attr-accept@npm:2.2.2"
+  checksum: 496f7249354ab53e522510c1dc8f67a1887382187adde4dc205507d2f014836a247073b05e9d9ea51e2e9c7f71b0d2aa21730af80efa9af2d68303e5f0565c4d
   languageName: node
   linkType: hard
 
@@ -5093,7 +5091,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^2.4.0, core-js@npm:^2.5.0":
+"core-js@npm:^2.4.0":
   version: 2.5.4
   resolution: "core-js@npm:2.5.4"
   checksum: 00ab9f1acd533d13b7eac9357d4fbf2f1252abed46894149d3a1fe99556008545b4ea0520f14435907bb5f47b1c9bf1bc6cdcd3ff9f130f1c30988b2a488a878
@@ -7091,6 +7089,15 @@ __metadata:
   peerDependencies:
     webpack: ^4.0.0 || ^5.0.0
   checksum: 6369da5af456b640599d7ede7a3a9a55e485138a7829c583313d5165d0984c3d337de3aebee32fdfa3295facb4a44b74a9c3c956b1e0e30e8c96152106ff4b23
+  languageName: node
+  linkType: hard
+
+"file-selector@npm:^0.2.2":
+  version: 0.2.4
+  resolution: "file-selector@npm:0.2.4"
+  dependencies:
+    tslib: ^2.0.3
+  checksum: 83341e7416352c7de0caf433b33c8d007d3c298c17d6ba0e70168af82bb045d905ddd6f4bc3ca764a2035c6f18eae7f52223dc6a784056f61b8391c351f88323
   languageName: node
   linkType: hard
 
@@ -12830,7 +12837,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.7, prop-types@npm:^15.5.8, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2":
+"prop-types@npm:^15.5.8, prop-types@npm:^15.6.1, prop-types@npm:^15.6.2":
   version: 15.6.2
   resolution: "prop-types@npm:15.6.2"
   dependencies:
@@ -13076,15 +13083,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-async-hook@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "react-async-hook@npm:4.0.0"
-  peerDependencies:
-    react: ">=16.8"
-  checksum: 059042027bff2751c89d1226ce7b463e73b54ad4018c627bd27d57c029469280d8e37e282bb943b35f91050fbd7d330965f65f0d8b1b7c0b9492fc848c6d82a3
-  languageName: node
-  linkType: hard
-
 "react-copy-to-clipboard@npm:^5.0.4":
   version: 5.0.4
   resolution: "react-copy-to-clipboard@npm:5.0.4"
@@ -13142,15 +13140,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dropzone@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "react-dropzone@npm:4.3.0"
+"react-dropzone@npm:^11.4.2":
+  version: 11.4.2
+  resolution: "react-dropzone@npm:11.4.2"
   dependencies:
-    attr-accept: ^1.1.3
-    prop-types: ^15.5.7
+    attr-accept: ^2.2.1
+    file-selector: ^0.2.2
+    prop-types: ^15.7.2
   peerDependencies:
-    react: ">=0.14.0"
-  checksum: be52f8833854fd45502bac0a186a06b030d991990dd66a981e8b4a785d32de6d464925183efc9ad0c9e6d3bd11bfe373562ef7c7c472a02669693635dfaee1ed
+    react: ">= 16.8"
+  checksum: f8dc6af69193133efe30ed11dd8c2212a180abd3833e91d03dab4bdc9546d47dcad311d7f72b4968b7d016871884555b9e16f7a490913b78dbfec8ce8f569193
   languageName: node
   linkType: hard
 
@@ -16107,10 +16106,9 @@ __metadata:
     pako: ^1.0.11
     prettier: ^2.5.1
     react: ^17.0.2
-    react-async-hook: ^4.0.0
     react-copy-to-clipboard: ^5.0.4
     react-dom: ^17.0.2
-    react-dropzone: ^4.3.0
+    react-dropzone: ^11.4.2
     react-error-boundary: ^3.1.4
     react-hot-loader: ^4.13.0
     react-promise: ^2.1.0

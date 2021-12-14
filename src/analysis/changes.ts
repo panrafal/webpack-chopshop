@@ -34,6 +34,13 @@ export function addChange(
   return newChanges
 }
 
+export function revertGraph(graph: Graph) {
+  for (const revert of graph.revert.reverse()) {
+    revert()
+  }
+  graph.revert.splice(0)
+}
+
 export function applyChanges(graph: Graph, changes: ReadonlyArray<Change>) {
   for (const change of changes) {
     if (change.change === "edge") {
@@ -51,6 +58,10 @@ export function applyChanges(graph: Graph, changes: ReadonlyArray<Change>) {
       if (!edge) {
         console.warn(`Edge ${change.from} -> ${change.to} doesnt exist`)
       }
+      const prevEnabled = edge.enabled
+      graph.revert.push(() => {
+        toggleEdge(graph, edge, prevEnabled)
+      })
       toggleEdge(graph, edge, change.enabled)
     }
   }
