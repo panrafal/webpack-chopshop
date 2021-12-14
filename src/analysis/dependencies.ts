@@ -42,7 +42,7 @@ async function collectEdges(
       [k in GraphEdgeID]: GraphEdge
     }
     direction: "children" | "parents"
-    filter: (e: GraphEdge) => boolean
+    filter?: (e: GraphEdge) => boolean
   }
 ) {
   const { direction, visited, filter } = options
@@ -127,6 +127,24 @@ export function getRetainedNodes(
       const ids = difference(allChildren, rootsChildren)
       ids.push(node.id)
       return ids
+    })
+  }
+  return graph.cache[key]
+}
+
+export function getEnabledChildEdges(
+  graph: Graph,
+  node: GraphNode
+): Promise<ReadonlyArray<GraphEdgeID>> {
+  const key = `getEnabledChildEdges:${node.id}`
+  if (!graph.cache[key]) {
+    const visited = {}
+    graph.cache[key] = collectEdges(graph, node, {
+      visited,
+      direction: "children",
+      filter: isEdgeEnabled,
+    }).then(() => {
+      return Object.keys(visited)
     })
   }
   return graph.cache[key]

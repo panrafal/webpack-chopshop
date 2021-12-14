@@ -1,14 +1,13 @@
 import * as React from "react"
-import { withStyles, Icon } from "@material-ui/core"
+import { withStyles, Icon, makeStyles } from "@material-ui/core"
 
 type Props = {
   error?: any
   children?: React.ReactNode
-  classes: any
 }
 
-const styles = (theme) => ({
-  root: {
+const useStyles = makeStyles((theme) => ({
+  ErrorBox: {
     background: theme.palette.error.dark,
     color: theme.palette.error.contrastText,
     padding: 16,
@@ -19,18 +18,19 @@ const styles = (theme) => ({
   icon: {
     "margin-right": 8,
   },
-})
+}))
 
-const ErrorBox = ({ classes, error, children }: Props) => {
+const ErrorBox = ({ error, children }: Props) => {
+  const classes = useStyles()
   if (children === undefined) children = String(error)
   return (
-    <div className={classes.root}>
+    <div className={classes.ErrorBox}>
       <Icon className={classes.icon}>error</Icon>
-      <span className={classes.label}>
+      <span>
         {React.isValidElement(children) ? children : String(children)}
       </span>
     </div>
   )
 }
 
-export default withStyles(styles)(ErrorBox)
+export default ErrorBox

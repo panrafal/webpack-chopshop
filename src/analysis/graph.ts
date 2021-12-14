@@ -162,10 +162,9 @@ export function toggleEdge(graph: Graph, edge: GraphEdge, enabled: boolean) {
 export async function modifyGraph(
   graph: Graph,
   fn: () => void | Promise<void>
-): Promise<void> {
+): Promise<Graph> {
   await fn()
-  const promise = graph.idle.abort()
+  await graph.idle.abort()
   graph.cache = {}
-  graph.idle = backgroundProcessor()
-  return promise
+  return { ...graph, cache: {}, idle: backgroundProcessor() }
 }

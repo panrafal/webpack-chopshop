@@ -1621,6 +1621,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.12.5":
+  version: 7.16.5
+  resolution: "@babel/runtime@npm:7.16.5"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: b96e67280efe581c6147b4fe984dfe08a8fbea048934a092f3cbf4dcf61725f6b221cb0c879b6e6e98671f83a104c9e8cfbd24c683e5ebcc886a731aa8984ad0
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.10.4, @babel/template@npm:^7.16.0, @babel/template@npm:^7.3.3":
   version: 7.16.0
   resolution: "@babel/template@npm:7.16.0"
@@ -13067,6 +13076,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-async-hook@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "react-async-hook@npm:4.0.0"
+  peerDependencies:
+    react: ">=16.8"
+  checksum: 059042027bff2751c89d1226ce7b463e73b54ad4018c627bd27d57c029469280d8e37e282bb943b35f91050fbd7d330965f65f0d8b1b7c0b9492fc848c6d82a3
+  languageName: node
+  linkType: hard
+
 "react-copy-to-clipboard@npm:^5.0.4":
   version: 5.0.4
   resolution: "react-copy-to-clipboard@npm:5.0.4"
@@ -13136,12 +13154,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-error-boundary@npm:^1.2.5":
-  version: 1.2.5
-  resolution: "react-error-boundary@npm:1.2.5"
+"react-error-boundary@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "react-error-boundary@npm:3.1.4"
+  dependencies:
+    "@babel/runtime": ^7.12.5
   peerDependencies:
-    react: ^16.0.0-beta.1
-  checksum: 7c56c73a3eb9096e6d01c7037170012ba6d62493ed4392e2a078eb84fe4964ba23296d600ca7ea4f77e695c31b65bbffab6688041cc69c95902293a9385f1dc0
+    react: ">=16.13.1"
+  checksum: f36270a5d775a25c8920f854c0d91649ceea417b15b5bc51e270a959b0476647bb79abb4da3be7dd9a4597b029214e8fe43ea914a7f16fa7543c91f784977f1b
   languageName: node
   linkType: hard
 
@@ -16087,10 +16107,11 @@ __metadata:
     pako: ^1.0.11
     prettier: ^2.5.1
     react: ^17.0.2
+    react-async-hook: ^4.0.0
     react-copy-to-clipboard: ^5.0.4
     react-dom: ^17.0.2
     react-dropzone: ^4.3.0
-    react-error-boundary: ^1.2.5
+    react-error-boundary: ^3.1.4
     react-hot-loader: ^4.13.0
     react-promise: ^2.1.0
     react-scripts: ^4.0.3

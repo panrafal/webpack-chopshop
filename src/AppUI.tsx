@@ -1,7 +1,6 @@
 import type { GraphNodeID, GraphNode, Graph } from "./analysis/graph"
 import type { Change } from "./analysis/changes"
 
-import * as React from "react"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import Dropzone from "react-dropzone"
 import {
@@ -13,15 +12,19 @@ import {
   Button,
   Drawer,
   Icon,
+  makeStyles,
 } from "@material-ui/core"
 
 import WarningBar from "./ui/WarningBar"
 import ErrorBar from "./ui/ErrorBar"
 import EmptyBox from "./ui/EmptyBox"
+import { createRef, lazy, Suspense, useRef, useState } from "react"
+import LoadingBoundary from "./ui/LoadingBoundary"
+import { usePromiseTracking } from "./ui/hooks/usePromiseTracking"
 
-const ChainsPage = React.lazy(() => import("./ui/chains/ChainsPage"))
-const TreePage = React.lazy(() => import("./ui/tree/TreePage"))
-const ChangesView = React.lazy(() => import("./ui/chains/ChangesView"))
+const ChainsPage = lazy(() => import("./ui/chains/ChainsPage"))
+const TreePage = lazy(() => import("./ui/tree/TreePage"))
+const ChangesView = lazy(() => import("./ui/chains/ChangesView"))
 
 type Props = {
   loading: boolean
@@ -43,17 +46,16 @@ type Props = {
   onShowChangesToggle: () => any
   onPinnedToggle: (a: GraphNodeID) => any
   onNavigate: (p: string) => void
-  classes: any
 }
 
-const styles = (theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     height: "100vh",
     minWidth: 1200,
     flexDirection: "column",
     justifyContent: "stretch",
-    fontFamily: ["Roboto", "Helvetica", "Arial", "sans-serif"],
+    fontFamily: "Roboto Helvetica Arial sans-serif",
   },
   container: {
     maxWidth: 2000,
@@ -73,6 +75,7 @@ const styles = (theme) => ({
   },
   dropzone: {},
   openButton: {},
+  progress: {},
   openFileMessage: {
     textAlign: "center",
     width: "30em",
@@ -80,174 +83,160 @@ const styles = (theme) => ({
     margin: "auto",
     cursor: "pointer",
   },
-})
+}))
 
-class AppUI extends React.Component<Props> {
-  dropzone: any
+function AppUI({
+  loading,
+  baseGraph,
+  graph,
+  error,
+  fromNode,
+  toNode,
+  changes,
+  showChanges,
+  pinned,
+  page,
+  onAddChange,
+  onFromNodeSelect,
+  onToNodeSelect,
+  onNodesSelectionReset,
+  onChangesUpdate,
+  onFileDrop,
+  onShowChangesToggle,
+  onPinnedToggle,
+  onNavigate,
+}: Props) {
+  const dropzone = createRef<any>()
+  const classes = useStyles()
 
-  renderGraph() {
-    const {
-      page,
-      baseGraph,
-      graph,
-      fromNode,
-      toNode,
-      pinned,
-      classes,
-      onFromNodeSelect,
-      onToNodeSelect,
-      onAddChange,
-      onPinnedToggle,
-    } = this.props
-    if (!graph || !baseGraph) return null
-    switch (page) {
-      case "tree":
-        return (
-          <TreePage
-            className={classes.container}
-            graph={graph}
-            toNode={toNode}
-            pinned={pinned}
-            onToNodeSelect={onToNodeSelect}
-            onAddChange={onAddChange}
-            onPinnedToggle={onPinnedToggle}
-          />
-        )
-      case "chains":
-        return (
-          <ChainsPage
-            className={classes.container}
-            baseGraph={baseGraph}
-            graph={graph}
-            fromNode={fromNode}
-            toNode={toNode}
-            pinned={pinned}
-            onFromNodeSelect={onFromNodeSelect}
-            onToNodeSelect={onToNodeSelect}
-            onAddChange={onAddChange}
-            onPinnedToggle={onPinnedToggle}
-          />
-        )
-      default:
-        return null
-    }
-  }
+  // const [loadingState, ] = usePromiseTracking()
 
-  render() {
-    const {
-      loading,
-      error,
-      graph,
-      showChanges,
-      changes,
-      pinned,
-      fromNode,
-      classes,
-      onNodesSelectionReset,
-      onChangesUpdate,
-      onFileDrop,
-      onShowChangesToggle,
-    } = this.props
-    return (
-      <Dropzone
-        multiple={false}
-        activeClassName=""
-        rejectClassName=""
-        accept=".json"
-        onDrop={onFileDrop}
-        className={classes.dropzone}
-        disableClick
-        ref={(node) => {
-          this.dropzone = node
-        }}
-      >
-        <div className={classes.root}>
-          <CssBaseline />
-          <React.Suspense
-            fallback={<LinearProgress className={classes.progress} />}
-          >
-            <AppBar position="static">
-              <Toolbar variant="regular" className={classes.container}>
-                {!loading && (
-                  <Button color="inherit" onClick={() => this.dropzone.open()}>
-                    Open stats
-                  </Button>
-                )}
-                {graph && (
-                  <Button color="inherit" onClick={onShowChangesToggle}>
-                    See changes
-                    {changes.length ? ` (${changes.length})` : null}
-                  </Button>
-                )}
-                {fromNode && (
-                  <Button color="inherit" onClick={onNodesSelectionReset}>
-                    Choose root node
-                  </Button>
-                )}
-                <Typography
-                  variant="h6"
+  const pageElement =
+    graph && page === "tree" ? (
+      <TreePage
+        className={classes.container}
+        graph={graph}
+        toNode={toNode}
+        pinned={pinned}
+        onToNodeSelect={onToNodeSelect}
+        onAddChange={onAddChange}
+        onPinnedToggle={onPinnedToggle}
+        trackLoading={() => {}}
+      />
+    ) : graph && page === "chains" ? (
+      <ChainsPage
+        className={classes.container}
+        baseGraph={baseGraph}
+        graph={graph}
+        fromNode={fromNode}
+        toNode={toNode}
+        pinned={pinned}
+        onFromNodeSelect={onFromNodeSelect}
+        onToNodeSelect={onToNodeSelect}
+        onAddChange={onAddChange}
+        onPinnedToggle={onPinnedToggle}
+      />
+    ) : null
+
+  return (
+    <Dropzone
+      multiple={false}
+      activeClassName=""
+      rejectClassName=""
+      accept=".json"
+      onDrop={onFileDrop}
+      className={classes.dropzone}
+      disableClick
+      ref={dropzone}
+    >
+      <div className={classes.root}>
+        <CssBaseline />
+        <LoadingBoundary
+          fallback={<LinearProgress className={classes.progress} />}
+        >
+          <AppBar position="static">
+            <Toolbar variant="regular" className={classes.container}>
+              {!loading && (
+                <Button
                   color="inherit"
-                  className={classes.title}
+                  onClick={() => dropzone.current!.open()}
                 >
-                  Webpack Chop Shop
-                </Typography>
-              </Toolbar>
-            </AppBar>
-            {loading && <LinearProgress className={classes.progress} />}
-            {graph && graph.errors.length > 0 && (
-              <WarningBar>
-                There where {graph.errors.length} errors found. Check the
-                console for more
-              </WarningBar>
-            )}
-            {error && <ErrorBar>{String(error)}</ErrorBar>}
-            {this.renderGraph()}
-            {!graph && !loading && (
-              <div
-                onClick={() => this.dropzone.open()}
-                className={classes.openFileMessage}
+                  Open stats
+                </Button>
+              )}
+              {graph && (
+                <Button color="inherit" onClick={onShowChangesToggle}>
+                  See changes
+                  {changes.length ? ` (${changes.length})` : null}
+                </Button>
+              )}
+              {fromNode && (
+                <Button color="inherit" onClick={onNodesSelectionReset}>
+                  Choose root node
+                </Button>
+              )}
+              <Typography
+                variant="h6"
+                color="inherit"
+                className={classes.title}
               >
-                <EmptyBox
-                  icon={
-                    <Icon color="inherit" fontSize="medium">
-                      open_in_browser
-                    </Icon>
-                  }
+                Webpack Chop Shop
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          {loading && <LinearProgress className={classes.progress} />}
+          {graph && graph.errors.length > 0 && (
+            <WarningBar>
+              There where {graph.errors.length} errors found. Check the console
+              for more
+            </WarningBar>
+          )}
+          {error && <ErrorBar>{String(error)}</ErrorBar>}
+          {pageElement}
+          {!graph && !loading && (
+            <div
+              onClick={() => dropzone.current!.open()}
+              className={classes.openFileMessage}
+            >
+              <EmptyBox
+                icon={
+                  <Icon color="inherit" fontSize="medium">
+                    open_in_browser
+                  </Icon>
+                }
+              >
+                First,{" "}
+                <a
+                  href="https://webpack.js.org/api/cli/#stats-options"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  First,{" "}
-                  <a
-                    href="https://webpack.js.org/api/cli/#stats-options"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    generate the stats file in webpack
-                  </a>
-                  , then click here or drop it anywhere on the page to start
-                </EmptyBox>
+                  generate the stats file in webpack
+                </a>
+                , then click here or drop it anywhere on the page to start
+              </EmptyBox>
+            </div>
+          )}
+          {graph && (
+            <Drawer
+              anchor="top"
+              open={showChanges}
+              onClose={onShowChangesToggle}
+            >
+              <div className={classes.container}>
+                <ChangesView
+                  graph={graph}
+                  changes={changes}
+                  pinned={pinned}
+                  onChangesUpdate={onChangesUpdate}
+                />
               </div>
-            )}
-            {graph && (
-              <Drawer
-                anchor="top"
-                open={showChanges}
-                onClose={onShowChangesToggle}
-              >
-                <div className={classes.container}>
-                  <ChangesView
-                    graph={graph}
-                    changes={changes}
-                    pinned={pinned}
-                    onChangesUpdate={onChangesUpdate}
-                  />
-                </div>
-              </Drawer>
-            )}
-          </React.Suspense>
-        </div>
-      </Dropzone>
-    )
-  }
+            </Drawer>
+          )}
+        </LoadingBoundary>
+      </div>
+    </Dropzone>
+  )
 }
 
-// @ts-expect-error mui
-export default withStyles(styles)(AppUI)
+export default AppUI

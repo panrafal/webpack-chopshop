@@ -163,12 +163,14 @@ class App extends React.Component<{}, AppState> {
     this.setState({ showChanges: !this.state.showChanges })
   }
 
-  applyChanges = () => {
+  applyChanges = async () => {
     const { graph, changes } = this.state
     if (!graph) return
-    modifyGraph(graph, () => applyChanges(graph, changes))
-
-    this.setState({ graph })
+    this.setState({ loading: true })
+    const newGraph = await modifyGraph(graph, () =>
+      applyChanges(graph, changes)
+    )
+    this.setState({ graph: newGraph, loading: false })
   }
 
   updateChanges = (changes) => {
@@ -233,7 +235,6 @@ class App extends React.Component<{}, AppState> {
       page,
     } = this.state
     return (
-      // @ts-expect-error TODO: WTF?
       <AppUI
         baseGraph={graph}
         graph={graph}
