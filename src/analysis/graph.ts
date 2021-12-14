@@ -3,6 +3,7 @@ import { BackgroundProcessor, backgroundProcessor } from "./utils"
 export const ROOT_NODE_ID = "root"
 export type GraphNodeID = string
 export type GraphEdgeID = string
+export type GraphElementID = string
 export type NodeKind = string
 export type EdgeKind = string
 
@@ -18,6 +19,7 @@ export type GraphEdgeSpec = {
 }
 
 export type GraphEdge = GraphEdgeSpec & {
+  id: GraphEdgeID
   enabled: boolean
 }
 
@@ -39,6 +41,7 @@ export type GraphNode = GraphNodeSpec & {
 }
 
 export type Graph = {
+  version: number
   root: GraphNode
   nodes: {
     [k in GraphNodeID]: GraphNode
@@ -64,6 +67,7 @@ export function createGraph(): Graph {
     size: 0,
   })
   const graph = {
+    version: 1,
     root,
     nodes: { [ROOT_NODE_ID]: root },
     edges: {},
@@ -145,8 +149,8 @@ export function addNode(graph: Graph, _node: GraphNodeSpec): GraphNode {
 }
 
 export function addEdge(graph: Graph, _edge: GraphEdgeSpec): GraphEdge {
-  const edge = { enabled: true, ..._edge }
-  const id = getEdgeId(edge.from.id, edge.to.id)
+  const id = getEdgeId(_edge.from.id, _edge.to.id)
+  const edge = { enabled: true, id, ..._edge }
   if (graph.edges[id]) {
     return graph.edges[id]
   }
@@ -163,10 +167,15 @@ export function toggleEdge(graph: Graph, edge: GraphEdge, enabled: boolean) {
 
 export async function modifyGraph(
   graph: Graph,
-  fn: () => void | Promise<void>
+  fn: (graph: Graph) => void | Promise<void>
 ): Promise<Graph> {
-  await fn()
-  await graph.idle.abort()
-  graph.cache = {}
-  return { ...graph, cache: {}, idle: backgroundProcessor() }
+  await graph.idle.abort(`[ABORT ${graph.version}]`)
+  const newGraph = {
+    ...graph,
+    version: graph.version + 1,
+    cache: {},
+    idle: backgroundProcessor(),
+  }
+  await fn(newGraph)
+  return newGraph
 }

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { withStyles, Icon, makeStyles } from "@material-ui/core"
+import { Icon, makeStyles } from "@material-ui/core"
 
 type Props = {
   error?: any

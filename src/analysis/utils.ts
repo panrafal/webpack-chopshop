@@ -1,9 +1,9 @@
 import { DebouncedFunc, throttle } from "lodash"
 
-export const ABORTED = Symbol("Aborted")
+export const ABORTED = "[ABORTED]"
 
 export type BackgroundProcessor = DebouncedFunc<() => Promise<void>> & {
-  abort: () => Promise<void>
+  abort: (err: any) => Promise<void>
 }
 
 //
@@ -27,6 +27,7 @@ export const backgroundProcessor = (): BackgroundProcessor => {
           return err
         }
         if (idleReject) idleReject(abort())
+        setTimeout(resolve, 0)
       })
     },
   })

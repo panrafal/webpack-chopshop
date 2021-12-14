@@ -144,6 +144,7 @@ class ChainsExplorer extends React.Component<Props, State> {
       if (isFirst) return null
       const prevNode = nodes[index - 1]
       const edge = resolveEdgeForNodes(graph, prevNode.id, node.id) || {
+        id: "",
         from: prevNode,
         to: node,
         kind: "",

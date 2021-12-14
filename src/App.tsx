@@ -1,20 +1,14 @@
 import type { Change } from "./analysis/changes"
 import { useDropzone } from "react-dropzone"
 
-import { hot } from "react-hot-loader"
-
 import { decodeUrlStateHash, encodeUrlStateHash } from "./history"
 import { lazy, useCallback, useEffect, useState } from "react"
-import {
-  PromiseTrackerFn,
-  usePromiseTracker,
-} from "./ui/hooks/usePromiseTracker"
+import { PromiseTrackerFn } from "./ui/hooks/usePromiseTracker"
 import { usePinnedState } from "./logic/usePinnedState"
 import { useGraphState } from "./logic/useGraphState"
 import {
   AppBar,
   Button,
-  CssBaseline,
   Drawer,
   Icon,
   LinearProgress,
@@ -24,10 +18,8 @@ import {
 } from "@material-ui/core"
 import LoadingBoundary from "./ui/LoadingBoundary"
 import WarningBar from "./ui/WarningBar"
-import ErrorBar from "./ui/ErrorBar"
 import EmptyBox from "./ui/EmptyBox"
 import classNames from "classnames"
-import { useStablePromiseSuspense } from "./ui/hooks/promises"
 
 const ChainsPage = lazy(() => import("./ui/chains/ChainsPage"))
 const TreePage = lazy(() => import("./ui/tree/TreePage"))
@@ -75,29 +67,29 @@ type Props = {
   trackLoading: PromiseTrackerFn
 }
 
-function App({ className, trackLoading }: Props) {
-  const [changes, setChanges] = useState<ReadonlyArray<Change>>([])
+export default function App({ className, trackLoading }: Props) {
+  const classes = useStyles()
 
   const [page, setPage] = useState<string>("tree")
   // History ------------------------------------------
-  useEffect(() => {
-    try {
-      const handleHistoryChange = () => {
-        const hash = (window.location.hash || "#").slice(1)
-        if (!hash) return
-        const hashState = decodeUrlStateHash(hash)
-        if (hashState.changes) setChanges(hashState.changes)
-      }
+  // useEffect(() => {
+  //   try {
+  //     const handleHistoryChange = () => {
+  //       const hash = (window.location.hash || "#").slice(1)
+  //       if (!hash) return
+  //       const hashState = decodeUrlStateHash(hash)
+  //       if (hashState.changes) setChanges(hashState.changes)
+  //     }
 
-      window.addEventListener("popstate", handleHistoryChange)
-      handleHistoryChange()
-      return () => {
-        window.removeEventListener("popstate", handleHistoryChange)
-      }
-    } catch (error) {
-      console.error("History failed to initialize", error)
-    }
-  }, [])
+  //     window.addEventListener("popstate", handleHistoryChange)
+  //     handleHistoryChange()
+  //     return () => {
+  //       window.removeEventListener("popstate", handleHistoryChange)
+  //     }
+  //   } catch (error) {
+  //     console.error("History failed to initialize", error)
+  //   }
+  // }, [])
 
   // TODO: Handle navigation and state storage
   const navigate = useCallback(() => {
@@ -108,7 +100,9 @@ function App({ className, trackLoading }: Props) {
 
   // Graph handling -----------------------------------
 
-  const { graph, openGraph, updateChanges } = useGraphState({ trackLoading })
+  const { graph, openGraph, changes, updateChanges } = useGraphState({
+    trackLoading,
+  })
 
   const handleDrop = useCallback(
     ([file], [rejected]) => {
@@ -167,7 +161,6 @@ function App({ className, trackLoading }: Props) {
   const [pinned, togglePinned] = usePinnedState()
 
   // UI
-  const classes = useStyles()
 
   // const [loadingState, ] = usePromiseTracking()
 
@@ -177,6 +170,7 @@ function App({ className, trackLoading }: Props) {
         className={classes.container}
         graph={graph}
         pinned={pinned}
+        updateChanges={updateChanges}
         trackLoading={() => {}}
       />
     ) : graph && page === "chains" ? null : null // /> //   onPinnedToggle={onPinnedToggle} //   onAddChange={onAddChange} //   onToNodeSelect={onToNodeSelect} //   onFromNodeSelect={onFromNodeSelect} //   pinned={pinned} //   toNode={toNode} //   fromNode={fromNode} //   graph={graph} //   baseGraph={baseGraph} //   className={classes.container} // <ChainsPage
@@ -271,5 +265,3 @@ function App({ className, trackLoading }: Props) {
     </div>
   )
 }
-
-export default hot(module)(App)

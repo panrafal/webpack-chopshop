@@ -8,6 +8,16 @@ import type {
 } from "./graph"
 import { getNode } from "./graph"
 
+const filterKeys = new WeakMap()
+let filterKeysCounter = 0
+export function getFilterKey(f?: Function | null | undefined): string {
+  if (!f) return ""
+  if (!filterKeys.has(f)) {
+    filterKeys.set(f, `${f.name}${++filterKeysCounter}`)
+  }
+  return filterKeys.get(f)
+}
+
 async function collectNodes(
   graph: Graph,
   node: GraphNode,
@@ -48,8 +58,9 @@ async function collectEdges(
   const { direction, visited, filter } = options
 
   for (const edge of node[direction]) {
-    if (visited[edge.to.id]) continue
+    if (visited[edge.id]) continue
     if (filter && !filter(edge)) continue
+    visited[edge.id] = edge
     await collectEdges(
       graph,
       direction === "children" ? edge.to : edge.from,
@@ -61,14 +72,16 @@ async function collectEdges(
 
 export function getDeepNodeChildren(
   graph: Graph,
-  node: GraphNode
+  node: GraphNode,
+  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
 ): Promise<ReadonlyArray<GraphNodeID>> {
-  const key = `getDeepNodeChildren:${node.id}`
+  const key = `getDeepNodeChildren:${node.id}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {
     const visited = {}
     graph.cache[key] = collectNodes(graph, node, {
       visited,
       direction: "children",
+      filter,
     }).then(() => {
       delete visited[node.id]
       return Object.keys(visited)
@@ -79,14 +92,16 @@ export function getDeepNodeChildren(
 
 export function getDeepNodeParents(
   graph: Graph,
-  node: GraphNode
+  node: GraphNode,
+  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
 ): Promise<ReadonlyArray<GraphNodeID>> {
-  const key = `getDeepNodeParents:${node.id}`
+  const key = `getDeepNodeParents:${node.id}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {
     const visited = {}
     graph.cache[key] = collectNodes(graph, node, {
       visited,
       direction: "parents",
+      filter,
     }).then(() => {
       delete visited[node.id]
       return Object.keys(visited)
@@ -101,17 +116,24 @@ export function getDeepNodeParents(
 export function getRetainedNodes(
   graph: Graph,
   rootNode: GraphNode,
-  node: GraphNode
+  node: GraphNode,
+  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
 ): Promise<ReadonlyArray<GraphNodeID>> {
-  const key = `getRetainedNodes:${rootNode.id}:${node.id}`
+  const key = `getRetainedNodes:${rootNode.id}:${node.id}:${getFilterKey(
+    filter
+  )}`
   if (!graph.cache[key]) {
+    // Gather all children of the rootNode
+    const allChildrenPromise = getDeepNodeChildren(graph, rootNode, { filter })
+    // Mark `node` as visited and gather children again - children of `node` will be ignored
+    // The difference between these two will be our answear
     const visited = {
       [node.id]: node,
     }
-    const allChildrenPromise = getDeepNodeChildren(graph, rootNode)
     const rootsChildrenPromise = collectNodes(graph, rootNode, {
       visited,
       direction: "children",
+      filter,
     }).then(() => {
       return Object.keys(visited)
     })
@@ -172,4 +194,13 @@ export function keepOnlyLeafModules(
 
 export function isEdgeEnabled(edge: GraphEdge) {
   return edge.enabled
+}
+
+export function currentGraphFilter(edge: GraphEdge) {
+  return edge.enabled
+}
+
+// Checks only async edges - all the rest are considered enabled
+export function baseGraphFilter(edge: GraphEdge) {
+  return !edge.async || edge.enabled
 }

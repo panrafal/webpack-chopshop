@@ -18,9 +18,13 @@ export function addChange(
   graph: Graph,
   changes: ReadonlyArray<Change>,
   change: Change
-) {
+): ReadonlyArray<Change> {
   // Remove same changes from queue
-  const newChanges = reject(changes, pick(change, ["change", "from", "to"]))
+  // @ts-expect-error
+  const newChanges: Array<Change> = reject(
+    changes,
+    pick(change, ["change", "from", "to"])
+  )
   if (change.change === "edge") {
     const edge = resolveEdgeForNodes(graph, change.from, change.to)
     const wasOriginallyEnabled = edge
