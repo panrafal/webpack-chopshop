@@ -40,6 +40,8 @@ export type GraphNode = GraphNodeSpec & {
   treeSize?: number
 }
 
+export type GraphElement = GraphNode | GraphEdge
+
 export type Graph = {
   version: number
   root: GraphNode

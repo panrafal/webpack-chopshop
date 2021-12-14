@@ -1,4 +1,4 @@
-import { isEdgeEnabled } from "./dependencies"
+import { currentGraphFilter, getFilterKey, isEdgeEnabled } from "./dependencies"
 import type { Graph, GraphEdge, GraphNode, GraphNodeID } from "./graph"
 import { getNode } from "./graph"
 
@@ -51,13 +51,14 @@ async function gatherChains(
 export async function findChains(
   graph: Graph,
   fromNode: GraphNode,
-  toNode: GraphNode
+  toNode: GraphNode,
+  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
 ): Promise<EdgeChain[]> {
-  const key = `findChains:${fromNode.id}:${toNode.id}`
+  const key = `findChains:${fromNode.id}:${toNode.id}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {
     graph.cache[key] = gatherChains(graph, fromNode, toNode.id, [], {
       visited: {},
-      filter: isEdgeEnabled,
+      filter,
     })
   }
   return graph.cache[key]
