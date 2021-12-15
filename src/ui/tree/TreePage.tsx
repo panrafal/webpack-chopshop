@@ -5,6 +5,7 @@ import {
   getEdgeId,
   getEdges,
   getNode,
+  getNodes,
   Graph,
   GraphEdgeID,
   GraphNode,
@@ -16,6 +17,7 @@ import {
 import TreeLevel from "./TreeLevel"
 import {
   currentGraphFilter,
+  getDeepNodeChildren,
   getEnabledChildEdges,
 } from "../../analysis/dependencies"
 import { findChains } from "../../analysis/chains"
@@ -25,13 +27,15 @@ import { TreeContextProvider } from "./TreeContext"
 import { UpdateChangesFn } from "../../logic/useGraphState"
 import NodeNavigator, { NavigatorModes } from "./NodeNavigator"
 import { TogglePinnedFn } from "../../logic/usePinnedState"
+import LoadingBoundary from "../LoadingBoundary"
+import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
 
 type Props = {
   graph: Graph
   pinned: ReadonlyArray<GraphNodeID>
   togglePinned: TogglePinnedFn
   className?: string
-  trackLoading: (p: Promise<any>) => void
+  trackLoading: PromiseTrackerFn
   updateChanges: UpdateChangesFn
 }
 
@@ -211,14 +215,39 @@ function TreePage({
     />
   ))
 
-  const navigatorModes: NavigatorModes = {
-    all: {
-      getNodes: () => getAllNodes(graph),
-      renderTitle: () => "All Nodes",
-      renderInfo: () => "Select node to start from",
-      renderEmpty: () => "Nothing found",
-    },
-  }
+  const navigatorModes: NavigatorModes = useMemo(
+    () => ({
+      all: {
+        getNodes: () => getAllNodes(graph),
+        renderTitle: () => "All Nodes",
+        renderInfo: () => "Select node to start from",
+        renderEmpty: () => "Nothing found",
+      },
+      enabled: {
+        getNodes: () =>
+          getDeepNodeChildren(graph, graph.root, {
+            filter: currentGraphFilter,
+          }).then((ids) => getNodes(graph, ids)),
+        renderTitle: () => "Enabled Nodes",
+        renderInfo: () => "Select node to start from",
+        renderEmpty: () => "Nothing found",
+      },
+      children: {
+        getNodes: () =>
+          getDeepNodeChildren(
+            graph,
+            resolveEdge(graph, selectedEdgeId)?.to || graph.root,
+            {
+              filter: currentGraphFilter,
+            }
+          ).then((ids) => getNodes(graph, ids)),
+        renderTitle: () => "Enabled Children",
+        renderInfo: () => "Select node to start from",
+        renderEmpty: () => "Nothing found",
+      },
+    }),
+    [graph, selectedEdgeId]
+  )
 
   return (
     <div className={classNames(className, classes.TreePage)}>
@@ -242,11 +271,13 @@ function TreePage({
       >
         <div className={classes.info}></div>
         <div className={classes.treeLevels}>{treeLevels}</div>
-        <NodeNavigator
-          className={classes.navigator}
-          modes={navigatorModes}
-          defaultMode="all"
-        />
+        <LoadingBoundary fallback={"..."}>
+          <NodeNavigator
+            className={classes.navigator}
+            modes={navigatorModes}
+            defaultMode="children"
+          />
+        </LoadingBoundary>
       </TreeContextProvider>
     </div>
   )

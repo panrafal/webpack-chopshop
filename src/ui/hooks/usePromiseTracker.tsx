@@ -1,7 +1,7 @@
 import { useMemo } from "react"
-import { useCallbackPromise } from "./promises"
+import { isPromise, useCallbackPromise } from "./promises"
 
-export type PromiseTrackerFn = (p: Promise<any>) => void
+export type PromiseTrackerFn = (p: Promise<any> | any) => void
 type TrackerState = { loading: boolean; error?: any }
 
 // Allows to display a single loading state for multiple, imperatively added promises
@@ -15,6 +15,7 @@ export function usePromiseTracker(): [TrackerState, PromiseTrackerFn] {
       getPromise: () => inst.allPromise,
       startLoading: null as (() => void) | null,
       addPromise: async (p) => {
+        if (!isPromise(p)) return inst.allPromise
         if (inst.seenPromises.has(p)) {
           return inst.allPromise
         }

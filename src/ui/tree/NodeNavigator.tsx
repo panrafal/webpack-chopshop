@@ -12,15 +12,17 @@ import {
   MenuItem,
   ListItemSecondaryAction,
   IconButton,
+  LinearProgress,
 } from "@material-ui/core"
 import StarIcon from "@material-ui/icons/Star"
 import { getModuleInfo } from "../../analysis/info"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import ElementList, { ElementListProps, RenderItemProps } from "./ElementList"
 import NodeNavigatorItem, { NodeNavigatorItemProps } from "./NodeNavigatorItem"
 import EmptyBox from "../EmptyBox"
-import { useStablePromiseSuspense } from "../hooks/promises"
+import { useStablePromise, useStablePromiseSuspense } from "../hooks/promises"
 import { useTreeContext } from "./TreeContext"
+import ErrorBox from "../ErrorBox"
 
 export type NavigatorMode = {
   getNodes: () => ReadonlyArray<GraphNode> | Promise<ReadonlyArray<GraphNode>>
@@ -75,7 +77,10 @@ export default function NodeNavigator({
     selectedEdgeId,
     openNode,
   } = useTreeContext()
-  const nodes = useStablePromiseSuspense(mode.getNodes())
+
+  const nodesPromise = useMemo(() => mode.getNodes(), [mode])
+
+  const { value: nodes, loading, error } = useStablePromise(nodesPromise)
 
   return (
     <div className={classNames(className, classes.NodeNavigator)}>
@@ -113,45 +118,51 @@ export default function NodeNavigator({
           </MenuItem>
         ))}
       </Menu>
-      <ElementList
-        className={classes.list}
-        items={nodes}
-        graph={graph}
-        pinned={pinned}
-        groupItemsBy="package"
-        orderItemsBy={undefined}
-        orderGroupsBy={[["size"], ["desc"]]}
-        renderItem={({ item, ...itemProps }) => (
-          <NodeNavigatorItem
-            {...itemProps}
-            node={item}
-            selected={item === resolveEdge(graph, selectedEdgeId)?.to}
-            retainerRootNode={graph.root}
-            onClick={() => {
-              openNode(item)
-            }}
-            onDoubleClick={() => {
-              setActiveNodeId(item.id)
-            }}
-            {...(mode.itemProps && mode.itemProps({ item, ...itemProps }))}
-          >
-            {pinned.indexOf(item.id) >= 0 ? (
-              <ListItemSecondaryAction>
-                <IconButton
-                  onClick={() => {
-                    togglePinned({ id: item.id, set: false })
-                  }}
-                >
-                  <StarIcon color="disabled" />
-                </IconButton>
-              </ListItemSecondaryAction>
-            ) : null}
-          </NodeNavigatorItem>
-        )}
-        renderEmpty={() => (
-          <EmptyBox icon={<Icon>block</Icon>}>Yada yada</EmptyBox>
-        )}
-      />
+      {loading ? (
+        <LinearProgress />
+      ) : error ? (
+        <ErrorBox error={error} />
+      ) : (
+        <ElementList
+          className={classes.list}
+          items={nodes}
+          graph={graph}
+          pinned={pinned}
+          groupItemsBy="package"
+          orderItemsBy={undefined}
+          orderGroupsBy={[["size"], ["desc"]]}
+          renderItem={({ item, ...itemProps }) => (
+            <NodeNavigatorItem
+              {...itemProps}
+              node={item}
+              selected={item === resolveEdge(graph, selectedEdgeId)?.to}
+              retainerRootNode={graph.root}
+              onClick={() => {
+                openNode(item)
+              }}
+              onDoubleClick={() => {
+                setActiveNodeId(item.id)
+              }}
+              {...(mode.itemProps && mode.itemProps({ item, ...itemProps }))}
+            >
+              {pinned.indexOf(item.id) >= 0 ? (
+                <ListItemSecondaryAction>
+                  <IconButton
+                    onClick={() => {
+                      togglePinned({ id: item.id, set: false })
+                    }}
+                  >
+                    <StarIcon color="disabled" />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              ) : null}
+            </NodeNavigatorItem>
+          )}
+          renderEmpty={() => (
+            <EmptyBox icon={<Icon>block</Icon>}>Yada yada</EmptyBox>
+          )}
+        />
+      )}
     </div>
   )
 }

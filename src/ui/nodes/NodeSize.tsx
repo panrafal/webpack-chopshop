@@ -39,14 +39,18 @@ export default function NodeSize({ graph, node, retainerRootNode }: Props) {
         calculateRetainedTreeSize(graph, retainerRootNode, node, { filter })
     : (filter) => calculateTreeSize(graph, node, { filter })
 
-  const { value: baseTreeSize, loading: baseLoading } = useStablePromise(
-    treeSizeCalculator(baseGraphFilter)
-  )
-  const { value: treeSize, loading: currentLoading } = useStablePromise(
-    treeSizeCalculator(currentGraphFilter)
-  )
+  const {
+    value: baseTreeSize,
+    loading: baseLoading,
+    error: baseError,
+  } = useStablePromise(treeSizeCalculator(baseGraphFilter))
+  const {
+    value: treeSize,
+    loading: currentLoading,
+    error: currentError,
+  } = useStablePromise(treeSizeCalculator(currentGraphFilter))
   if (baseLoading || currentLoading) return <Skeleton variant="text" />
-  if (baseTreeSize == null || treeSize == null)
+  if (baseError || currentError)
     return <ErrorBox>"Failed to calculate size"</ErrorBox>
 
   return (

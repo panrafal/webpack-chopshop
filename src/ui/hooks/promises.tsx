@@ -7,12 +7,12 @@ type CachedPromiseState<T> = {
   value?: T
 }
 type PromiseState<T> = CachedPromiseState<T> & {
-  promise?: Promise<T>
+  promise?: Promise<T> | T
 }
 
 const promisesCache = new WeakMap<Promise<any>, CachedPromiseState<any>>()
 
-function isPromise(p: any): p is Promise<any> {
+export function isPromise(p: any): p is Promise<any> {
   return p && "then" in p && typeof p.then === "function"
 }
 
@@ -53,19 +53,16 @@ const promiseReducer = (state, action): PromiseState<any> => {
       }
     case "RESOLVE":
       return {
-        called: true,
+        ...state,
         loading: false,
         error: false,
         value: action.payload,
-        promise: state.promise,
       }
     case "REJECT":
       return {
-        called: true,
+        ...state,
         loading: false,
         error: action.payload,
-        value: undefined,
-        promise: state.promise,
       }
     default:
       return state
@@ -74,7 +71,7 @@ const promiseReducer = (state, action): PromiseState<any> => {
 
 const createEffectFn =
   <T extends any>(
-    promise: Promise<T>,
+    promise: Promise<T> | T,
     dispatch,
     ctx: { active: boolean } = { active: true }
   ) =>
@@ -125,7 +122,7 @@ const createEffectFn =
   }
 
 export const useStablePromise = <T extends any>(
-  promise: Promise<T>
+  promise: Promise<T> | T
 ): PromiseState<T> => {
   const [promiseState, dispatch] = useReducer(
     promiseReducer,
@@ -168,6 +165,7 @@ export function useStablePromiseSuspense<T>(stablePromise: Promise<T> | T): T {
   if (!isPromise(stablePromise)) return stablePromise
 
   let promiseState = promisesCache.get(stablePromise)
+  console.log(promiseState)
   if (!promiseState) {
     storePromise(stablePromise)
     throw stablePromise
