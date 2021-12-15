@@ -170,6 +170,7 @@ export default function App({ className, trackLoading }: Props) {
         className={classes.container}
         graph={graph}
         pinned={pinned}
+        togglePinned={togglePinned}
         updateChanges={updateChanges}
         trackLoading={trackLoading}
       />

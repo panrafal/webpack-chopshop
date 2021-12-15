@@ -2047,6 +2047,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@material-ui/icons@npm:^4.11.2":
+  version: 4.11.2
+  resolution: "@material-ui/icons@npm:4.11.2"
+  dependencies:
+    "@babel/runtime": ^7.4.4
+  peerDependencies:
+    "@material-ui/core": ^4.0.0
+    "@types/react": ^16.8.6 || ^17.0.0
+    react: ^16.8.0 || ^17.0.0
+    react-dom: ^16.8.0 || ^17.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 0cd1d54b25a4237bd0cefd383d287911f721d4c4ac4fd7980370566b9927f3a9725e7a715042f7c65c87fa554173fbef5328de1d08e60eb996038f375ddf583a
+  languageName: node
+  linkType: hard
+
 "@material-ui/lab@npm:^4.0.0-alpha.60":
   version: 4.0.0-alpha.60
   resolution: "@material-ui/lab@npm:4.0.0-alpha.60"
@@ -16112,6 +16129,7 @@ __metadata:
   resolution: "webpack-chopshop@workspace:."
   dependencies:
     "@material-ui/core": ^4.12.3
+    "@material-ui/icons": ^4.11.2
     "@material-ui/lab": ^4.0.0-alpha.60
     "@types/jest": ^27.0.3
     "@types/lodash": ^4.14.178
