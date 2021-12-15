@@ -29,14 +29,14 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     height: "100vh",
-    minWidth: 1200,
+    // minWidth: 1200,
     flexDirection: "column",
     justifyContent: "stretch",
     fontFamily: "Roboto Helvetica Arial sans-serif",
   },
   container: {
-    maxWidth: 2000,
-    minWidth: 1200,
+    // maxWidth: 2000,
+    // minWidth: 1200,
     width: "100vw",
     marginLeft: "auto",
     marginRight: "auto",
