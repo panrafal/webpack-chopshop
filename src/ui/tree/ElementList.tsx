@@ -3,7 +3,8 @@ import numeral from "numeral"
 import Fuse from "fuse.js"
 import { groupBy, orderBy, map, sortBy, sumBy } from "lodash"
 
-import { List, AutoSizer } from "react-virtualized"
+import { FixedSizeList } from "react-window"
+import AutoSizer from "react-virtualized-auto-sizer"
 import {
   Input,
   InputAdornment,
@@ -42,7 +43,7 @@ export type ElementListProps<T> = {
   items: ReadonlyArray<T>
   getNode?: (item: T) => GraphNode
   renderItem: (p: RenderItemProps<T>) => React.ReactNode
-  renderEmpty: (a: any) => React.ReactNode
+  renderEmpty: () => React.ReactNode
   search?: string
   pinned: ReadonlyArray<GraphNodeID>
   groupItemsBy?: "" | "package"
@@ -178,55 +179,59 @@ function ElementList<T extends GraphNode | GraphEdge>({
 
       <div className={classes.listContainer}>
         <AutoSizer>
-          {({ width, height }) => (
-            <List
-              className={classes.list}
-              width={width}
-              height={height}
-              rowCount={listItems.length}
-              rowHeight={60}
-              rowRenderer={({ index, style }) => {
-                const item = listItems[index]
-                if ("group" in item && item.group) {
-                  return (
-                    <ListItem
-                      dense
-                      // @ts-expect-error mui
-                      ContainerComponent="div"
-                      button
-                      onClick={() =>
-                        setTreeState(toggleTreeRowState(item, treeOptions))
-                      }
-                      disableGutters
-                      style={style}
-                      key={index}
-                      divider
-                    >
-                      <ListItemText
-                        primary={item.name}
-                        secondary={`${numeral(item.size).format("0.0b")} in ${
-                          item.children.length
-                        }`}
-                      />
-                      <Icon>
-                        {isTreeExpanded(treeState, item, treeOptions)
-                          ? "expand_less"
-                          : "expand_more"}
-                      </Icon>
-                    </ListItem>
-                  )
-                } else {
-                  return renderItem({
-                    item: item as Exclude<T, Group>,
-                    key: index,
-                    hidePackage: Boolean(groupItemsBy),
-                    style,
-                  })
-                }
-              }}
-              noRowsRenderer={renderEmpty}
-            />
-          )}
+          {({ width, height }) =>
+            listItems.length === 0 ? (
+              renderEmpty()
+            ) : (
+              <FixedSizeList
+                className={classes.list}
+                width={width}
+                height={height}
+                itemCount={listItems.length}
+                itemSize={60}
+              >
+                {({ index, style }) => {
+                  const item = listItems[index]
+                  if ("group" in item && item.group) {
+                    return (
+                      <ListItem
+                        dense
+                        // @ts-expect-error mui
+                        ContainerComponent="div"
+                        button
+                        onClick={() =>
+                          setTreeState(toggleTreeRowState(item, treeOptions))
+                        }
+                        disableGutters
+                        style={style}
+                        key={index}
+                        divider
+                      >
+                        <ListItemText
+                          primary={item.name}
+                          secondary={`${numeral(item.size).format("0.0b")} in ${
+                            item.children.length
+                          }`}
+                        />
+                        <Icon>
+                          {isTreeExpanded(treeState, item, treeOptions)
+                            ? "expand_less"
+                            : "expand_more"}
+                        </Icon>
+                      </ListItem>
+                    )
+                  } else {
+                    return renderItem({
+                      item: item as Exclude<T, Group>,
+                      key: index,
+                      hidePackage: Boolean(groupItemsBy),
+                      style,
+                    })
+                  }
+                }}
+              </FixedSizeList>
+            )
+          }
         </AutoSizer>
       </div>
     </div>

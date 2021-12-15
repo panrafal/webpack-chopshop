@@ -14,6 +14,7 @@ import {
   IconButton,
   LinearProgress,
 } from "@material-ui/core"
+import BlockIcon from "@material-ui/icons/Block"
 import StarIcon from "@material-ui/icons/Star"
 import { getModuleInfo } from "../../analysis/info"
 import { useMemo, useState } from "react"
@@ -118,11 +119,9 @@ export default function NodeNavigator({
           </MenuItem>
         ))}
       </Menu>
-      {loading ? (
-        <LinearProgress />
-      ) : error ? (
-        <ErrorBox error={error} />
-      ) : (
+      {<LinearProgress style={{ opacity: loading ? 1 : 0 }} />}
+      {error && <ErrorBox error={error} />}
+      {nodes && (
         <ElementList
           className={classes.list}
           items={nodes}
@@ -159,7 +158,7 @@ export default function NodeNavigator({
             </NodeNavigatorItem>
           )}
           renderEmpty={() => (
-            <EmptyBox icon={<Icon>block</Icon>}>Yada yada</EmptyBox>
+            <EmptyBox icon={<BlockIcon />}>{mode.renderEmpty()}</EmptyBox>
           )}
         />
       )}
