@@ -6,16 +6,23 @@ import { lazy, useCallback, useEffect, useState } from "react"
 import { PromiseTrackerFn } from "./ui/hooks/usePromiseTracker"
 import { usePinnedState } from "./logic/usePinnedState"
 import { useGraphState } from "./logic/useGraphState"
-import { AppBar, Button, Drawer, Icon, LinearProgress, Toolbar, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import {
+  AppBar,
+  Button,
+  Drawer,
+  Icon,
+  LinearProgress,
+  Toolbar,
+  Typography,
+} from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import LoadingBoundary from "./ui/LoadingBoundary"
 import WarningBar from "./ui/WarningBar"
 import EmptyBox from "./ui/EmptyBox"
 import classNames from "classnames"
 
-const ChainsPage = lazy(() => import("./ui/chains/ChainsPage"))
 const TreePage = lazy(() => import("./ui/tree/TreePage"))
-const ChangesView = lazy(() => import("./ui/chains/ChangesView"))
+const ChangesPage = lazy(() => import("./ui/changes/ChangesPage"))
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -245,7 +252,7 @@ export default function App({ className, trackLoading }: Props) {
             onClose={() => setShowChanges(false)}
           >
             <div className={classes.container}>
-              <ChangesView
+              <ChangesPage
                 graph={graph}
                 changes={changes}
                 pinned={pinned}
