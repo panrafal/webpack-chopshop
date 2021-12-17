@@ -1,15 +1,15 @@
-import { CssBaseline, LinearProgress } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import { CssBaseline, LinearProgress } from "@mui/material"
 import { lazy } from "react"
 import { hot } from "react-hot-loader"
 import { isAbortSignal } from "./analysis/utils"
 import ErrorBar from "./ui/ErrorBar"
 import { usePromiseTracker } from "./ui/hooks/usePromiseTracker"
 import LoadingBoundary from "./ui/LoadingBoundary"
+import { makeStyles } from "./ui/makeStyles"
 
 const App = lazy(() => import("./App"))
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({ name: "AppContainer" })((theme) => ({
   AppContainer: {},
   progress: {
     position: "fixed",
@@ -28,16 +28,16 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Loading() {
-  const classes = useStyles()
+  const { classes } = useStyles()
   return <LinearProgress className={classes.progress} />
 }
 function Error({ error }) {
-  const classes = useStyles()
+  const { classes } = useStyles()
   return <ErrorBar className={classes.error}>{String(error)}</ErrorBar>
 }
 
 function AppContainer() {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const [{ loading, error }, trackLoading] = usePromiseTracker()
   return (
     <div className={classes.AppContainer}>

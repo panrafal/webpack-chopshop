@@ -13,8 +13,6 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material"
-import makeStyles from "@mui/styles/makeStyles"
-import classNames from "classnames"
 
 import type {
   GraphNode,
@@ -30,6 +28,7 @@ import {
 } from "../tree"
 import { getPackageName } from "../../analysis/info"
 import { useMemo, useState } from "react"
+import { makeStyles } from "../makeStyles"
 
 export type RenderItemProps<T> = {
   item: T
@@ -52,7 +51,7 @@ export type ElementListProps<T> = {
   className?: string
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({ name: "NodeNavigator" })((theme) => ({
   root: {
     display: "flex",
     flexDirection: "column" as const,
@@ -93,30 +92,27 @@ function ElementList<T extends GraphNode | GraphEdge>({
   groupItemsBy,
   orderGroupsBy,
 }: ElementListProps<T>) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   const [search, setSearch] = useState("")
   const [treeState, setTreeState] = useState<TreeState>({ expanded: [] })
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const stableItems = useMemo(() => items, items)
-
   const fuse = useMemo(
     () =>
-      new Fuse(stableItems, {
+      new Fuse(items, {
         keys: ["name", "id", "kind", "to.name", "to.id"],
       }),
-    [stableItems]
+    [items]
   )
 
   const filteredItems = useMemo(() => {
     const searchedItems = search
       ? fuse.search(search).map(({ item }) => item)
-      : stableItems
+      : items
     if (orderItemsBy && !search) {
       return orderBy(searchedItems, ...orderItemsBy)
     }
     return searchedItems
-  }, [fuse, stableItems, search, orderItemsBy])
+  }, [fuse, items, search, orderItemsBy])
 
   const pinnedItems = useMemo(
     () => filteredItems.filter((item) => pinned.includes(getNode(item).id)),
@@ -155,7 +151,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
   ])
 
   return (
-    <div className={classNames(className, classes.root)}>
+    <div className={cx(className, classes.root)}>
       <Input
         className={classes.search}
         type="text"

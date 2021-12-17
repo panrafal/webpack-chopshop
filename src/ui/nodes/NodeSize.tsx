@@ -1,9 +1,8 @@
 import type { Graph, GraphNode } from "../../analysis/graph"
 
 import numeral from "numeral"
-import { Tooltip } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
-import Skeleton from '@mui/material/Skeleton'
+import { Tooltip } from "@mui/material"
+import Skeleton from "@mui/material/Skeleton"
 
 import {
   calculateTreeSize,
@@ -16,7 +15,8 @@ import {
 } from "../../analysis/dependencies"
 import ErrorBox from "../ErrorBox"
 
-import { red, green } from '@mui/material/colors';
+import { red, green } from "@mui/material/colors"
+import { makeStyles } from "../makeStyles"
 
 type Props = {
   graph: Graph
@@ -24,7 +24,7 @@ type Props = {
   node: GraphNode
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({ name: "NodeSize" })((theme) => ({
   bigger: {
     color: red.A700,
   },
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function NodeSize({ graph, node, retainerRootNode }: Props) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   const treeSizeCalculator = retainerRootNode
     ? (filter) =>
         calculateRetainedTreeSize(graph, retainerRootNode, node, { filter })

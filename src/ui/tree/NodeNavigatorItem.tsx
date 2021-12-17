@@ -1,9 +1,7 @@
-import { Checkbox, ListItem, ListItemIcon, ListItemText } from "@mui/material"
-import makeStyles from "@mui/styles/makeStyles"
-import classNames from "classnames"
+import { ListItem, ListItemText } from "@mui/material"
 import { ReactNode } from "react"
-import { addChange } from "../../analysis/changes"
-import { GraphEdge, GraphNode } from "../../analysis/graph"
+import { GraphNode } from "../../analysis/graph"
+import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
 import { useTreeContext } from "./TreeContext"
@@ -23,7 +21,7 @@ export type NodeNavigatorItemProps = {
   onDoubleClick?: () => void
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles({ name: "NodeNavigatorItem" })((theme) => ({
   NodeNavigatorItem: {},
   disabled: {
     opacity: 0.5,
@@ -34,7 +32,7 @@ const useStyles = makeStyles({
   active: {
     border: "4px solid red",
   },
-})
+}))
 
 export default function NodeNavigatorItem({
   className,
@@ -47,7 +45,7 @@ export default function NodeNavigatorItem({
   onDoubleClick,
   children,
 }: NodeNavigatorItemProps) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   const { graph, updateChanges, activeNodeId } = useTreeContext()
   const active = activeNodeId === node.id
   return (
@@ -60,7 +58,7 @@ export default function NodeNavigatorItem({
         selected={selected}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
-        className={classNames(
+        className={cx(
           className,
           classes.NodeNavigatorItem,
           active && classes.active

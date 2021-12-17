@@ -27,9 +27,6 @@
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
-    "@material-ui/core": "^4.12.3",
-    "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.60",
     "@mui/icons-material": "^5.2.4",
     "@mui/lab": "^5.0.0-alpha.60",
     "@mui/material": "^5.2.4",
@@ -61,6 +58,7 @@
     "react-window": "^1.8.6",
     "reselect": "^3.0.1",
     "source-map-explorer": "^1.8.0",
+    "tss-react": "^3.2.2",
     "typescript": "^4.5.3"
   },
   "eslintConfig": {

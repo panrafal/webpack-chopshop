@@ -1,6 +1,4 @@
 import { createRef, useCallback, useEffect, useMemo, useState } from "react"
-import { Grid } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
 import {
   getAllNodes,
   getEdgeId,
@@ -22,7 +20,6 @@ import {
   getEnabledChildEdges,
 } from "../../analysis/dependencies"
 import { findChains } from "../../analysis/chains"
-import classNames from "classnames"
 import { useStablePromise } from "../hooks/promises"
 import { TreeContextProvider } from "./TreeContext"
 import { UpdateChangesFn } from "../../logic/useGraphState"
@@ -30,6 +27,7 @@ import NodeNavigator, { NavigatorModes } from "./NodeNavigator"
 import { TogglePinnedFn } from "../../logic/usePinnedState"
 import LoadingBoundary from "../LoadingBoundary"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
+import { makeStyles } from "../makeStyles"
 
 type Props = {
   graph: Graph
@@ -40,7 +38,7 @@ type Props = {
   updateChanges: UpdateChangesFn
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
   TreePage: {
     flexGrow: 1,
     display: "grid",
@@ -105,7 +103,7 @@ function TreePage({
   trackLoading,
   updateChanges,
 }: Props) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   const [selectedEdgeId, setSelectedEdgeId] = useState<GraphEdgeID | null>(null)
   const [activeNodeId, setActiveNodeId] = useState<GraphNodeID | null>(null)
   const [openedNodeIds, setOpenedNodeIds] = useState<GraphNodeID[]>([
@@ -261,7 +259,7 @@ function TreePage({
   )
 
   return (
-    <div className={classNames(className, classes.TreePage)}>
+    <div className={cx(className, classes.TreePage)}>
       <TreeContextProvider
         value={{
           graph,

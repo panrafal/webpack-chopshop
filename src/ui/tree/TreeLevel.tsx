@@ -1,16 +1,13 @@
 import type { GraphEdge, GraphNode } from "../../analysis/graph"
 
-import classNames from "classnames"
-import { Icon } from "@mui/material";
-
-import makeStyles from '@mui/styles/makeStyles';
+import { Icon } from "@mui/material"
 
 import EmptyBox from "../EmptyBox"
-import LoadingBoundary from "../LoadingBoundary"
 import ElementList from "./ElementList"
 import { useTreeContext } from "./TreeContext"
 import TreeItem from "./TreeItem"
 import { forwardRef } from "react"
+import { makeStyles } from "../makeStyles"
 
 type Props = {
   parentNode?: GraphNode | null
@@ -21,8 +18,8 @@ type Props = {
   className?: string
 }
 
-const useStyles = makeStyles({
-  TreeLevel: {
+const useStyles = makeStyles({ name: "TreeLevel" })({
+  root: {
     display: "flex",
     flexDirection: "column",
   },
@@ -36,10 +33,10 @@ function TreeLevel(
   ref
 ) {
   const { graph, pinned } = useTreeContext()
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   const edges = node.children
   return (
-    <div className={classNames(className, classes.TreeLevel)} ref={ref}>
+    <div className={cx(className, classes.root)} ref={ref}>
       <ElementList
         className={classes.list}
         items={edges}

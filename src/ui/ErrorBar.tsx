@@ -1,14 +1,13 @@
 import * as React from "react"
-import { Icon } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
-import classNames from "classnames"
+import { Icon } from "@mui/material"
+import { makeStyles } from "./makeStyles"
 
 type Props = {
   children: React.ReactNode
   className?: string
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({ name: "ErrorBar" })((theme) => ({
   root: {
     background: theme.palette.error.dark,
     color: theme.palette.error.contrastText,
@@ -24,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function ErrorBar({ className, children }: Props) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   return (
-    <div className={classNames(className, classes.root)}>
+    <div className={cx(className, classes.root)}>
       <Icon className={classes.icon}>error</Icon>
       <span>{children}</span>
     </div>

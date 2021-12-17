@@ -1,8 +1,7 @@
 import { Checkbox, ListItem, ListItemIcon, ListItemText } from "@mui/material"
-import makeStyles from "@mui/styles/makeStyles"
-import classNames from "classnames"
 import { addChange } from "../../analysis/changes"
 import { GraphEdge, GraphNode } from "../../analysis/graph"
+import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
 import { useTreeContext } from "./TreeContext"
@@ -21,8 +20,8 @@ type Props = {
   onDoubleClick?: () => void
 }
 
-const useStyles = makeStyles({
-  TreeItem: {},
+const useStyles = makeStyles({ name: "TreeItem" })({
+  root: {},
   disabled: {
     opacity: 0.5,
   },
@@ -44,7 +43,7 @@ export default function TreeItem({
   onClick,
   onDoubleClick,
 }: Props) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   const { graph, updateChanges, enabledIds, chainedNodeIds, activeNodeId } =
     useTreeContext()
   const enabled =
@@ -63,9 +62,9 @@ export default function TreeItem({
         selected={selected}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
-        className={classNames(
+        className={cx(
           className,
-          classes.TreeItem,
+          classes.root,
           !enabled && classes.disabled,
           chained && classes.chained,
           active && classes.active

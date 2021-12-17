@@ -1,7 +1,6 @@
-import type { Change } from "./analysis/changes"
 import { useDropzone } from "react-dropzone"
 
-import { decodeUrlStateHash, encodeUrlStateHash } from "./history"
+import { encodeUrlStateHash } from "./history"
 import { lazy, useCallback, useEffect, useState } from "react"
 import { PromiseTrackerFn } from "./ui/hooks/usePromiseTracker"
 import { usePinnedState } from "./logic/usePinnedState"
@@ -15,16 +14,15 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material"
-import makeStyles from "@mui/styles/makeStyles"
 import LoadingBoundary from "./ui/LoadingBoundary"
 import WarningBar from "./ui/WarningBar"
 import EmptyBox from "./ui/EmptyBox"
-import classNames from "classnames"
+import { makeStyles } from "./ui/makeStyles"
 
 const TreePage = lazy(() => import("./ui/tree/TreePage"))
 const ChangesPage = lazy(() => import("./ui/changes/ChangesPage"))
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({ name: "App" })((theme) => ({
   root: {
     display: "flex",
     height: "100vh",
@@ -67,7 +65,7 @@ type Props = {
 }
 
 export default function App({ className, trackLoading }: Props) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
 
   const [page, setPage] = useState<string>("tree")
   // History ------------------------------------------
@@ -190,7 +188,7 @@ export default function App({ className, trackLoading }: Props) {
   })
 
   return (
-    <div {...getRootProps({ className: classNames(classes.root, className) })}>
+    <div {...getRootProps({ className: cx(classes.root, className) })}>
       {/* @ts-expect-error */}
       <input {...getInputProps()} />
       <LoadingBoundary

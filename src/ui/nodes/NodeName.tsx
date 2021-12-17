@@ -1,12 +1,10 @@
 import type { GraphNode } from "../../analysis/graph"
 
 import * as React from "react"
-import classNames from "classnames"
-import { Tooltip } from "@mui/material";
-
-import makeStyles from '@mui/styles/makeStyles';
+import { Tooltip } from "@mui/material"
 
 import { getModuleInfo } from "../../analysis/info"
+import { makeStyles } from "../makeStyles"
 
 type Props = {
   node: GraphNode
@@ -17,7 +15,7 @@ type Props = {
   className?: string
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({ name: "NodeSize" })((theme) => ({
   root: {
     maxWidth: "100%",
     display: "inline-flex",
@@ -55,7 +53,7 @@ export default function NodeName({
   children,
   className,
 }: Props) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   // {selectFromNode && <a onClick={() => selectFromNode(node.id)}>From</a>}
   // {selectToNode && <a onClick={() => selectToNode(node.id)}>To</a>}
 
@@ -66,7 +64,7 @@ export default function NodeName({
   const name = onlyPackage ? "" : (info.name || "") + (info.extension || "")
 
   const text = (
-    <span className={classNames(className, classes.root)}>
+    <span className={cx(className, classes.root)}>
       {packageName && (
         <span className={classes.packageName}>{packageName}</span>
       )}

@@ -1,8 +1,6 @@
 import { GraphNode, resolveEdge } from "../../analysis/graph"
 
-import classNames from "classnames"
 import {
-  Tooltip,
   ListItem,
   ListItemText,
   Typography,
@@ -12,18 +10,17 @@ import {
   ListItemSecondaryAction,
   IconButton,
   LinearProgress,
-} from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+} from "@mui/material"
 import BlockIcon from "@mui/icons-material/Block"
 import StarIcon from "@mui/icons-material/Star"
-import { getModuleInfo } from "../../analysis/info"
 import { useMemo, useState } from "react"
 import ElementList, { ElementListProps, RenderItemProps } from "./ElementList"
 import NodeNavigatorItem, { NodeNavigatorItemProps } from "./NodeNavigatorItem"
 import EmptyBox from "../EmptyBox"
-import { useStablePromise, useStablePromiseSuspense } from "../hooks/promises"
+import { useStablePromise } from "../hooks/promises"
 import { useTreeContext } from "./TreeContext"
 import ErrorBox from "../ErrorBox"
+import { makeStyles } from "../makeStyles"
 
 export type NavigatorMode = {
   getNodes: () => ReadonlyArray<GraphNode> | Promise<ReadonlyArray<GraphNode>>
@@ -42,7 +39,7 @@ type Props = {
   defaultMode: string
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({ name: "NodeNavigator" })((theme) => ({
   NodeNavigator: {
     display: "flex",
     position: "relative",
@@ -65,7 +62,7 @@ export default function NodeNavigator({
   modes,
   defaultMode,
 }: Props) {
-  const classes = useStyles()
+  const { classes, cx } = useStyles()
   const [modeId, setModeId] = useState(defaultMode)
   const [modeMenuAnchor, setModeMenuAnchor] = useState(null)
   const mode = modes[modeId] || modes[defaultMode]
@@ -84,7 +81,7 @@ export default function NodeNavigator({
   const { value: nodes, loading, error } = useStablePromise(nodesPromise)
 
   return (
-    <div className={classNames(className, classes.NodeNavigator)}>
+    <div className={cx(className, classes.NodeNavigator)}>
       <ListItem
         button
         disableGutters
@@ -150,7 +147,8 @@ export default function NodeNavigator({
                     onClick={() => {
                       togglePinned({ id: item.id, set: false })
                     }}
-                    size="large">
+                    size="large"
+                  >
                     <StarIcon color="disabled" />
                   </IconButton>
                 </ListItemSecondaryAction>
@@ -163,5 +161,5 @@ export default function NodeNavigator({
         />
       )}
     </div>
-  );
+  )
 }
