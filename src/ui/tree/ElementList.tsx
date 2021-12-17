@@ -12,8 +12,8 @@ import {
   Icon,
   ListItem,
   ListItemText,
-  makeStyles,
-} from "@material-ui/core"
+} from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import classNames from "classnames"
 
 import type {
@@ -168,6 +168,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
                 color="inherit"
                 aria-label="Clear search"
                 onClick={() => setSearch("")}
+                size="large"
               >
                 <Icon color="inherit">clear</Icon>
               </IconButton>
@@ -198,7 +199,6 @@ function ElementList<T extends GraphNode | GraphEdge>({
                         dense
                         // @ts-expect-error mui
                         ContainerComponent="div"
-                        button
                         onClick={() =>
                           setTreeState(toggleTreeRowState(item, treeOptions))
                         }

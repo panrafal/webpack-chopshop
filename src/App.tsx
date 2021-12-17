@@ -6,16 +6,8 @@ import { lazy, useCallback, useEffect, useState } from "react"
 import { PromiseTrackerFn } from "./ui/hooks/usePromiseTracker"
 import { usePinnedState } from "./logic/usePinnedState"
 import { useGraphState } from "./logic/useGraphState"
-import {
-  AppBar,
-  Button,
-  Drawer,
-  Icon,
-  LinearProgress,
-  makeStyles,
-  Toolbar,
-  Typography,
-} from "@material-ui/core"
+import { AppBar, Button, Drawer, Icon, LinearProgress, Toolbar, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import LoadingBoundary from "./ui/LoadingBoundary"
 import WarningBar from "./ui/WarningBar"
 import EmptyBox from "./ui/EmptyBox"

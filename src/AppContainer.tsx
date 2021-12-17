@@ -1,4 +1,5 @@
-import { CssBaseline, LinearProgress, makeStyles } from "@material-ui/core"
+import { CssBaseline, LinearProgress } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import { lazy } from "react"
 import { hot } from "react-hot-loader"
 import { isAbortSignal } from "./analysis/utils"

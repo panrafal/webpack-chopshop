@@ -1,5 +1,7 @@
 import * as React from "react"
-import { Icon, makeStyles } from "@material-ui/core"
+import { Icon } from "@mui/material";
+
+import makeStyles from '@mui/styles/makeStyles';
 
 type Props = {
   error?: any

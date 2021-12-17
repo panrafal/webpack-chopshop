@@ -8,7 +8,6 @@ import { map } from "lodash"
 import { createSelector } from "reselect"
 import Async from "react-promise"
 import {
-  withStyles,
   Icon,
   Typography,
   Menu,
@@ -16,7 +15,9 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-} from "@material-ui/core"
+} from "@mui/material";
+
+import withStyles from '@mui/styles/withStyles';
 
 import EmptyBox from "../EmptyBox"
 import NodeItem from "./NodeItem"

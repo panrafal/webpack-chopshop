@@ -1,5 +1,6 @@
 import { createRef, useCallback, useEffect, useMemo, useState } from "react"
-import { Grid, makeStyles } from "@material-ui/core"
+import { Grid } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import {
   getAllNodes,
   getEdgeId,

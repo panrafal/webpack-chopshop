@@ -2,7 +2,8 @@ import type { Graph, GraphNode, GraphNodeID } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
-import { withStyles, ListItem, ListItemText } from "@material-ui/core"
+import { ListItem, ListItemText } from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 import NodeSize from "./NodeSize"
 import NodeName from "./NodeName"
 
@@ -53,6 +54,7 @@ function NodeItem({
         disableGutters
         // @ts-expect-error mui
         ContainerComponent="div"
+        // @ts-expect-error mui
         button={true}
         onClick={onClick}
         className={classNames(className, classes.root)}

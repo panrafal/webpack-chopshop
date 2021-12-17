@@ -3,14 +3,15 @@ import type { Graph, GraphNode } from "../../analysis/graph"
 import * as React from "react"
 import numeral from "numeral"
 import Async from "react-promise"
-import { withStyles, Tooltip } from "@material-ui/core"
-import red from "@material-ui/core/colors/red"
-import green from "@material-ui/core/colors/green"
+import { Tooltip } from "@mui/material";
+import withStyles from '@mui/styles/withStyles';
 
 import {
   calculateTreeSize,
   calculateRetainedTreeSize,
 } from "../../analysis/size"
+
+import { red, green } from '@mui/material/colors';
 
 type Props = {
   baseGraph: Graph

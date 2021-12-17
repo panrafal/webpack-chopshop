@@ -2,7 +2,9 @@ import type { GraphNode } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
-import { Tooltip, makeStyles } from "@material-ui/core"
+import { Tooltip } from "@mui/material";
+
+import makeStyles from '@mui/styles/makeStyles';
 
 import { getModuleInfo } from "../../analysis/info"
 

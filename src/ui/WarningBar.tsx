@@ -1,6 +1,7 @@
 import * as React from "react"
-import { withStyles, Icon } from "@material-ui/core"
-import orange from "@material-ui/core/colors/amber"
+import { Icon } from "@mui/material";
+import withStyles from '@mui/styles/withStyles';
+import { amber as orange } from '@mui/material/colors';
 
 type Props = {
   children: React.ReactNode

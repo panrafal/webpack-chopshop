@@ -1,10 +1,9 @@
 import type { Graph, GraphNode } from "../../analysis/graph"
 
 import numeral from "numeral"
-import { Tooltip, makeStyles } from "@material-ui/core"
-import red from "@material-ui/core/colors/red"
-import green from "@material-ui/core/colors/green"
-import Skeleton from "@material-ui/lab/Skeleton"
+import { Tooltip } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import Skeleton from '@mui/material/Skeleton'
 
 import {
   calculateTreeSize,
@@ -16,6 +15,8 @@ import {
   currentGraphFilter,
 } from "../../analysis/dependencies"
 import ErrorBox from "../ErrorBox"
+
+import { red, green } from '@mui/material/colors';
 
 type Props = {
   graph: Graph

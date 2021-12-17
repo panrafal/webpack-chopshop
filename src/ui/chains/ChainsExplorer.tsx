@@ -5,14 +5,9 @@ import classNames from "classnames"
 import * as React from "react"
 import { createSelector } from "reselect"
 import Async from "react-promise"
-import {
-  withStyles,
-  Typography,
-  LinearProgress,
-  IconButton,
-  Icon,
-  Tooltip,
-} from "@material-ui/core"
+import { Typography, LinearProgress, IconButton, Icon, Tooltip } from "@mui/material";
+
+import withStyles from '@mui/styles/withStyles';
 
 import { findChains, findAllChains } from "../../analysis/chains"
 import ErrorBox from "../ErrorBox"
@@ -151,60 +146,58 @@ class ChainsExplorer extends React.Component<Props, State> {
         enabled: false,
       }
 
-      return (
-        <>
-          <NodeCard
-            baseGraph={baseGraph}
-            graph={graph}
-            node={node}
-            retainerRootNode={fromNode}
-            edge={edge}
-            actions={
-              <>
-                <EdgeLinkButton
-                  edge={edge}
-                  onClick={() =>
-                    onAddChange({
-                      change: "edge",
-                      from: edge.from.id,
-                      to: edge.to.id,
-                      enabled: !edge.enabled,
-                    })
-                  }
-                />
+      return <>
+        <NodeCard
+          baseGraph={baseGraph}
+          graph={graph}
+          node={node}
+          retainerRootNode={fromNode}
+          edge={edge}
+          actions={
+            <>
+              <EdgeLinkButton
+                edge={edge}
+                onClick={() =>
+                  onAddChange({
+                    change: "edge",
+                    from: edge.from.id,
+                    to: edge.to.id,
+                    enabled: !edge.enabled,
+                  })
+                }
+              />
+              <Tooltip
+                title="Set as the first node"
+                disableFocusListener
+                enterDelay={500}
+                placement="top"
+              >
+                <IconButton onClick={() => onFromNodeSelect(node.id)} size="large">
+                  <Icon>vertical_align_top</Icon>
+                </IconButton>
+              </Tooltip>
+              {!isLast && (
                 <Tooltip
-                  title="Set as the first node"
+                  title="Set as the last node"
                   disableFocusListener
                   enterDelay={500}
                   placement="top"
                 >
-                  <IconButton onClick={() => onFromNodeSelect(node.id)}>
-                    <Icon>vertical_align_top</Icon>
+                  <IconButton onClick={() => onToNodeSelect(node.id)} size="large">
+                    <Icon>vertical_align_bottom</Icon>
                   </IconButton>
                 </Tooltip>
-                {!isLast && (
-                  <Tooltip
-                    title="Set as the last node"
-                    disableFocusListener
-                    enterDelay={500}
-                    placement="top"
-                  >
-                    <IconButton onClick={() => onToNodeSelect(node.id)}>
-                      <Icon>vertical_align_bottom</Icon>
-                    </IconButton>
-                  </Tooltip>
-                )}
-                <IconButton onClick={() => onPinnedToggle(node.id)}>
-                  <Icon>
-                    {pinned.indexOf(node.id) >= 0 ? "star" : "star_border"}
-                  </Icon>
-                </IconButton>
-              </>
-            }
-          />
-        </>
-      )
-    })
+              )}
+              <IconButton onClick={() => onPinnedToggle(node.id)} size="large">
+                <Icon>
+                  {pinned.indexOf(node.id) >= 0 ? "star" : "star_border"}
+                </Icon>
+              </IconButton>
+            </>
+          }
+        />
+      </>;
+    });
   }
 
   renderChains = (chains) => {
@@ -268,12 +261,12 @@ class ChainsExplorer extends React.Component<Props, State> {
                       enterDelay={500}
                       placement="top"
                     >
-                      <IconButton onClick={() => onToNodeSelect(fromNode.id)}>
+                      <IconButton onClick={() => onToNodeSelect(fromNode.id)} size="large">
                         <Icon>vertical_align_bottom</Icon>
                       </IconButton>
                     </Tooltip>
                   )}
-                  <IconButton onClick={() => onPinnedToggle(fromNode.id)}>
+                  <IconButton onClick={() => onPinnedToggle(fromNode.id)} size="large">
                     <Icon>
                       {pinned.indexOf(fromNode.id) >= 0
                         ? "star"
@@ -289,7 +282,7 @@ class ChainsExplorer extends React.Component<Props, State> {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 

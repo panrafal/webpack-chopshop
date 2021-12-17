@@ -2,16 +2,9 @@ import type { Graph, GraphNode, GraphEdge } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
-import {
-  withStyles,
-  Typography,
-  IconButton,
-  Icon,
-  Card,
-  CardContent,
-  Collapse,
-  CardActions,
-} from "@material-ui/core"
+import { Typography, IconButton, Icon, Card, CardContent, Collapse, CardActions } from "@mui/material";
+
+import withStyles from '@mui/styles/withStyles';
 
 import NodeSize from "./NodeSize"
 import NodeName from "./NodeName"
@@ -108,7 +101,7 @@ class NodeCard extends React.Component<Props, State> {
                 expanded && classes.expandOpen
               )}
               onClick={() => this.setState({ expanded: !expanded })}
-            >
+              size="large">
               <Icon>expand_more</Icon>
             </IconButton>
           </CardActions>
@@ -152,7 +145,7 @@ class NodeCard extends React.Component<Props, State> {
           </Collapse>
         </Card>
       </div>
-    )
+    );
   }
 }
 

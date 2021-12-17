@@ -1,4 +1,4 @@
-import { withStyles } from "@material-ui/core"
+import withStyles from '@mui/styles/withStyles';
 import classNames from "classnames"
 import { Change } from "../../analysis/changes"
 import { Graph, GraphNode, GraphNodeID } from "../../analysis/graph"

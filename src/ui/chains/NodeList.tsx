@@ -6,7 +6,6 @@ import { groupBy, orderBy, map, sortBy, sumBy } from "lodash"
 
 import { List, AutoSizer } from "react-virtualized"
 import {
-  withStyles,
   Input,
   InputAdornment,
   IconButton,
@@ -14,7 +13,8 @@ import {
   ListItem,
   ListItemText,
   LinearProgress,
-} from "@material-ui/core"
+} from "@mui/material"
+import withStyles from "@mui/styles/withStyles"
 import classNames from "classnames"
 import { createSelector } from "reselect"
 
@@ -157,7 +157,6 @@ class NodeList extends React.Component<Props, State> {
                       dense
                       // @ts-expect-error mui
                       ContainerComponent="div"
-                      button
                       onClick={() =>
                         this.setState(toggleTreeRowState(node, treeOptions))
                       }
@@ -214,6 +213,7 @@ class NodeList extends React.Component<Props, State> {
                   color="inherit"
                   aria-label="Clear search"
                   onClick={() => this.setState({ search: "" })}
+                  size="large"
                 >
                   <Icon color="inherit">clear</Icon>
                 </IconButton>

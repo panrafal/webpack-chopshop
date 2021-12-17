@@ -3,7 +3,7 @@ import type { GraphNode, GraphNodeID, Graph } from "../../analysis/graph"
 import * as React from "react"
 import classNames from "classnames"
 import { createSelector } from "reselect"
-import { withStyles } from "@material-ui/core"
+import withStyles from '@mui/styles/withStyles';
 
 import { getNodes, getAllNodes } from "../../analysis/graph"
 import GraphExplorer, { Modes } from "./GraphExplorer"

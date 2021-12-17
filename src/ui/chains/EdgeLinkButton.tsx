@@ -2,7 +2,9 @@ import type { GraphEdge } from "../../analysis/graph"
 
 import * as React from "react"
 import classNames from "classnames"
-import { withStyles, Icon, IconButton, Tooltip } from "@material-ui/core"
+import { Icon, IconButton, Tooltip } from "@mui/material";
+
+import withStyles from '@mui/styles/withStyles';
 
 type Props = {
   edge: GraphEdge
@@ -31,11 +33,11 @@ class EdgeLinkButton extends React.Component<Props> {
           aria-label="Unlink"
           color={edge.enabled ? "secondary" : "default"}
           onClick={onClick}
-        >
+          size="large">
           <Icon>{edge.enabled ? "link_off" : "link"}</Icon>
         </IconButton>
       </Tooltip>
-    )
+    );
   }
 }
 

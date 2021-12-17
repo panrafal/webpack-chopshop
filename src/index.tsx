@@ -3,7 +3,14 @@ import ReactDOM from "react-dom"
 import "./index.css"
 import AppContainer from "./AppContainer"
 import registerServiceWorker from "./registerServiceWorker"
-import { createTheme, ThemeProvider } from "@material-ui/core"
+import { createTheme, ThemeProvider, Theme, StyledEngineProvider } from "@mui/material";
+
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 const rootEl = document.getElementById("root")
 const theme = createTheme()
@@ -12,10 +19,12 @@ registerServiceWorker()
 
 function AppRoot() {
   return (
-    <ThemeProvider theme={theme}>
-      <AppContainer />
-    </ThemeProvider>
-  )
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <AppContainer />
+      </ThemeProvider>
+    </StyledEngineProvider>
+  );
 }
 
 ReactDOM.render(<AppRoot />, rootEl)

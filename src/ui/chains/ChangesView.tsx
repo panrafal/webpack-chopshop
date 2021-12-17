@@ -5,7 +5,6 @@ import * as React from "react"
 import { without } from "lodash"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import {
-  withStyles,
   IconButton,
   Icon,
   List,
@@ -14,7 +13,8 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-} from "@material-ui/core"
+} from "@mui/material";
+import withStyles from '@mui/styles/withStyles';
 import { resolveEdgeForNodes, getNode } from "../../analysis/graph"
 import EmptyBox from "../EmptyBox"
 import { encodeUrlStateHash, decodeUrlStateHash } from "../../history"
@@ -71,7 +71,7 @@ class ChangesView extends React.Component<Props> {
                     aria-label="Delete"
                     className={classes.delete}
                     onClick={() => onChangesUpdate(without(changes, change))}
-                  >
+                    size="large">
                     <Icon>delete</Icon>
                   </IconButton>
                   <ListItemText
@@ -89,7 +89,7 @@ class ChangesView extends React.Component<Props> {
                   />
                   <ListItemSecondaryAction />
                 </ListItem>
-              )
+              );
             })
             .reverse()}
           {changes.length === 0 && (
@@ -110,7 +110,7 @@ class ChangesView extends React.Component<Props> {
           </CopyToClipboard>
         </Toolbar>
       </div>
-    )
+    );
   }
 }
 

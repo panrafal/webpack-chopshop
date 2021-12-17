@@ -1,7 +1,9 @@
 import type { GraphEdge, GraphNode } from "../../analysis/graph"
 
 import classNames from "classnames"
-import { Icon, makeStyles } from "@material-ui/core"
+import { Icon } from "@mui/material";
+
+import makeStyles from '@mui/styles/makeStyles';
 
 import EmptyBox from "../EmptyBox"
 import LoadingBoundary from "../LoadingBoundary"

@@ -3,7 +3,6 @@ import { GraphNode, resolveEdge } from "../../analysis/graph"
 import classNames from "classnames"
 import {
   Tooltip,
-  makeStyles,
   ListItem,
   ListItemText,
   Typography,
@@ -13,9 +12,10 @@ import {
   ListItemSecondaryAction,
   IconButton,
   LinearProgress,
-} from "@material-ui/core"
-import BlockIcon from "@material-ui/icons/Block"
-import StarIcon from "@material-ui/icons/Star"
+} from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import BlockIcon from "@mui/icons-material/Block"
+import StarIcon from "@mui/icons-material/Star"
 import { getModuleInfo } from "../../analysis/info"
 import { useMemo, useState } from "react"
 import ElementList, { ElementListProps, RenderItemProps } from "./ElementList"
@@ -150,7 +150,7 @@ export default function NodeNavigator({
                     onClick={() => {
                       togglePinned({ id: item.id, set: false })
                     }}
-                  >
+                    size="large">
                     <StarIcon color="disabled" />
                   </IconButton>
                 </ListItemSecondaryAction>
@@ -163,5 +163,5 @@ export default function NodeNavigator({
         />
       )}
     </div>
-  )
+  );
 }

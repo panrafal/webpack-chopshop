@@ -1,10 +1,5 @@
-import {
-  Checkbox,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from "@material-ui/core"
+import { Checkbox, ListItem, ListItemIcon, ListItemText } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import classNames from "classnames"
 import { ReactNode } from "react"
 import { addChange } from "../../analysis/changes"
@@ -62,7 +57,6 @@ export default function NodeNavigatorItem({
         disableGutters
         // @ts-expect-error mui
         ContainerComponent="div"
-        button={true}
         selected={selected}
         onClick={onClick}
         onDoubleClick={onDoubleClick}

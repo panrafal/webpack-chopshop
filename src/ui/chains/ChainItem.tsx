@@ -1,7 +1,9 @@
 import type { Graph, GraphNodeID } from "../../analysis/graph"
 
 import * as React from "react"
-import { withStyles, ListItem, ListItemText } from "@material-ui/core"
+import { ListItem, ListItemText } from "@mui/material"
+
+import withStyles from "@mui/styles/withStyles"
 
 import { getNode } from "../../analysis/graph"
 import NodeName from "./NodeName"
@@ -49,7 +51,9 @@ function ChainItem({
         dense
         // @ts-expect-error mui
         ContainerComponent="div"
+        // @ts-expect-error mui
         button
+        // @ts-expect-error mui
         onClick={onClick}
         disableGutters
       >

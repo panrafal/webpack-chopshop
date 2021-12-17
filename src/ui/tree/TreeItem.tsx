@@ -1,10 +1,5 @@
-import {
-  Checkbox,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from "@material-ui/core"
+import { Checkbox, ListItem, ListItemIcon, ListItemText } from "@mui/material"
+import makeStyles from "@mui/styles/makeStyles"
 import classNames from "classnames"
 import { addChange } from "../../analysis/changes"
 import { GraphEdge, GraphNode } from "../../analysis/graph"
@@ -65,7 +60,6 @@ export default function TreeItem({
         disableGutters
         // @ts-expect-error mui
         ContainerComponent="div"
-        button={true}
         selected={selected}
         onClick={onClick}
         onDoubleClick={onDoubleClick}

@@ -4,7 +4,9 @@ import * as React from "react"
 import classNames from "classnames"
 import { difference } from "lodash"
 import { List, AutoSizer } from "react-virtualized"
-import { withStyles, Icon } from "@material-ui/core"
+import { Icon } from "@mui/material";
+
+import withStyles from '@mui/styles/withStyles';
 
 import ChainItem from "./ChainItem"
 import EmptyBox from "../EmptyBox"
