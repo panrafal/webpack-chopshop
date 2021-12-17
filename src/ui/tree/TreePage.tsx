@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react"
+import { createRef, useCallback, useEffect, useMemo, useState } from "react"
 import { Grid, makeStyles } from "@material-ui/core"
 import {
   getAllNodes,
@@ -110,6 +110,7 @@ function TreePage({
   const [openedNodeIds, setOpenedNodeIds] = useState<GraphNodeID[]>([
     ROOT_NODE_ID,
   ])
+  const selectedEdge = resolveEdge(graph, selectedEdgeId)
 
   // const selectNode = useCallback(() => async (nextNode: GraphNode) => {
   //   // already opened
@@ -192,10 +193,19 @@ function TreePage({
     [graph, trackLoading, openedNodeIds, selectedEdgeId]
   )
 
+  const selectedTreeLevelRef = createRef<HTMLDivElement>()
+
+  useEffect(() => {
+    if (!selectedEdge || !selectedTreeLevelRef.current) return
+    selectedTreeLevelRef.current.scrollIntoView()
+  }, [selectedEdge, selectedTreeLevelRef])
+
+  const selectedTreeLevelIndex = openedNodeIds.lastIndexOf(selectedEdge?.to.id)
   const treeLevels = openedNodeIds.map((nodeId, index) => (
     <TreeLevel
       key={index}
       className={classes.treeLevel}
+      ref={selectedTreeLevelIndex === index ? selectedTreeLevelRef : null}
       node={getNode(graph, nodeId)}
       childNode={resolveNode(graph, openedNodeIds[index + 1])}
       selectEdge={(edge) => {

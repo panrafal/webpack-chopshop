@@ -8,6 +8,7 @@ import LoadingBoundary from "../LoadingBoundary"
 import ElementList from "./ElementList"
 import { useTreeContext } from "./TreeContext"
 import TreeItem from "./TreeItem"
+import { forwardRef } from "react"
 
 type Props = {
   parentNode?: GraphNode | null
@@ -28,18 +29,15 @@ const useStyles = makeStyles({
   },
 })
 
-function TreeLevel({
-  node,
-  childNode,
-  selectEdge,
-  activateNode,
-  className,
-}: Props) {
+function TreeLevel(
+  { node, childNode, selectEdge, activateNode, className }: Props,
+  ref
+) {
   const { graph, pinned } = useTreeContext()
   const classes = useStyles()
   const edges = node.children
   return (
-    <>
+    <div className={classNames(className, classes.TreeLevel)} ref={ref}>
       <ElementList
         className={classes.list}
         items={edges}
@@ -64,19 +62,8 @@ function TreeLevel({
           <EmptyBox icon={<Icon>block</Icon>}>Yada yada</EmptyBox>
         )}
       />
-    </>
-  )
-}
-
-function TreeLevelWithBoundary(props: Props) {
-  const classes = useStyles()
-  return (
-    <div className={classNames(props.className, classes.TreeLevel)}>
-      <LoadingBoundary fallback={"Loading"}>
-        <TreeLevel {...props} />
-      </LoadingBoundary>
     </div>
   )
 }
 
-export default TreeLevelWithBoundary
+export default forwardRef(TreeLevel)
