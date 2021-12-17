@@ -1,13 +1,12 @@
 import * as React from "react"
-import withStyles from '@mui/styles/withStyles';
+import { makeStyles } from "./makeStyles"
 
 type Props = {
   children: React.ReactNode
   icon: React.ReactNode
-  classes: any
 }
 
-const styles = (theme) => ({
+const useStyles = makeStyles({ name: "EmptyBox" })((theme) => ({
   root: {
     color: theme.palette.text.secondary,
     padding: 24,
@@ -21,14 +20,14 @@ const styles = (theme) => ({
   icon: {
     "margin-bottom": 8,
   },
-})
+}))
 
-const EmptyBox = ({ classes, children, icon }: Props) => (
-  <div className={classes.root}>
-    <div className={classes.icon}>{icon}</div>
-    <div>{children}</div>
-  </div>
-)
-
-// @ts-expect-error mui
-export default withStyles(styles)(EmptyBox)
+export default function EmptyBox({ children, icon }: Props) {
+  const { classes } = useStyles()
+  return (
+    <div className={classes.root}>
+      <div className={classes.icon}>{icon}</div>
+      <div>{children}</div>
+    </div>
+  )
+}

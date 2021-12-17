@@ -1,12 +1,12 @@
 import * as React from "react"
-import withStyles from '@mui/styles/withStyles';
+import { makeStyles } from "./makeStyles"
 
 type Props = {
   classes: any
   children: React.ReactNode
 }
 
-const styles = (theme) => ({
+const useStyles = makeStyles({ name: "Dot" })((theme) => ({
   root: {
     background: theme.palette.primary.dark,
     color: theme.palette.primary.contrastText,
@@ -19,11 +19,9 @@ const styles = (theme) => ({
     borderRadius: "100%",
     textAlign: "center",
   },
-})
+}))
 
-const Dot = ({ classes, children }: Props) => (
-  <div className={classes.root}>{children}</div>
-)
-
-// @ts-expect-error mui
-export default withStyles(styles)(Dot)
+export default function Dot({ children }: Props) {
+  const { classes } = useStyles()
+  return <div className={classes.root}>{children}</div>
+}

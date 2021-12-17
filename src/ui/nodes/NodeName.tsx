@@ -17,6 +17,7 @@ type Props = {
 
 const useStyles = makeStyles({ name: "NodeSize" })((theme) => ({
   root: {
+    color: "inherit",
     maxWidth: "100%",
     display: "inline-flex",
     flexDirection: "row",

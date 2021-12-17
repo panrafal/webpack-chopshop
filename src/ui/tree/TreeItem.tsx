@@ -95,7 +95,7 @@ export default function TreeItem({
           }
           primaryTypographyProps={{
             noWrap: true,
-            color: selected ? "secondary" : "initial",
+            // color: selected ? "secondary" : "initial",
           }}
           secondary={
             <NodeSize
