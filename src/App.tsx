@@ -190,7 +190,15 @@ export default function App({ className, trackLoading }: Props) {
         togglePinned={togglePinned}
         updateChanges={updateChanges}
         trackLoading={trackLoading}
-        mode={page === "tree/async" ? "async" : "modules"}
+        mode={
+          page === "tree/async"
+            ? "async"
+            : page === "tree/modules"
+            ? "modules"
+            : page === "tree/cycles"
+            ? "cycles"
+            : "modules"
+        }
       />
     )
   } else if (graph && page === "changes") {
@@ -233,6 +241,7 @@ export default function App({ className, trackLoading }: Props) {
                   label="Split points"
                 />
                 <Tab disabled={!graph} value="tree/modules" label="Modules" />
+                <Tab disabled={!graph} value="tree/cycles" label="Cycles" />
                 <Tab
                   disabled={!graph}
                   value="changes"

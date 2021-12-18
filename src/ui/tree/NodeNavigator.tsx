@@ -40,7 +40,6 @@ export type NavigatorModes = Record<string, NavigatorMode>
 type Props = {
   className?: string
   modes: NavigatorModes
-  defaultMode: string
 }
 
 const useStyles = makeStyles({ name: "NodeNavigator" })((theme) => ({
@@ -58,15 +57,12 @@ const useStyles = makeStyles({ name: "NodeNavigator" })((theme) => ({
   },
 }))
 
-export default function NodeNavigator({
-  className,
-  modes,
-  defaultMode,
-}: Props) {
+export default function NodeNavigator({ className, modes }: Props) {
   const { classes, cx } = useStyles()
-  const [modeId, setModeId] = useState(defaultMode)
-  const [modeMenuAnchor, setModeMenuAnchor] = useState(null)
-  const mode = modes[modeId] || modes[defaultMode]
+  const [modeId, setModeId] = useState(null)
+  const defaultModeId = Object.keys(modes)[0]
+  const [modeMenuAnchor, setModeMenuAnchor] = useState(undefined)
+  const mode = modes[modeId] || modes[defaultModeId]
 
   const {
     graph,
@@ -87,7 +83,7 @@ export default function NodeNavigator({
         <InputLabel id="NodeNavigator-mode-label">Display</InputLabel>
         <Select
           labelId="NodeNavigator-mode-label"
-          value={modeId}
+          value={modes[modeId] ? modeId : defaultModeId}
           label="Display"
           onChange={() => {}}
         >

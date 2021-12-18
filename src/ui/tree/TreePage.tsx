@@ -31,6 +31,7 @@ import LoadingBoundary from "../LoadingBoundary"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
 import { makeStyles } from "../makeStyles"
 import { uniq } from "lodash"
+import { findNodeCycles } from "../../analysis/cycles"
 
 type Props = {
   graph: Graph
@@ -39,7 +40,7 @@ type Props = {
   className?: string
   trackLoading: PromiseTrackerFn
   updateChanges: UpdateChangesFn
-  mode: "async" | "modules"
+  mode: "async" | "modules" | "cycles"
 }
 
 const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
@@ -168,12 +169,6 @@ function TreePage({
           normalizePath: (path: GraphNodeID[]) => path,
           getChildEdges: (node: GraphNode) => node.children,
           navigatorModes: {
-            all: {
-              getNodes: () => getAllNodes(graph),
-              renderTitle: () => "All Nodes",
-              renderInfo: () => "Select node to start from",
-              renderEmpty: () => "Nothing found",
-            },
             enabled: {
               getNodes: () =>
                 getDeepNodeChildren(graph, graph.root, {
@@ -193,6 +188,32 @@ function TreePage({
                   }
                 ).then((ids) => getNodes(graph, ids)),
               renderTitle: () => "Enabled Children",
+              renderInfo: () => "Select node to start from",
+              renderEmpty: () => "Nothing found",
+            },
+            all: {
+              getNodes: () => getAllNodes(graph),
+              renderTitle: () => "All Nodes",
+              renderInfo: () => "Select node to start from",
+              renderEmpty: () => "Nothing found",
+            },
+          } as NavigatorModes,
+        }
+      case "cycles":
+        return {
+          normalizePath: (path: GraphNodeID[]) => path,
+          getChildEdges: (node: GraphNode) => node.children,
+          navigatorModes: {
+            cycles: {
+              getNodes: () =>
+                findNodeCycles(graph, graph.root, {
+                  filter: currentGraphFilter,
+                }).then((cycles) =>
+                  cycles
+                    .map((cycle) => cycle[cycle.length - 1])
+                    .map((cycleEnd) => getNode(graph, cycleEnd))
+                ),
+              renderTitle: () => "Cycles",
               renderInfo: () => "Select node to start from",
               renderEmpty: () => "Nothing found",
             },
@@ -232,6 +253,10 @@ function TreePage({
           selectedEdge && openedNodeIds.includes(selectedEdge.to.id)
             ? selectedEdge.to
             : graph.root
+        const openedBeforeFromNode = openedNodeIds.slice(
+          0,
+          openedNodeIds.findIndex((id) => id === fromNode.id)
+        )
         // Try to find connection between currently selected & opening node.
         let chains = await findChains(graph, fromNode, toNode, {
           filter: currentGraphFilter,
@@ -240,6 +265,10 @@ function TreePage({
         if (chains.length === 0) {
           chains = await findChains(graph, fromNode, toNode)
         }
+        // Remove chains that would open a dependency cycle (they include an opened node)
+        chains = chains.filter(
+          (chain) => !chain.some((id) => openedBeforeFromNode.includes(id))
+        )
         // If there's no connection from selected node, start from root
         if (fromNode !== graph.root) {
           if (chains.length === 0) {
@@ -293,13 +322,19 @@ function TreePage({
   const treeLevels = openedNodeIds.map((nodeId, index) => (
     <TreeLevel
       key={index}
+      levelIndex={index}
       className={classes.treeLevel}
       ref={selectedTreeLevelIndex === index ? selectedTreeLevelRef : null}
       node={getNode(graph, nodeId)}
       childNode={resolveNode(graph, openedNodeIds[index + 1])}
       selectEdge={(edge) => {
         const node = edge.to
-        if (openedNodeIds[index + 1] !== node.id) {
+        // ignore if this edge is already opened or there's a dependency cycle
+        const alreadyOpened = openedNodeIds[index + 1] === node.id
+        const belongsToCycle = openedNodeIds
+          .slice(0, index + 1)
+          .includes(node.id)
+        if (!alreadyOpened && !belongsToCycle) {
           const newOpened = [...openedNodeIds.slice(0, index + 1), node.id]
           // check if there's a chain starting with these nodes... if yes - open it
           const chain = chains.find((chain) => chain.includes(node.id))
@@ -338,11 +373,7 @@ function TreePage({
         <div className={classes.info}></div>
         <div className={classes.treeLevels}>{treeLevels}</div>
         <LoadingBoundary fallback={"..."}>
-          <NodeNavigator
-            className={classes.navigator}
-            modes={navigatorModes}
-            defaultMode="children"
-          />
+          <NodeNavigator className={classes.navigator} modes={navigatorModes} />
         </LoadingBoundary>
       </TreeContextProvider>
     </div>

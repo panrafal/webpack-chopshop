@@ -18,6 +18,7 @@ type Props = {
   selectEdge: (node: GraphEdge) => void
   activateNode: (node: GraphNode) => void
   className?: string
+  levelIndex: number
 }
 
 const useStyles = makeStyles({ name: "TreeLevel" })({
@@ -31,7 +32,7 @@ const useStyles = makeStyles({ name: "TreeLevel" })({
 })
 
 function TreeLevel(
-  { node, childNode, selectEdge, activateNode, className }: Props,
+  { node, childNode, selectEdge, activateNode, className, levelIndex }: Props,
   ref
 ) {
   const { graph, pinned, getChildEdges } = useTreeContext()
@@ -55,6 +56,7 @@ function TreeLevel(
           <TreeItem
             {...itemProps}
             edge={item}
+            levelIndex={levelIndex}
             selected={item.to === childNode}
             retainerRootNode={graph.root}
             onClick={() => {

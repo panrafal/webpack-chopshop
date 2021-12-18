@@ -69,7 +69,7 @@ export default function NodeNavigatorItem({
             primary={<NodeName node={node} hidePackage={hidePackage} tooltip />}
             primaryTypographyProps={{
               noWrap: true,
-              color: selected ? "secondary" : "initial",
+              // color: selected ? "secondary" : "initial",
             }}
             secondary={
               <NodeSize

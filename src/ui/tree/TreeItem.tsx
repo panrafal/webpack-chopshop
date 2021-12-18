@@ -1,3 +1,4 @@
+import { ChangeCircle } from "@mui/icons-material"
 import {
   Checkbox,
   ListItem,
@@ -19,6 +20,7 @@ type Props = {
   edge: GraphEdge
   retainerRootNode?: GraphNode | null
   hidePackage?: boolean
+  levelIndex: number
 
   selected?: boolean
 
@@ -37,6 +39,10 @@ const useStyles = makeStyles({ name: "TreeItem" })({
   active: {
     border: "4px solid red",
   },
+  cycle: {
+    position: "absolute",
+    right: 0,
+  },
 })
 
 export default function TreeItem({
@@ -48,16 +54,24 @@ export default function TreeItem({
   retainerRootNode,
   onClick,
   onDoubleClick,
+  levelIndex,
 }: Props) {
   const { classes, cx } = useStyles()
-  const { graph, updateChanges, enabledIds, chainedNodeIds, activeNodeId } =
-    useTreeContext()
+  const {
+    graph,
+    updateChanges,
+    enabledIds,
+    chainedNodeIds,
+    activeNodeId,
+    openedNodeIds,
+  } = useTreeContext()
   const enabled =
     edge.async ||
     enabledIds.includes(edge.id) ||
     enabledIds.includes(edge.from.id)
   const chained = chainedNodeIds.includes(edge.to.id)
   const active = activeNodeId === edge.to.id
+  const cycle = openedNodeIds.slice(0, levelIndex + 1).includes(edge.to.id)
   return (
     <div style={style}>
       <ListItem
@@ -112,6 +126,7 @@ export default function TreeItem({
               />
             }
           />
+          {cycle && <ChangeCircle className={classes.cycle} />}
         </ListItemButton>
       </ListItem>
     </div>

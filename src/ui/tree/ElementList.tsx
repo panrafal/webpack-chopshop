@@ -29,6 +29,9 @@ import {
 import { getPackageName } from "../../analysis/info"
 import { useMemo, useState } from "react"
 import { makeStyles } from "../makeStyles"
+import ClearIcon from "@mui/icons-material/Clear"
+import ExpandLessIcon from "@mui/icons-material/ExpandLess"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 
 export type RenderItemProps<T> = {
   item: T
@@ -167,7 +170,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
                 onClick={() => setSearch("")}
                 size="large"
               >
-                <Icon color="inherit">clear</Icon>
+                <ClearIcon color="inherit" />
               </IconButton>
             </InputAdornment>
           )
@@ -210,11 +213,11 @@ function ElementList<T extends GraphNode | GraphEdge>({
                             item.children.length
                           }`}
                         />
-                        <Icon>
-                          {isTreeExpanded(treeState, item, treeOptions)
-                            ? "expand_less"
-                            : "expand_more"}
-                        </Icon>
+                        {isTreeExpanded(treeState, item, treeOptions) ? (
+                          <ExpandLessIcon />
+                        ) : (
+                          <ExpandMoreIcon />
+                        )}
                       </ListItem>
                     )
                   } else {
