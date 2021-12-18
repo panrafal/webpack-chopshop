@@ -19,6 +19,7 @@ import {
   getAsyncChildEdges,
   getDeepNodeChildren,
   getEnabledChildEdges,
+  stopOnAsyncModulesFilter,
 } from "../../analysis/dependencies"
 import { findChains } from "../../analysis/chains"
 import { useStablePromise } from "../hooks/promises"
@@ -29,6 +30,7 @@ import { TogglePinnedFn } from "../../logic/usePinnedState"
 import LoadingBoundary from "../LoadingBoundary"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
 import { makeStyles } from "../makeStyles"
+import { uniq } from "lodash"
 
 type Props = {
   graph: Graph
@@ -123,6 +125,82 @@ function TreePage({
   //   }
   // }, [path])
 
+  // Tree Mode -------------------------------------
+  const { getChildEdges, navigatorModes, normalizePath } = useMemo(() => {
+    switch (modeId) {
+      case "async":
+        return {
+          normalizePath: (path: GraphNodeID[]) =>
+            path.filter(
+              // remove nodes that don't have async connection to the parent
+              (nodeId, index) =>
+                index === 0 ||
+                resolveEdge(graph, getEdgeId(path[index - 1], nodeId))?.async
+            ),
+          getChildEdges: (node: GraphNode) =>
+            getAsyncChildEdges(graph, node, {
+              filter: stopOnAsyncModulesFilter,
+            }),
+          navigatorModes: {
+            all: {
+              getNodes: () =>
+                getAsyncChildEdges(graph, graph.root).then((edges) =>
+                  uniq(edges.map((edge) => edge.to))
+                ),
+              renderTitle: () => "All Async Nodes",
+              renderInfo: () => "Select node to start from",
+              renderEmpty: () => "Nothing found",
+            },
+            children: {
+              getNodes: () =>
+                getAsyncChildEdges(
+                  graph,
+                  resolveEdge(graph, selectedEdgeId)?.to || graph.root
+                ).then((edges) => uniq(edges.map((edge) => edge.to))),
+              renderTitle: () => "Child Async Nodes",
+              renderInfo: () => "Select node to start from",
+              renderEmpty: () => "Nothing found",
+            },
+          } as NavigatorModes,
+        }
+      case "modules":
+        return {
+          normalizePath: (path: GraphNodeID[]) => path,
+          getChildEdges: (node: GraphNode) => node.children,
+          navigatorModes: {
+            all: {
+              getNodes: () => getAllNodes(graph),
+              renderTitle: () => "All Nodes",
+              renderInfo: () => "Select node to start from",
+              renderEmpty: () => "Nothing found",
+            },
+            enabled: {
+              getNodes: () =>
+                getDeepNodeChildren(graph, graph.root, {
+                  filter: currentGraphFilter,
+                }).then((ids) => getNodes(graph, ids)),
+              renderTitle: () => "Enabled Nodes",
+              renderInfo: () => "Select node to start from",
+              renderEmpty: () => "Nothing found",
+            },
+            children: {
+              getNodes: () =>
+                getDeepNodeChildren(
+                  graph,
+                  resolveEdge(graph, selectedEdgeId)?.to || graph.root,
+                  {
+                    filter: currentGraphFilter,
+                  }
+                ).then((ids) => getNodes(graph, ids)),
+              renderTitle: () => "Enabled Children",
+              renderInfo: () => "Select node to start from",
+              renderEmpty: () => "Nothing found",
+            },
+          } as NavigatorModes,
+        }
+    }
+  }, [graph, modeId, selectedEdgeId])
+
   const { value: enabledIds, promise: enabledIdsPromise } = useStablePromise(
     useMemo(async () => {
       const edgeIds = await getEnabledChildEdges(graph, graph.root)
@@ -179,28 +257,37 @@ function TreePage({
         const chain = chains[0]
         const chainStart = chain[0]
         // Add the found chain to the currently opened path
-        setOpenedNodeIds([
-          ...openedNodeIds.slice(
-            0,
-            openedNodeIds.findIndex((id) => id === chainStart)
-          ),
-          ...chain,
-        ])
+        setOpenedNodeIds(
+          normalizePath([
+            ...openedNodeIds.slice(
+              0,
+              openedNodeIds.findIndex((id) => id === chainStart)
+            ),
+            ...chain,
+          ])
+        )
         setSelectedEdgeId(
           getEdgeId(chain[chain.length - 2], chain[chain.length - 1])
         )
       }
       trackLoading(run())
     },
-    [graph, trackLoading, openedNodeIds, selectedEdgeId]
+    [graph, trackLoading, openedNodeIds, selectedEdgeId, normalizePath]
   )
 
   const selectedTreeLevelRef = createRef<HTMLDivElement>()
 
+  // Scroll selected into view
   useEffect(() => {
     if (!selectedEdge || !selectedTreeLevelRef.current) return
     selectedTreeLevelRef.current.scrollIntoView()
   }, [selectedEdge, selectedTreeLevelRef])
+
+  // Normalize path after node change
+  useEffect(() => {
+    openNode(selectedEdge?.to || graph.root)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modeId])
 
   const selectedTreeLevelIndex = openedNodeIds.lastIndexOf(selectedEdge?.to.id)
   const treeLevels = openedNodeIds.map((nodeId, index) => (
@@ -227,53 +314,6 @@ function TreePage({
     />
   ))
 
-  const navigatorModes: NavigatorModes = useMemo(
-    () => ({
-      all: {
-        getNodes: () => getAllNodes(graph),
-        renderTitle: () => "All Nodes",
-        renderInfo: () => "Select node to start from",
-        renderEmpty: () => "Nothing found",
-      },
-      enabled: {
-        getNodes: () =>
-          getDeepNodeChildren(graph, graph.root, {
-            filter: currentGraphFilter,
-          }).then((ids) => getNodes(graph, ids)),
-        renderTitle: () => "Enabled Nodes",
-        renderInfo: () => "Select node to start from",
-        renderEmpty: () => "Nothing found",
-      },
-      children: {
-        getNodes: () =>
-          getDeepNodeChildren(
-            graph,
-            resolveEdge(graph, selectedEdgeId)?.to || graph.root,
-            {
-              filter: currentGraphFilter,
-            }
-          ).then((ids) => getNodes(graph, ids)),
-        renderTitle: () => "Enabled Children",
-        renderInfo: () => "Select node to start from",
-        renderEmpty: () => "Nothing found",
-      },
-    }),
-    [graph, selectedEdgeId]
-  )
-
-  const treeMode = useMemo(() => {
-    switch (modeId) {
-      case "async":
-        return {
-          getChildEdges: (node: GraphNode) => getAsyncChildEdges(graph, node),
-        }
-      case "modules":
-        return {
-          getChildEdges: (node: GraphNode) => node.children,
-        }
-    }
-  }, [graph, modeId])
-
   return (
     <div className={cx(className, classes.TreePage)}>
       <TreeContextProvider
@@ -292,7 +332,7 @@ function TreePage({
           updateChanges,
           chains: chains || [],
           chainedNodeIds: chainedNodeIds || [],
-          getChildEdges: treeMode.getChildEdges,
+          getChildEdges,
         }}
       >
         <div className={classes.info}></div>
