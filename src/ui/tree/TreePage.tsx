@@ -16,7 +16,7 @@ import {
 import TreeLevel from "./TreeLevel"
 import {
   currentGraphFilter,
-  getAsyncChildEdges,
+  getAsyncEdges,
   getDeepNodeChildren,
   getEnabledChildEdges,
   stopOnAsyncModulesFilter,
@@ -139,13 +139,13 @@ function TreePage({
                 resolveEdge(graph, getEdgeId(path[index - 1], nodeId))?.async
             ),
           getChildEdges: (node: GraphNode) =>
-            getAsyncChildEdges(graph, node, {
+            getAsyncEdges(graph, node, {
               filter: stopOnAsyncModulesFilter,
             }),
           navigatorModes: {
             all: {
               getNodes: () =>
-                getAsyncChildEdges(graph, graph.root).then((edges) =>
+                getAsyncEdges(graph, graph.root).then((edges) =>
                   uniq(edges.map((edge) => edge.to))
                 ),
               renderTitle: () => "All Async Nodes",
@@ -154,7 +154,7 @@ function TreePage({
             },
             children: {
               getNodes: () =>
-                getAsyncChildEdges(
+                getAsyncEdges(
                   graph,
                   resolveEdge(graph, selectedEdgeId)?.to || graph.root
                 ).then((edges) => uniq(edges.map((edge) => edge.to))),

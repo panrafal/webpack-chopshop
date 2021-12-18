@@ -6,8 +6,16 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material"
+import { MouseEvent } from "react"
+import { ChangeEvent, useCallback } from "react"
+import { findChains } from "../../analysis/chains"
 import { addChange } from "../../analysis/changes"
-import { GraphEdge, GraphNode } from "../../analysis/graph"
+import {
+  currentGraphFilter,
+  getAsyncEdges,
+  stopOnAsyncModulesFilter,
+} from "../../analysis/dependencies"
+import { getEdgesFromChain, GraphEdge, GraphNode } from "../../analysis/graph"
 import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
@@ -72,6 +80,54 @@ export default function TreeItem({
   const chained = chainedNodeIds.includes(edge.to.id)
   const active = activeNodeId === edge.to.id
   const cycle = openedNodeIds.slice(0, levelIndex + 1).includes(edge.to.id)
+
+  const handleToggleChange = useCallback(
+    async (event: MouseEvent<HTMLButtonElement>) => {
+      const enabled = (event.target as HTMLInputElement).checked
+      const changeEdges = [edge]
+      if (edge.async && enabled) {
+        // for async edges, we want to enable async parent edges (on a single chain is enough)
+        // but only if it's not already enabled...
+        const [parentChain] = await findChains(graph, graph.root, edge.to, {
+          filter: currentGraphFilter,
+        })
+        if (!parentChain) {
+          const [parentDisabledChain = []] = await findChains(
+            graph,
+            graph.root,
+            edge.to
+          )
+          changeEdges.push(
+            ...getEdgesFromChain(graph, parentDisabledChain).filter(
+              (e) => !e.enabled
+            )
+          )
+        }
+      }
+      if (edge.async && (event.shiftKey || event.altKey)) {
+        // toggle all child async edges
+        changeEdges.push(
+          ...(await getAsyncEdges(graph, edge.to, {
+            filter: event.shiftKey ? stopOnAsyncModulesFilter : undefined,
+          }))
+        )
+      }
+      // if (edge)
+      updateChanges((changes) =>
+        changeEdges.reduce(
+          (changes, changeEdge) =>
+            addChange(graph, changes, {
+              change: "edge",
+              from: changeEdge.from.id,
+              to: changeEdge.to.id,
+              enabled,
+            }),
+          changes
+        )
+      )
+    },
+    [edge, graph, updateChanges]
+  )
   return (
     <div style={style}>
       <ListItem
@@ -96,18 +152,12 @@ export default function TreeItem({
               checked={edge.enabled}
               disabled={!enabled}
               onClick={(event) => {
+                // so that edge isn't selected by clicking
                 event.stopPropagation()
+                // @ts-expect-error
+                handleToggleChange(event)
               }}
-              onChange={(event) => {
-                updateChanges((changes) =>
-                  addChange(graph, changes, {
-                    change: "edge",
-                    from: edge.from.id,
-                    to: edge.to.id,
-                    enabled: event.target.checked,
-                  })
-                )
-              }}
+              // onChange={handleToggleChange}
             />
           </ListItemIcon>
           <ListItemText

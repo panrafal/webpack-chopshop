@@ -183,19 +183,23 @@ export function getEnabledChildEdges(
   return graph.cache[key]
 }
 
-export function getAsyncChildEdges(
+export function getAsyncEdges(
   graph: Graph,
   node: GraphNode,
   {
     filter,
-  }: { filter?: (e: GraphEdge) => boolean | typeof LAST_ITEM_IN_BRANCH } = {}
+    direction = "children",
+  }: {
+    filter?: (e: GraphEdge) => boolean | typeof LAST_ITEM_IN_BRANCH
+    direction?: "children" | "parents"
+  } = {}
 ): Promise<ReadonlyArray<GraphEdge>> {
-  const key = `getAsyncChildEdges:${node.id}:${getFilterKey(filter)}`
+  const key = `getAsyncEdges:${node.id}:${direction}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {
     const visited: Record<GraphEdgeID, GraphEdge> = {}
     graph.cache[key] = collectEdges(graph, node, {
       visited,
-      direction: "children",
+      direction,
       filter,
     }).then(() => {
       return Object.values(visited).filter((e) => e.async)

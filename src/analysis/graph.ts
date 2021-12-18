@@ -1,3 +1,4 @@
+import { EdgeChain } from "./chains"
 import { AbortSignal, BackgroundProcessor, backgroundProcessor } from "./utils"
 
 export const ROOT_NODE_ID = "root"
@@ -141,6 +142,18 @@ export function getEdges(
   ids: ReadonlyArray<GraphEdgeID>
 ): ReadonlyArray<GraphEdge> {
   return ids.map(getEdge.bind(null, graph))
+}
+
+export function getEdgesFromChain(
+  graph: Graph,
+  chain: EdgeChain
+): ReadonlyArray<GraphEdge> {
+  if (chain.length < 2) return []
+  const result = []
+  for (let i = 1; i < chain.length; ++i) {
+    result.push(getEdge(graph, getEdgeId(chain[i - 1], chain[i])))
+  }
+  return result
 }
 
 export function addNode(graph: Graph, _node: GraphNodeSpec): GraphNode {
