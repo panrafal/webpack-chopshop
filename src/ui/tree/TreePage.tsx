@@ -16,6 +16,7 @@ import {
 import TreeLevel from "./TreeLevel"
 import {
   currentGraphFilter,
+  getAsyncChildEdges,
   getDeepNodeChildren,
   getEnabledChildEdges,
 } from "../../analysis/dependencies"
@@ -36,6 +37,7 @@ type Props = {
   className?: string
   trackLoading: PromiseTrackerFn
   updateChanges: UpdateChangesFn
+  mode: "async" | "modules"
 }
 
 const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
@@ -102,6 +104,7 @@ function TreePage({
   className,
   trackLoading,
   updateChanges,
+  mode: modeId,
 }: Props) {
   const { classes, cx } = useStyles()
   const [selectedEdgeId, setSelectedEdgeId] = useState<GraphEdgeID | null>(null)
@@ -258,6 +261,19 @@ function TreePage({
     [graph, selectedEdgeId]
   )
 
+  const treeMode = useMemo(() => {
+    switch (modeId) {
+      case "async":
+        return {
+          getChildEdges: (node: GraphNode) => getAsyncChildEdges(graph, node),
+        }
+      case "modules":
+        return {
+          getChildEdges: (node: GraphNode) => node.children,
+        }
+    }
+  }, [graph, modeId])
+
   return (
     <div className={cx(className, classes.TreePage)}>
       <TreeContextProvider
@@ -276,6 +292,7 @@ function TreePage({
           updateChanges,
           chains: chains || [],
           chainedNodeIds: chainedNodeIds || [],
+          getChildEdges: treeMode.getChildEdges,
         }}
       >
         <div className={classes.info}></div>

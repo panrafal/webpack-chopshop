@@ -27,6 +27,9 @@ type TreeContextType = {
   updateChanges: UpdateChangesFn
   chains: EdgeChain[]
   chainedNodeIds: GraphNodeID[]
+  getChildEdges: (
+    node: GraphNode
+  ) => ReadonlyArray<GraphEdge> | Promise<ReadonlyArray<GraphEdge>>
 }
 
 const TreeContext = createContext<TreeContextType>(null)

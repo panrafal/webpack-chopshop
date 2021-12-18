@@ -18,6 +18,8 @@ export function getFilterKey(f?: Function | null | undefined): string {
   return filterKeys.get(f)
 }
 
+const LAST_ITEM_IN_BRANCH = "last" as const
+
 async function collectNodes(
   graph: Graph,
   node: GraphNode,
@@ -26,7 +28,7 @@ async function collectNodes(
       [k in GraphNodeID]: GraphNode
     }
     direction: "children" | "parents"
-    filter?: (e: GraphEdge) => boolean
+    filter?: (e: GraphEdge) => boolean | typeof LAST_ITEM_IN_BRANCH
   }
 ) {
   const { direction, visited, filter } = options
@@ -34,7 +36,12 @@ async function collectNodes(
 
   for (const edge of node[direction]) {
     if (visited[edge.to.id]) continue
-    if (filter && !filter(edge)) continue
+    let included = filter ? filter(edge) : true
+    if (!included) continue
+    if (included === LAST_ITEM_IN_BRANCH) {
+      visited[node.id] = node
+      continue
+    }
     await collectNodes(
       graph,
       direction === "children" ? edge.to : edge.from,
@@ -52,15 +59,19 @@ async function collectEdges(
       [k in GraphEdgeID]: GraphEdge
     }
     direction: "children" | "parents"
-    filter?: (e: GraphEdge) => boolean
+    filter?: (e: GraphEdge) => boolean | typeof LAST_ITEM_IN_BRANCH
   }
 ) {
   const { direction, visited, filter } = options
 
   for (const edge of node[direction]) {
     if (visited[edge.id]) continue
-    if (filter && !filter(edge)) continue
+    let included = filter ? filter(edge) : true
+    if (!included) continue
     visited[edge.id] = edge
+    if (included === LAST_ITEM_IN_BRANCH) {
+      continue
+    }
     await collectEdges(
       graph,
       direction === "children" ? edge.to : edge.from,
@@ -172,6 +183,24 @@ export function getEnabledChildEdges(
   return graph.cache[key]
 }
 
+export function getAsyncChildEdges(
+  graph: Graph,
+  node: GraphNode
+): Promise<ReadonlyArray<GraphEdge>> {
+  const key = `getAsyncChildEdges:${node.id}`
+  if (!graph.cache[key]) {
+    const visited: Record<GraphEdgeID, GraphEdge> = {}
+    graph.cache[key] = collectEdges(graph, node, {
+      visited,
+      direction: "children",
+      filter: stopOnAsyncModulesFilter,
+    }).then(() => {
+      return Object.values(visited).filter((e) => e.async)
+    })
+  }
+  return graph.cache[key]
+}
+
 export function keepOnlyEntryModules(
   graph: Graph,
   nodes: ReadonlyArray<GraphNode>
@@ -203,4 +232,8 @@ export function currentGraphFilter(edge: GraphEdge) {
 // Checks only async edges - all the rest are considered enabled
 export function baseGraphFilter(edge: GraphEdge) {
   return !edge.async || edge.enabled
+}
+
+export function stopOnAsyncModulesFilter(edge: GraphEdge) {
+  return edge.async ? LAST_ITEM_IN_BRANCH : true
 }

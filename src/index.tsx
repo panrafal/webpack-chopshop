@@ -8,7 +8,7 @@ import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material"
 const rootEl = document.getElementById("root")
 const theme = createTheme({
   palette: {
-    mode: "light",
+    mode: "dark",
   },
 })
 

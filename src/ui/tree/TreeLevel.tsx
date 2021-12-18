@@ -1,6 +1,6 @@
 import type { GraphEdge, GraphNode } from "../../analysis/graph"
 
-import { Icon } from "@mui/material"
+import { Icon, LinearProgress } from "@mui/material"
 
 import EmptyBox from "../EmptyBox"
 import ElementList from "./ElementList"
@@ -8,6 +8,8 @@ import { useTreeContext } from "./TreeContext"
 import TreeItem from "./TreeItem"
 import { forwardRef } from "react"
 import { makeStyles } from "../makeStyles"
+import { useStablePromise } from "../hooks/promises"
+import ErrorBox from "../ErrorBox"
 
 type Props = {
   parentNode?: GraphNode | null
@@ -32,14 +34,21 @@ function TreeLevel(
   { node, childNode, selectEdge, activateNode, className }: Props,
   ref
 ) {
-  const { graph, pinned } = useTreeContext()
+  const { graph, pinned, getChildEdges } = useTreeContext()
   const { classes, cx } = useStyles()
-  const edges = node.children
+  const { value: edges, loading, error } = useStablePromise(getChildEdges(node))
   return (
     <div className={cx(className, classes.root)} ref={ref}>
+      <LinearProgress
+        sx={{
+          position: "absolute",
+          visibility: loading ? "visible" : "hidden",
+        }}
+      />
+      {error && <ErrorBox error={error} />}
       <ElementList
         className={classes.list}
-        items={edges}
+        items={edges || []}
         graph={graph}
         pinned={pinned}
         renderItem={({ item, ...itemProps }) => (

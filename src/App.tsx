@@ -7,10 +7,13 @@ import { usePinnedState } from "./logic/usePinnedState"
 import { useGraphState } from "./logic/useGraphState"
 import {
   AppBar,
+  Badge,
   Button,
   Drawer,
   Icon,
   LinearProgress,
+  Tab,
+  Tabs,
   Toolbar,
   Typography,
 } from "@mui/material"
@@ -18,6 +21,7 @@ import LoadingBoundary from "./ui/LoadingBoundary"
 import WarningBar from "./ui/WarningBar"
 import EmptyBox from "./ui/EmptyBox"
 import { makeStyles } from "./ui/makeStyles"
+import OpenStatsPage from "./ui/open/OpenStatsPage"
 
 const TreePage = lazy(() => import("./ui/tree/TreePage"))
 const ChangesPage = lazy(() => import("./ui/changes/ChangesPage"))
@@ -99,6 +103,7 @@ export default function App({ className, trackLoading }: Props) {
 
   const { graph, openGraph, changes, updateChanges } = useGraphState({
     trackLoading,
+    onLoaded: () => setPage("tree/async"),
   })
 
   const handleDrop = useCallback(
@@ -159,20 +164,6 @@ export default function App({ className, trackLoading }: Props) {
 
   // UI
 
-  // const [loadingState, ] = usePromiseTracking()
-
-  const pageElement =
-    graph && page === "tree" ? (
-      <TreePage
-        className={classes.container}
-        graph={graph}
-        pinned={pinned}
-        togglePinned={togglePinned}
-        updateChanges={updateChanges}
-        trackLoading={trackLoading}
-      />
-    ) : graph && page === "chains" ? null : null // /> //   onPinnedToggle={onPinnedToggle} //   onAddChange={onAddChange} //   onToNodeSelect={onToNodeSelect} //   onFromNodeSelect={onFromNodeSelect} //   pinned={pinned} //   toNode={toNode} //   fromNode={fromNode} //   graph={graph} //   baseGraph={baseGraph} //   className={classes.container} // <ChainsPage
-
   const [showChanges, setShowChanges] = useState(false)
 
   const {
@@ -187,6 +178,32 @@ export default function App({ className, trackLoading }: Props) {
     noKeyboard: true,
   })
 
+  let pageElement = null
+  if (!graph || page === "open") {
+    pageElement = <OpenStatsPage openFileDialog={openFileDialog} />
+  } else if (graph && page.startsWith("tree/")) {
+    pageElement = (
+      <TreePage
+        className={classes.container}
+        graph={graph}
+        pinned={pinned}
+        togglePinned={togglePinned}
+        updateChanges={updateChanges}
+        trackLoading={trackLoading}
+        mode={page === "tree/async" ? "async" : "modules"}
+      />
+    )
+  } else if (graph && page === "changes") {
+    pageElement = (
+      <ChangesPage
+        graph={graph}
+        changes={changes}
+        pinned={pinned}
+        onChangesUpdate={() => {}}
+      />
+    )
+  }
+
   return (
     <div {...getRootProps({ className: cx(classes.root, className) })}>
       {/* @ts-expect-error */}
@@ -194,19 +211,44 @@ export default function App({ className, trackLoading }: Props) {
       <LoadingBoundary
         fallback={<LinearProgress className={classes.progress} />}
       >
-        <AppBar position="static">
-          <Toolbar variant="regular" className={classes.container}>
+        <AppBar position="static" color="primary">
+          <Toolbar className={classes.container} variant="dense">
             {
-              <Button color="inherit" onClick={() => openFileDialog()}>
-                Open stats
-              </Button>
+              <Tabs
+                value={page}
+                indicatorColor="secondary"
+                textColor="inherit"
+                onChange={(event, v) => setPage(v)}
+              >
+                <Tab
+                  value="open"
+                  label="Open stats"
+                  onClick={(event) => {
+                    openFileDialog()
+                  }}
+                />
+                <Tab
+                  disabled={!graph}
+                  value="tree/async"
+                  label="Split points"
+                />
+                <Tab disabled={!graph} value="tree/modules" label="Modules" />
+                <Tab
+                  disabled={!graph}
+                  value="changes"
+                  label={
+                    <Badge
+                      badgeContent={changes.length}
+                      invisible={changes.length === 0}
+                      color="secondary"
+                    >
+                      Show changes
+                    </Badge>
+                  }
+                  onClick={() => setShowChanges(true)}
+                />
+              </Tabs>
             }
-            {graph && (
-              <Button color="inherit" onClick={() => setShowChanges(true)}>
-                See changes
-                {changes.length ? ` (${changes.length})` : null}
-              </Button>
-            )}
             <Typography variant="h6" color="inherit" className={classes.title}>
               Webpack Chop Shop
             </Typography>
@@ -219,46 +261,6 @@ export default function App({ className, trackLoading }: Props) {
           </WarningBar>
         )}
         {pageElement}
-        {!graph && (
-          <div
-            onClick={() => openFileDialog()}
-            className={classes.openFileMessage}
-          >
-            <EmptyBox
-              icon={
-                <Icon color="inherit" fontSize="medium">
-                  open_in_browser
-                </Icon>
-              }
-            >
-              First,{" "}
-              <a
-                href="https://webpack.js.org/api/cli/#stats-options"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                generate the stats file in webpack
-              </a>
-              , then click here or drop it anywhere on the page to start
-            </EmptyBox>
-          </div>
-        )}
-        {graph && (
-          <Drawer
-            anchor="top"
-            open={showChanges}
-            onClose={() => setShowChanges(false)}
-          >
-            <div className={classes.container}>
-              <ChangesPage
-                graph={graph}
-                changes={changes}
-                pinned={pinned}
-                onChangesUpdate={() => {}}
-              />
-            </div>
-          </Drawer>
-        )}
       </LoadingBoundary>
     </div>
   )

@@ -2,6 +2,7 @@ import { GraphNode, resolveEdge } from "../../analysis/graph"
 
 import {
   ListItem,
+  ListItemButton,
   ListItemText,
   Typography,
   Icon,
@@ -10,6 +11,9 @@ import {
   ListItemSecondaryAction,
   IconButton,
   LinearProgress,
+  InputLabel,
+  FormControl,
+  Select,
 } from "@mui/material"
 import BlockIcon from "@mui/icons-material/Block"
 import StarIcon from "@mui/icons-material/Star"
@@ -52,9 +56,6 @@ const useStyles = makeStyles({ name: "NodeNavigator" })((theme) => ({
   listProgress: {
     marginTop: 16,
   },
-  modeMenuItem: {
-    width: 300,
-  },
 }))
 
 export default function NodeNavigator({
@@ -82,40 +83,30 @@ export default function NodeNavigator({
 
   return (
     <div className={cx(className, classes.NodeNavigator)}>
-      <ListItem
-        button
-        disableGutters
-        onClick={(event) => {
-          setModeMenuAnchor(event.currentTarget)
-        }}
-      >
-        <ListItemText>
-          <Typography variant="h5">{mode.renderTitle()}</Typography>
-          <Typography variant="subtitle1" gutterBottom>
-            {mode.renderInfo()}
-          </Typography>
-        </ListItemText>
-        <Icon color="action">more_vert</Icon>
-      </ListItem>
-      <Menu
-        anchorEl={modeMenuAnchor}
-        open={Boolean(modeMenuAnchor)}
-        onClose={() => setModeMenuAnchor(null)}
-      >
-        {Object.entries(modes).map(([id, mode]) => (
-          <MenuItem
-            className={classes.modeMenuItem}
-            key={id}
-            selected={id === modeId}
-            onClick={() => {
-              setModeId(id)
-              setModeMenuAnchor(null)
-            }}
-          >
-            {mode.renderTitle()}
-          </MenuItem>
-        ))}
-      </Menu>
+      <FormControl fullWidth>
+        <InputLabel id="NodeNavigator-mode-label">Display</InputLabel>
+        <Select
+          labelId="NodeNavigator-mode-label"
+          value={modeId}
+          label="Display"
+          onChange={() => {}}
+        >
+          {Object.entries(modes).map(([id, mode]) => (
+            <MenuItem
+              key={id}
+              value={id}
+              onClick={() => {
+                setModeId(id)
+              }}
+            >
+              {mode.renderTitle()}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <Typography variant="subtitle1" gutterBottom>
+        {mode.renderInfo()}
+      </Typography>
       {<LinearProgress style={{ opacity: loading ? 1 : 0 }} />}
       {error && <ErrorBox error={error} />}
       {nodes && (

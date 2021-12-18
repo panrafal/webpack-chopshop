@@ -8,7 +8,7 @@ export type ChangesReducerFn = (
 ) => ReadonlyArray<Change>
 export type UpdateChangesFn = (reducer: ChangesReducerFn) => void
 
-export function useGraphState({ trackLoading }) {
+export function useGraphState({ trackLoading, onLoaded }) {
   const [graph, setGraph] = useState<Graph | undefined | null>()
 
   const openGraph = useCallback(
@@ -26,6 +26,7 @@ export function useGraphState({ trackLoading }) {
         console.log("Graph: ", graph)
         console.warn("Errors found: ", graph.errors)
         setGraph(graph)
+        onLoaded()
       }
       trackLoading(run())
     },

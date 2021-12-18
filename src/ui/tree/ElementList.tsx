@@ -121,7 +121,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
 
   const listItems = useMemo(() => {
     let rows: Array<Group | GraphEdge | GraphNode>
-    if (groupItemsBy === "package") {
+    if (!search && groupItemsBy === "package") {
       const groups = groupBy(filteredItems, (item) => {
         const node = getNode(item)
         if (node.kind === "module") {
@@ -148,6 +148,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
     groupItemsBy,
     orderGroupsBy,
     treeState,
+    search,
   ])
 
   return (

@@ -1,4 +1,10 @@
-import { Checkbox, ListItem, ListItemIcon, ListItemText } from "@mui/material"
+import {
+  Checkbox,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material"
 import { addChange } from "../../analysis/changes"
 import { GraphEdge, GraphNode } from "../../analysis/graph"
 import { makeStyles } from "../makeStyles"
@@ -70,41 +76,43 @@ export default function TreeItem({
           active && classes.active
         )}
       >
-        <ListItemIcon>
-          <Checkbox
-            checked={edge.enabled}
-            disabled={!enabled}
-            onClick={(event) => {
-              event.stopPropagation()
-            }}
-            onChange={(event) => {
-              updateChanges((changes) =>
-                addChange(graph, changes, {
-                  change: "edge",
-                  from: edge.from.id,
-                  to: edge.to.id,
-                  enabled: event.target.checked,
-                })
-              )
-            }}
-          />
-        </ListItemIcon>
-        <ListItemText
-          primary={
-            <NodeName node={edge.to} hidePackage={hidePackage} tooltip />
-          }
-          primaryTypographyProps={{
-            noWrap: true,
-            // color: selected ? "secondary" : "initial",
-          }}
-          secondary={
-            <NodeSize
-              graph={graph}
-              node={edge.to}
-              retainerRootNode={retainerRootNode || graph.root}
+        <ListItemButton sx={{ width: "100%" }}>
+          <ListItemIcon>
+            <Checkbox
+              checked={edge.enabled}
+              disabled={!enabled}
+              onClick={(event) => {
+                event.stopPropagation()
+              }}
+              onChange={(event) => {
+                updateChanges((changes) =>
+                  addChange(graph, changes, {
+                    change: "edge",
+                    from: edge.from.id,
+                    to: edge.to.id,
+                    enabled: event.target.checked,
+                  })
+                )
+              }}
             />
-          }
-        />
+          </ListItemIcon>
+          <ListItemText
+            primary={
+              <NodeName node={edge.to} hidePackage={hidePackage} tooltip />
+            }
+            primaryTypographyProps={{
+              noWrap: true,
+              // color: selected ? "secondary" : "initial",
+            }}
+            secondary={
+              <NodeSize
+                graph={graph}
+                node={edge.to}
+                retainerRootNode={retainerRootNode || graph.root}
+              />
+            }
+          />
+        </ListItemButton>
       </ListItem>
     </div>
   )

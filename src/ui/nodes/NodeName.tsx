@@ -87,7 +87,7 @@ export default function NodeName({
             : tooltip
         }
         placement="top"
-        enterDelay={100}
+        enterDelay={1000}
         disableFocusListener
       >
         {text}

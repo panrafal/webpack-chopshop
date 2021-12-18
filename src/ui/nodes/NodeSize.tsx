@@ -58,37 +58,22 @@ export default function NodeSize({ graph, node, retainerRootNode }: Props) {
     <>
       {!retainerRootNode || treeSize > 0 ? (
         <>
-          <Tooltip title="Node size" enterDelay={500}>
-            <span>{numeral(node.size).format("0[.]0b")}</span>
-          </Tooltip>
+          <span>{numeral(node.size).format("0[.]0b")}</span>
           {" + "}
-          <Tooltip
-            title={
-              retainerRootNode
-                ? "Size of retained dependencies "
-                : "Size of dependencies"
-            }
-            enterDelay={500}
-          >
-            <span>{numeral(treeSize - node.size).format("0[.]0b")}</span>
-          </Tooltip>
+          <span>{numeral(treeSize - node.size).format("0[.]0b")}</span>
         </>
       ) : (
         "disconnected"
       )}
       {baseTreeSize != null && treeSize !== baseTreeSize ? (
-        <Tooltip title="Difference without changes" enterDelay={500}>
-          <span
-            className={
-              treeSize > baseTreeSize ? classes.bigger : classes.smaller
-            }
-          >
-            {" ("}
-            {treeSize > baseTreeSize ? "+" : "-"}
-            {numeral(Math.abs(treeSize - baseTreeSize)).format("0[.]0b")}
-            {")"}
-          </span>
-        </Tooltip>
+        <span
+          className={treeSize > baseTreeSize ? classes.bigger : classes.smaller}
+        >
+          {" ("}
+          {treeSize > baseTreeSize ? "+" : "-"}
+          {numeral(Math.abs(treeSize - baseTreeSize)).format("0[.]0b")}
+          {")"}
+        </span>
       ) : null}
     </>
   )

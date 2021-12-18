@@ -1,4 +1,4 @@
-import { ListItem, ListItemText } from "@mui/material"
+import { ListItem, ListItemText, ListItemButton } from "@mui/material"
 import { ReactNode } from "react"
 import { GraphNode } from "../../analysis/graph"
 import { makeStyles } from "../makeStyles"
@@ -64,21 +64,23 @@ export default function NodeNavigatorItem({
           active && classes.active
         )}
       >
-        <ListItemText
-          primary={<NodeName node={node} hidePackage={hidePackage} tooltip />}
-          primaryTypographyProps={{
-            noWrap: true,
-            color: selected ? "secondary" : "initial",
-          }}
-          secondary={
-            <NodeSize
-              graph={graph}
-              node={node}
-              retainerRootNode={retainerRootNode}
-            />
-          }
-        />
-        {children}
+        <ListItemButton>
+          <ListItemText
+            primary={<NodeName node={node} hidePackage={hidePackage} tooltip />}
+            primaryTypographyProps={{
+              noWrap: true,
+              color: selected ? "secondary" : "initial",
+            }}
+            secondary={
+              <NodeSize
+                graph={graph}
+                node={node}
+                retainerRootNode={retainerRootNode}
+              />
+            }
+          />
+          {children}
+        </ListItemButton>
       </ListItem>
     </div>
   )
