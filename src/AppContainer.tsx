@@ -1,7 +1,6 @@
 import { CssBaseline, LinearProgress } from "@mui/material"
 import { fontSize } from "@mui/system"
 import { lazy } from "react"
-import { hot } from "react-hot-loader"
 import { isAbortSignal } from "./analysis/utils"
 import ErrorBar from "./ui/ErrorBar"
 import { usePromiseTracker } from "./ui/hooks/usePromiseTracker"
@@ -52,4 +51,4 @@ function AppContainer() {
   )
 }
 
-export default hot(module)(AppContainer)
+export default AppContainer

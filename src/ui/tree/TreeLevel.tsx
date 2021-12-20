@@ -24,14 +24,35 @@ type Props = {
   renderEmpty: () => ReactNode
 }
 
-const useStyles = makeStyles({ name: "TreeLevel" })({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  list: {
-    flexGrow: 1,
-  },
+const useStyles = makeStyles({ name: "TreeLevel" })((theme) => {
+  const railWidth = theme.graph.treeRailSize
+  return {
+    root: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    list: {
+      flexGrow: 1,
+    },
+    listContainer: {
+      marginLeft: -theme.graph.treeLevelGap / 2 - railWidth / 2,
+      marginRight: -theme.graph.treeLevelGap / 2 - railWidth / 2,
+    },
+    rail: {
+      width: railWidth,
+      background: theme.graph.treeRailColor,
+      position: "absolute",
+      top: theme.graph.treeItemHeight / 2,
+      bottom: theme.graph.treeItemHeight / 2,
+      borderRadius: railWidth,
+    },
+    left: {
+      left: 0,
+    },
+    right: {
+      right: 0,
+    },
+  }
 })
 
 function TreeLevel(
@@ -61,9 +82,11 @@ function TreeLevel(
       <NodeName node={node} />
       <ElementList
         className={classes.list}
+        listClassName={classes.listContainer}
         items={edges || []}
         graph={graph}
         pinned={pinned}
+        itemSize={64}
         renderItem={({ item, ...itemProps }) => (
           <TreeItem
             {...itemProps}
@@ -81,7 +104,10 @@ function TreeLevel(
           />
         )}
         renderEmpty={() => <EmptyBox>{renderEmpty()}</EmptyBox>}
-      />
+      >
+        <div className={cx(classes.rail, classes.left)} />
+        <div className={cx(classes.rail, classes.right)} />
+      </ElementList>
     </div>
   )
 }

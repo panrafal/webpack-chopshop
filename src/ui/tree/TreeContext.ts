@@ -12,7 +12,7 @@ import { UpdateChangesFn } from "../../logic/useGraphState"
 import { TogglePinnedFn } from "../../logic/usePinnedState"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
 
-type TreeContextType = {
+export type TreeContextType = {
   graph: Graph
   pinned: ReadonlyArray<GraphNodeID>
   togglePinned: TogglePinnedFn
@@ -21,7 +21,7 @@ type TreeContextType = {
   setOpenedNodeIds: (nodes: Array<GraphNodeID>) => void
   activeNodeId: GraphNodeID | null
   setActiveNodeId: (n: GraphNodeID | null) => void
-  selectedEdgeId: GraphEdgeID | null
+  activeEdgeId: GraphEdgeID | null
   openNode(n: GraphNode)
   trackLoading: PromiseTrackerFn
   updateChanges: UpdateChangesFn

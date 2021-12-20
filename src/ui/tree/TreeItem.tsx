@@ -16,14 +16,25 @@ import {
   getAsyncEdges,
   stopOnAsyncModulesFilter,
 } from "../../analysis/dependencies"
-import { getEdgesFromChain, GraphEdge, GraphNode } from "../../analysis/graph"
+import {
+  getEdgeId,
+  getEdgesFromChain,
+  Graph,
+  GraphEdge,
+  GraphNode,
+  GraphNodeID,
+  resolveEdge,
+  resolveNode,
+  ROOT_NODE_ID,
+} from "../../analysis/graph"
 import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
-import { useTreeContext } from "./TreeContext"
+import { TreeContextType, useTreeContext } from "./TreeContext"
 
 import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline"
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined"
+import { AppTheme } from "../theme"
 
 type Props = {
   className?: string
@@ -40,22 +51,165 @@ type Props = {
   onDoubleClick?: () => void
 }
 
-const useStyles = makeStyles({ name: "TreeItem" })({
-  root: {},
-  disabled: {
-    opacity: 0.5,
+type EdgeProps = {
+  enabled: boolean
+  chained: boolean
+  cycled: boolean
+}
+
+export function getLineColor(
+  theme: AppTheme,
+  { enabled, chained, cycled }: EdgeProps
+) {
+  return !enabled
+    ? theme.graph.treeLineColor.disabled
+    : cycled
+    ? theme.graph.treeLineColor.cycled
+    : chained
+    ? theme.graph.treeLineColor.chained
+    : theme.graph.treeLineColor.enabled
+}
+
+type EdgeChainState = false | "start" | "end" | "middle" | "lone"
+
+function getChainedState({
+  edge,
+  chainedNodeIds,
+}: {
+  edge: GraphEdge
+  chainedNodeIds: GraphNodeID[]
+}): EdgeChainState {
+  const hasChainedChildren = edge.to.children.some(({ to }) =>
+    chainedNodeIds.includes(to.id)
+  )
+  const isChained = chainedNodeIds.includes(edge.to.id)
+  if (hasChainedChildren && edge.from.id === ROOT_NODE_ID) return "start"
+  if (hasChainedChildren) return "middle"
+  return isChained ? "end" : false
+}
+
+function getCycledState({
+  graph,
+  edge,
+  levelIndex,
+  openedNodeIds,
+  activeNode,
+}: {
+  graph: Graph
+  edge: GraphEdge
+  activeNode: GraphNode | undefined
+  levelIndex: number
+  openedNodeIds: ReadonlyArray<GraphNodeID>
+}): EdgeChainState {
+  // is this edge already opened?
+  const isCycleEnd = openedNodeIds.slice(0, levelIndex + 1).includes(edge.to.id)
+  const isOpened = openedNodeIds[levelIndex + 1] === edge.to.id
+
+  let cycleStartIndex
+  let cycleEndIndex = isCycleEnd ? levelIndex : undefined
+  if (activeNode) {
+    // index where the active node is opened
+    const activeLevelIndex = openedNodeIds.indexOf(activeNode.id)
+    // find node that imports the active one again
+    const cyclingNodeId =
+      activeLevelIndex > 0
+        ? openedNodeIds
+            .slice(activeLevelIndex)
+            .find((nodeId) =>
+              resolveEdge(graph, getEdgeId(nodeId, activeNode.id))
+            )
+        : null
+    if (cyclingNodeId) {
+      cycleStartIndex = activeLevelIndex
+      cycleEndIndex = openedNodeIds.indexOf(cyclingNodeId)
+    }
+  }
+  if (isCycleEnd && cycleStartIndex == null) return "lone"
+  if (isCycleEnd) return "end"
+  if (!isOpened || cycleStartIndex == null || cycleEndIndex == null)
+    return false
+  if (levelIndex === cycleStartIndex) return "start"
+  if (levelIndex > cycleStartIndex && levelIndex < cycleEndIndex)
+    return "middle"
+  return false
+}
+
+const useStyles = makeStyles<
+  {
+    enabled: boolean
+    chained: EdgeChainState
+    cycled: EdgeChainState
+    activeNode: boolean
+    activeEdge: boolean
+    opened: boolean
   },
-  chained: {
-    border: "1px solid red",
-  },
-  active: {
-    border: "4px solid red",
-  },
-  cycle: {
-    position: "absolute",
-    right: 0,
-  },
-})
+  "connectorLeft"
+>({ name: "TreeItem" })(
+  (
+    theme,
+    { enabled, chained, activeNode, activeEdge, opened, cycled },
+    classes
+  ) => {
+    const lineWidth = theme.graph.treeLevelGap / 2
+    const lineSize = theme.graph.treeLineSize
+    const lineColor = getLineColor(theme, {
+      enabled,
+      chained: activeNode || !!chained,
+      cycled: !!cycled,
+    })
+    const parentLineColor = getLineColor(theme, {
+      enabled,
+      chained: chained && chained !== "start",
+      cycled: cycled && cycled !== "start" && cycled !== "lone",
+    })
+    const childLineColor = getLineColor(theme, {
+      enabled,
+      chained: chained && chained !== "end",
+      cycled: cycled && cycled !== "end" && cycled !== "lone",
+    })
+    return {
+      root: {
+        height: 64,
+        padding: `2px ${lineWidth}px`,
+        [`&:hover .${classes.connectorLeft}`]: {
+          opacity: 1,
+        },
+      },
+      edge: {
+        height: "100%",
+        border: "1px solid",
+        borderRadius: 2,
+        borderColor: lineColor,
+        borderLeftWidth:
+          cycled === "start" || (!cycled && chained === "start") ? 4 : 1,
+        borderRightWidth:
+          cycled === "end" || (!cycled && chained === "end") ? 4 : 1,
+        borderTopWidth: activeNode ? 4 : 1,
+        borderBottomWidth: activeNode ? 4 : 1,
+      },
+      cycleIcon: {
+        position: "absolute",
+        right: 0,
+      },
+      connector: {
+        position: "absolute",
+        width: lineWidth,
+        height: lineSize,
+        top: `calc(50% - ${lineSize / 2}px)`,
+      },
+      connectorLeft: {
+        left: 0,
+        opacity: opened ? 1 : 0,
+        background: `linear-gradient(90deg, ${theme.graph.treeRailColor}, ${parentLineColor})`,
+      },
+      connectorRight: {
+        right: 0,
+        opacity: opened ? 1 : 0,
+        background: `linear-gradient(90deg, ${childLineColor}, ${theme.graph.treeRailColor})`,
+      },
+    }
+  }
+)
 
 export default function TreeItem({
   className,
@@ -68,23 +222,43 @@ export default function TreeItem({
   onDoubleClick,
   levelIndex,
 }: Props) {
-  const { classes, cx } = useStyles()
   const {
     graph,
     updateChanges,
     enabledIds,
     chainedNodeIds,
     activeNodeId,
+    activeEdgeId,
     openedNodeIds,
     openNode,
   } = useTreeContext()
-  const enabled =
+  const activeNode = activeNodeId === edge.to.id
+  const activeEdge = activeEdgeId === edge.id
+  const opened = openedNodeIds[levelIndex + 1] === edge.to.id
+
+  const enabled = enabledIds.includes(edge.id)
+  const toggleable =
     edge.async ||
     enabledIds.includes(edge.id) ||
     enabledIds.includes(edge.from.id)
-  const chained = chainedNodeIds.includes(edge.to.id)
-  const active = activeNodeId === edge.to.id
-  const cycle = openedNodeIds.slice(0, levelIndex + 1).includes(edge.to.id)
+
+  const chained = getChainedState({ edge, chainedNodeIds })
+  const cycled = getCycledState({
+    graph,
+    edge,
+    activeNode: resolveNode(graph, activeNodeId),
+    openedNodeIds,
+    levelIndex,
+  })
+
+  const { classes, cx } = useStyles({
+    enabled,
+    chained,
+    activeEdge,
+    activeNode,
+    opened,
+    cycled,
+  })
 
   const handleToggleChange = useCallback(
     async (event: MouseEvent<HTMLButtonElement>) => {
@@ -143,7 +317,7 @@ export default function TreeItem({
     : {}
 
   return (
-    <div style={style}>
+    <div style={style} className={classes.root}>
       <ListItem
         dense
         disableGutters
@@ -152,19 +326,13 @@ export default function TreeItem({
         selected={selected}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
-        className={cx(
-          className,
-          classes.root,
-          !enabled && classes.disabled,
-          chained && classes.chained,
-          active && classes.active
-        )}
+        className={cx(className, classes.edge)}
       >
         <ListItemButton sx={{ width: "100%" }}>
           <ListItemIcon>
             <Checkbox
               checked={edge.enabled}
-              disabled={!enabled}
+              disabled={!toggleable}
               {...checkboxProps}
               onClick={(event) => {
                 // so that edge isn't selected by clicking
@@ -184,7 +352,7 @@ export default function TreeItem({
             }
             primaryTypographyProps={{
               noWrap: true,
-              // color: selected ? "secondary" : "initial",
+              fontWeight: activeEdge ? "bold" : "initial",
             }}
             secondary={
               <NodeSize
@@ -194,9 +362,9 @@ export default function TreeItem({
               />
             }
           />
-          {cycle && (
+          {(cycled === "lone" || cycled === "end") && (
             <IconButton
-              className={classes.cycle}
+              className={classes.cycleIcon}
               onClick={(event) => {
                 event.stopPropagation()
                 openNode(edge.to)
@@ -207,6 +375,10 @@ export default function TreeItem({
           )}
         </ListItemButton>
       </ListItem>
+      {edge.from !== graph.root ? (
+        <div className={cx(classes.connector, classes.connectorLeft)} />
+      ) : null}
+      <div className={cx(classes.connector, classes.connectorRight)} />
     </div>
   )
 }

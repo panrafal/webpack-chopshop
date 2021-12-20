@@ -69,7 +69,7 @@ export default function NodeNavigator({ className, modes }: Props) {
     pinned,
     togglePinned,
     setActiveNodeId,
-    selectedEdgeId,
+    activeEdgeId,
     openNode,
   } = useTreeContext()
 
@@ -118,7 +118,7 @@ export default function NodeNavigator({ className, modes }: Props) {
             <NodeNavigatorItem
               {...itemProps}
               node={item}
-              selected={item === resolveEdge(graph, selectedEdgeId)?.to}
+              selected={item === resolveEdge(graph, activeEdgeId)?.to}
               retainerRootNode={graph.root}
               onClick={() => {
                 openNode(item)

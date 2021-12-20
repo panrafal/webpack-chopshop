@@ -33,7 +33,7 @@ import { makeStyles } from "../makeStyles"
 import { uniq } from "lodash"
 import { findNodeCycles } from "../../analysis/cycles"
 import RootInfo from "./info/RootInfo"
-import SelectedEdgeInfo from "./info/SelectedEdgeInfo"
+import ActiveEdgeInfo from "./info/ActiveEdgeInfo"
 import ActiveNodeInfo from "./info/ActiveNodeInfo"
 import { Grid } from "@mui/material"
 
@@ -63,10 +63,10 @@ const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
     gridArea: "navigation / span 1",
     display: "grid",
     grid: "100% / auto-flow",
-    gap: theme.spacing(2),
+    gap: theme.graph.treeLevelGap,
     overflowX: "auto",
     justifyContent: "flex-start",
-    marginLeft: -theme.spacing(2),
+    marginLeft: -theme.graph.treeLevelGap - 16,
     "&:before": {
       content: '""',
       display: "block",
@@ -114,12 +114,12 @@ function TreePage({
   mode: modeId,
 }: Props) {
   const { classes, cx } = useStyles()
-  const [selectedEdgeId, setSelectedEdgeId] = useState<GraphEdgeID | null>(null)
+  const [activeEdgeId, setActiveEdgeId] = useState<GraphEdgeID | null>(null)
   const [activeNodeId, setActiveNodeId] = useState<GraphNodeID | null>(null)
   const [openedNodeIds, setOpenedNodeIds] = useState<GraphNodeID[]>([
     ROOT_NODE_ID,
   ])
-  const selectedEdge = resolveEdge(graph, selectedEdgeId)
+  const activeEdge = resolveEdge(graph, activeEdgeId)
 
   // const selectNode = useCallback(() => async (nextNode: GraphNode) => {
   //   // already opened
@@ -166,7 +166,7 @@ function TreePage({
                 getNodes: () =>
                   getAsyncEdges(
                     graph,
-                    resolveEdge(graph, selectedEdgeId)?.to || graph.root
+                    resolveEdge(graph, activeEdgeId)?.to || graph.root
                   ).then((edges) => uniq(edges.map((edge) => edge.to))),
                 renderTitle: () => "Child Async Nodes",
                 renderInfo: () => "Select node to start from",
@@ -193,7 +193,7 @@ function TreePage({
                 getNodes: () =>
                   getDeepNodeChildren(
                     graph,
-                    resolveEdge(graph, selectedEdgeId)?.to || graph.root,
+                    resolveEdge(graph, activeEdgeId)?.to || graph.root,
                     {
                       filter: currentGraphFilter,
                     }
@@ -232,7 +232,7 @@ function TreePage({
             } as NavigatorModes,
           }
       }
-    }, [graph, modeId, selectedEdgeId])
+    }, [graph, modeId, activeEdgeId])
 
   const { value: enabledIds, promise: enabledIdsPromise } = useStablePromise(
     useMemo(async () => {
@@ -248,7 +248,9 @@ function TreePage({
       useMemo(async () => {
         const activeNode = resolveNode(graph, activeNodeId)
         const chains = activeNode
-          ? await findChains(graph, graph.root, activeNode)
+          ? await findChains(graph, graph.root, activeNode, {
+              filter: currentGraphFilter,
+            })
           : []
         const chainedNodeIds = chains.flat()
         return [chains, chainedNodeIds] as const
@@ -260,7 +262,7 @@ function TreePage({
     (toNode: GraphNode) => {
       const run = async () => {
         if (openedNodeIds.includes(toNode.id)) {
-          setSelectedEdgeId(
+          setActiveEdgeId(
             getEdgeId(
               openedNodeIds[openedNodeIds.indexOf(toNode.id) - 1],
               toNode.id
@@ -268,11 +270,11 @@ function TreePage({
           )
           return
         }
-        const selectedEdge = resolveEdge(graph, selectedEdgeId)
+        const activeEdge = resolveEdge(graph, activeEdgeId)
         // Pick starting node that is included on the path
         const fromNode =
-          selectedEdge && openedNodeIds.includes(selectedEdge.to.id)
-            ? selectedEdge.to
+          activeEdge && openedNodeIds.includes(activeEdge.to.id)
+            ? activeEdge.to
             : graph.root
         const openedBeforeFromNode = openedNodeIds.slice(
           0,
@@ -316,30 +318,30 @@ function TreePage({
             ...chain,
           ])
         )
-        setSelectedEdgeId(
+        setActiveEdgeId(
           getEdgeId(chain[chain.length - 2], chain[chain.length - 1])
         )
       }
       trackLoading(run())
     },
-    [graph, trackLoading, openedNodeIds, selectedEdgeId, normalizePath]
+    [graph, trackLoading, openedNodeIds, activeEdgeId, normalizePath]
   )
 
   const selectedTreeLevelRef = createRef<HTMLDivElement>()
 
   // Scroll selected into view
   useEffect(() => {
-    if (!selectedEdge || !selectedTreeLevelRef.current) return
+    if (!activeEdge || !selectedTreeLevelRef.current) return
     selectedTreeLevelRef.current.scrollIntoView()
-  }, [selectedEdge, selectedTreeLevelRef])
+  }, [activeEdge, selectedTreeLevelRef])
 
   // Normalize path after node change
   useEffect(() => {
-    openNode(selectedEdge?.to || graph.root)
+    openNode(activeEdge?.to || graph.root)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modeId])
 
-  const selectedTreeLevelIndex = openedNodeIds.lastIndexOf(selectedEdge?.to.id)
+  const selectedTreeLevelIndex = openedNodeIds.lastIndexOf(activeEdge?.to.id)
   const treeLevels = openedNodeIds.map((nodeId, index) => (
     <TreeLevel
       key={index}
@@ -362,7 +364,7 @@ function TreePage({
           if (chain) newOpened.push(...chain.slice(chain.indexOf(node.id) + 1))
           setOpenedNodeIds(newOpened)
         }
-        setSelectedEdgeId(edge.id)
+        setActiveEdgeId(edge.id)
       }}
       activateNode={(node) => {
         setActiveNodeId(node.id)
@@ -379,7 +381,7 @@ function TreePage({
           pinned,
           togglePinned,
           enabledIds: enabledIds || [],
-          selectedEdgeId,
+          activeEdgeId: activeEdgeId,
           openNode,
           openedNodeIds,
           setOpenedNodeIds,
@@ -397,7 +399,7 @@ function TreePage({
             <RootInfo />
           </Grid>
           <Grid item xs={4}>
-            <SelectedEdgeInfo />
+            <ActiveEdgeInfo />
           </Grid>
           <Grid item xs={4}>
             <ActiveNodeInfo />
