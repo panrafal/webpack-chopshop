@@ -1,12 +1,13 @@
 import type { GraphEdge, GraphNode } from "../../analysis/graph"
 
 import { Icon, LinearProgress } from "@mui/material"
+import BlockIcon from "@mui/icons-material/Block"
 
 import EmptyBox from "../EmptyBox"
 import ElementList from "./ElementList"
 import { useTreeContext } from "./TreeContext"
 import TreeItem from "./TreeItem"
-import { forwardRef } from "react"
+import { forwardRef, ReactNode } from "react"
 import { makeStyles } from "../makeStyles"
 import { useStablePromise } from "../hooks/promises"
 import ErrorBox from "../ErrorBox"
@@ -20,6 +21,7 @@ type Props = {
   activateNode: (node: GraphNode) => void
   className?: string
   levelIndex: number
+  renderEmpty: () => ReactNode
 }
 
 const useStyles = makeStyles({ name: "TreeLevel" })({
@@ -33,7 +35,15 @@ const useStyles = makeStyles({ name: "TreeLevel" })({
 })
 
 function TreeLevel(
-  { node, childNode, selectEdge, activateNode, className, levelIndex }: Props,
+  {
+    node,
+    childNode,
+    selectEdge,
+    activateNode,
+    className,
+    levelIndex,
+    renderEmpty,
+  }: Props,
   ref
 ) {
   const { graph, pinned, getChildEdges } = useTreeContext()
@@ -70,9 +80,7 @@ function TreeLevel(
             // checked={selected ? selected.id === itemProps.node.id : false}
           />
         )}
-        renderEmpty={() => (
-          <EmptyBox icon={<Icon>block</Icon>}>Yada yada</EmptyBox>
-        )}
+        renderEmpty={() => <EmptyBox>{renderEmpty()}</EmptyBox>}
       />
     </div>
   )

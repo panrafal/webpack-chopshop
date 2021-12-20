@@ -51,16 +51,16 @@ const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
   TreePage: {
     flexGrow: 1,
     display: "grid",
-    grid: "[info] auto [navigation] 100% / 1fr 1fr 1fr",
+    grid: "[info] auto [navigation] 1fr / 1fr 350px",
     gap: theme.spacing(3),
     padding: theme.spacing(3),
   },
   info: {
-    gridArea: "info / span 4",
+    gridArea: "info / span 2",
   },
   treeLevels: {
     position: "relative",
-    gridArea: "navigation / span 3",
+    gridArea: "navigation / span 1",
     display: "grid",
     grid: "100% / auto-flow",
     gap: theme.spacing(2),
@@ -94,7 +94,7 @@ const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
   },
 
   treeLevel: {
-    width: 300,
+    width: 350,
     height: "100%",
     flexShrink: 0,
     flexGrow: 0,
@@ -131,100 +131,108 @@ function TreePage({
   // }, [path])
 
   // Tree Mode -------------------------------------
-  const { getChildEdges, navigatorModes, normalizePath } = useMemo(() => {
-    switch (modeId) {
-      case "async":
-        return {
-          normalizePath: (path: GraphNodeID[]) =>
-            path.filter(
-              // remove nodes that don't have async connection to the parent
-              (nodeId, index) =>
-                index === 0 ||
-                resolveEdge(graph, getEdgeId(path[index - 1], nodeId))?.async
-            ),
-          getChildEdges: (node: GraphNode) =>
-            getAsyncEdges(graph, node, {
-              filter: stopOnAsyncModulesFilter,
-            }),
-          navigatorModes: {
-            all: {
-              getNodes: () =>
-                getAsyncEdges(graph, graph.root).then((edges) =>
-                  uniq(edges.map((edge) => edge.to))
-                ),
-              renderTitle: () => "All Async Nodes",
-              renderInfo: () => "Select node to start from",
-              renderEmpty: () => "Nothing found",
-            },
-            children: {
-              getNodes: () =>
-                getAsyncEdges(
-                  graph,
-                  resolveEdge(graph, selectedEdgeId)?.to || graph.root
-                ).then((edges) => uniq(edges.map((edge) => edge.to))),
-              renderTitle: () => "Child Async Nodes",
-              renderInfo: () => "Select node to start from",
-              renderEmpty: () => "Nothing found",
-            },
-          } as NavigatorModes,
-        }
-      case "modules":
-        return {
-          normalizePath: (path: GraphNodeID[]) => path,
-          getChildEdges: (node: GraphNode) => node.children,
-          navigatorModes: {
-            enabled: {
-              getNodes: () =>
-                getDeepNodeChildren(graph, graph.root, {
-                  filter: currentGraphFilter,
-                }).then((ids) => getNodes(graph, ids)),
-              renderTitle: () => "Enabled Nodes",
-              renderInfo: () => "Select node to start from",
-              renderEmpty: () => "Nothing found",
-            },
-            children: {
-              getNodes: () =>
-                getDeepNodeChildren(
-                  graph,
-                  resolveEdge(graph, selectedEdgeId)?.to || graph.root,
-                  {
+  const { getChildEdges, renderEmptyChildren, navigatorModes, normalizePath } =
+    useMemo(() => {
+      const defaults = {
+        renderEmptyChildren: () => "Module doesn’t import anything",
+      }
+      switch (modeId) {
+        case "async":
+          return {
+            ...defaults,
+            normalizePath: (path: GraphNodeID[]) =>
+              path.filter(
+                // remove nodes that don't have async connection to the parent
+                (nodeId, index) =>
+                  index === 0 ||
+                  resolveEdge(graph, getEdgeId(path[index - 1], nodeId))?.async
+              ),
+            getChildEdges: (node: GraphNode) =>
+              getAsyncEdges(graph, node, {
+                filter: stopOnAsyncModulesFilter,
+              }),
+            renderEmptyChildren: () => "There are no deeper split points",
+            navigatorModes: {
+              all: {
+                getNodes: () =>
+                  getAsyncEdges(graph, graph.root).then((edges) =>
+                    uniq(edges.map((edge) => edge.to))
+                  ),
+                renderTitle: () => "All Async Nodes",
+                renderInfo: () => "Select node to start from",
+                renderEmpty: () => "Nothing found",
+              },
+              children: {
+                getNodes: () =>
+                  getAsyncEdges(
+                    graph,
+                    resolveEdge(graph, selectedEdgeId)?.to || graph.root
+                  ).then((edges) => uniq(edges.map((edge) => edge.to))),
+                renderTitle: () => "Child Async Nodes",
+                renderInfo: () => "Select node to start from",
+                renderEmpty: () => "Nothing found",
+              },
+            } as NavigatorModes,
+          }
+        case "modules":
+          return {
+            ...defaults,
+            normalizePath: (path: GraphNodeID[]) => path,
+            getChildEdges: (node: GraphNode) => node.children,
+            navigatorModes: {
+              enabled: {
+                getNodes: () =>
+                  getDeepNodeChildren(graph, graph.root, {
                     filter: currentGraphFilter,
-                  }
-                ).then((ids) => getNodes(graph, ids)),
-              renderTitle: () => "Enabled Children",
-              renderInfo: () => "Select node to start from",
-              renderEmpty: () => "Nothing found",
-            },
-            all: {
-              getNodes: () => getAllNodes(graph),
-              renderTitle: () => "All Nodes",
-              renderInfo: () => "Select node to start from",
-              renderEmpty: () => "Nothing found",
-            },
-          } as NavigatorModes,
-        }
-      case "cycles":
-        return {
-          normalizePath: (path: GraphNodeID[]) => path,
-          getChildEdges: (node: GraphNode) => node.children,
-          navigatorModes: {
-            cycles: {
-              getNodes: () =>
-                findNodeCycles(graph, graph.root, {
-                  filter: currentGraphFilter,
-                }).then((cycles) =>
-                  cycles
-                    .map((cycle) => cycle[cycle.length - 1])
-                    .map((cycleEnd) => getNode(graph, cycleEnd))
-                ),
-              renderTitle: () => "Cycles",
-              renderInfo: () => "Select node to start from",
-              renderEmpty: () => "Nothing found",
-            },
-          } as NavigatorModes,
-        }
-    }
-  }, [graph, modeId, selectedEdgeId])
+                  }).then((ids) => getNodes(graph, ids)),
+                renderTitle: () => "Enabled Nodes",
+                renderInfo: () => "Select node to start from",
+                renderEmpty: () => "Nothing found",
+              },
+              children: {
+                getNodes: () =>
+                  getDeepNodeChildren(
+                    graph,
+                    resolveEdge(graph, selectedEdgeId)?.to || graph.root,
+                    {
+                      filter: currentGraphFilter,
+                    }
+                  ).then((ids) => getNodes(graph, ids)),
+                renderTitle: () => "Enabled Children",
+                renderInfo: () => "Select node to start from",
+                renderEmpty: () => "Nothing found",
+              },
+              all: {
+                getNodes: () => getAllNodes(graph),
+                renderTitle: () => "All Nodes",
+                renderInfo: () => "Select node to start from",
+                renderEmpty: () => "Nothing found",
+              },
+            } as NavigatorModes,
+          }
+        case "cycles":
+          return {
+            ...defaults,
+            normalizePath: (path: GraphNodeID[]) => path,
+            getChildEdges: (node: GraphNode) => node.children,
+            navigatorModes: {
+              cycles: {
+                getNodes: () =>
+                  findNodeCycles(graph, graph.root, {
+                    filter: currentGraphFilter,
+                  }).then((cycles) =>
+                    cycles
+                      .map((cycle) => cycle[cycle.length - 1])
+                      .map((cycleEnd) => getNode(graph, cycleEnd))
+                  ),
+                renderTitle: () => "Cycles",
+                renderInfo: () => "Select node to start from",
+                renderEmpty: () => "Nothing found",
+              },
+            } as NavigatorModes,
+          }
+      }
+    }, [graph, modeId, selectedEdgeId])
 
   const { value: enabledIds, promise: enabledIdsPromise } = useStablePromise(
     useMemo(async () => {
@@ -359,6 +367,7 @@ function TreePage({
       activateNode={(node) => {
         setActiveNodeId(node.id)
       }}
+      renderEmpty={renderEmptyChildren}
     />
   ))
 

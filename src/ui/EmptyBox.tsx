@@ -1,33 +1,23 @@
+import { Stack, Typography } from "@mui/material"
 import * as React from "react"
 import { makeStyles } from "./makeStyles"
+import BlockIcon from "@mui/icons-material/Block"
 
 type Props = {
   children: React.ReactNode
-  icon: React.ReactNode
+  icon?: React.ReactNode
 }
 
-const useStyles = makeStyles({ name: "EmptyBox" })((theme) => ({
-  root: {
-    color: theme.palette.text.secondary,
-    padding: 24,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-    textAlign: "center",
-  },
-  icon: {
-    "margin-bottom": 8,
-  },
-}))
-
 export default function EmptyBox({ children, icon }: Props) {
-  const { classes } = useStyles()
   return (
-    <div className={classes.root}>
-      <div className={classes.icon}>{icon}</div>
+    <Stack
+      direction="row"
+      justifyContent="center"
+      sx={{ padding: 2, color: "text.secondary" }}
+      spacing={2}
+    >
+      {icon}
       <div>{children}</div>
-    </div>
+    </Stack>
   )
 }

@@ -177,13 +177,10 @@ function ElementList<T extends GraphNode | GraphEdge>({
         }
         placeholder="Search"
       />
-
-      <div className={classes.listContainer}>
-        <AutoSizer>
-          {({ width, height }) =>
-            listItems.length === 0 ? (
-              renderEmpty()
-            ) : (
+      {listItems.length > 0 ? (
+        <div className={classes.listContainer}>
+          <AutoSizer>
+            {({ width, height }) => (
               <FixedSizeList
                 className={classes.list}
                 width={width}
@@ -230,10 +227,12 @@ function ElementList<T extends GraphNode | GraphEdge>({
                   }
                 }}
               </FixedSizeList>
-            )
-          }
-        </AutoSizer>
-      </div>
+            )}
+          </AutoSizer>
+        </div>
+      ) : (
+        renderEmpty()
+      )}
     </div>
   )
 }
