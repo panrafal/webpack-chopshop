@@ -15,6 +15,8 @@ export type GraphEdgeSpec = {
   kind: EdgeKind
   async?: boolean
   enabled?: boolean
+  // Location in source code
+  location?: string
   // Original source object
   original?: any
 }
@@ -31,6 +33,9 @@ export type GraphNodeSpec = {
   kind: NodeKind
   size: number
   file?: string
+  exports?: string[]
+  usedExports?: string[]
+  source?: string
   // Original source object
   original?: any
 }

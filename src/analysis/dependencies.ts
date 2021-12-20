@@ -244,3 +244,7 @@ export function baseGraphFilter(edge: GraphEdge) {
 export function stopOnAsyncModulesFilter(edge: GraphEdge) {
   return edge.async ? LAST_ITEM_IN_BRANCH : true
 }
+
+export function allAsyncAndEnabledFilter(edge: GraphEdge) {
+  return edge.async || edge.enabled
+}

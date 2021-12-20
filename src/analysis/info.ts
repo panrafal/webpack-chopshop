@@ -61,3 +61,16 @@ export function getFileExtension({ file }: GraphNode): string {
   if (dot <= 0) return ""
   return file.slice(dot + 1)
 }
+
+export function getSourceLocation(
+  source: string | undefined,
+  location: string | undefined
+): string | undefined {
+  if (!source || !location) return undefined
+  const [rowsLoc, colsLoc] = location.split(":")
+  const [rowStart, rowEnd = rowStart + 1] = rowsLoc.split("-").map(Number)
+  const [colStart, colEnd = colStart + 1] = colsLoc.split("-").map(Number)
+  const lines = source.split(/\n/g).slice(rowStart - 1, rowEnd - 1)
+  if (lines.length > 1) return lines.join("\n")
+  return lines[0].slice(colStart, colEnd)
+}

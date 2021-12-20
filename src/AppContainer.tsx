@@ -1,4 +1,5 @@
 import { CssBaseline, LinearProgress } from "@mui/material"
+import { fontSize } from "@mui/system"
 import { lazy } from "react"
 import { hot } from "react-hot-loader"
 import { isAbortSignal } from "./analysis/utils"

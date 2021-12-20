@@ -10,6 +10,7 @@ import { forwardRef } from "react"
 import { makeStyles } from "../makeStyles"
 import { useStablePromise } from "../hooks/promises"
 import ErrorBox from "../ErrorBox"
+import NodeName from "../nodes/NodeName"
 
 type Props = {
   parentNode?: GraphNode | null
@@ -47,6 +48,7 @@ function TreeLevel(
         }}
       />
       {error && <ErrorBox error={error} />}
+      <NodeName node={node} />
       <ElementList
         className={classes.list}
         items={edges || []}

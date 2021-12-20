@@ -25,12 +25,12 @@ export const backgroundProcessor = (): BackgroundProcessor => {
   let abort
   let idleReject
   const fn = throttle<() => Promise<void>>(
-    () =>
-      new Promise((resolve, reject) => {
-        if (abort) reject(abort())
-        idleReject = reject
-        setTimeout(resolve, 0)
-      }),
+    () => 0 as any,
+    // new Promise((resolve, reject) => {
+    //   if (abort) reject(abort())
+    //   idleReject = reject
+    //   setTimeout(resolve, 0)
+    // }),
     16
   )
   return Object.assign(fn, {

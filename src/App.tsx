@@ -33,7 +33,6 @@ const useStyles = makeStyles({ name: "App" })((theme) => ({
     // minWidth: 1200,
     flexDirection: "column",
     justifyContent: "stretch",
-    fontFamily: "Roboto Helvetica Arial sans-serif",
   },
   container: {
     // maxWidth: 2000,

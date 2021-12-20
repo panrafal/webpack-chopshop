@@ -4,13 +4,10 @@ import "./index.css"
 import AppContainer from "./AppContainer"
 import registerServiceWorker from "./registerServiceWorker"
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material"
+import { createAppTheme } from "./ui/theme"
 
 const rootEl = document.getElementById("root")
-const theme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-})
+const theme = createAppTheme()
 
 registerServiceWorker()
 

@@ -32,6 +32,10 @@ import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
 import { makeStyles } from "../makeStyles"
 import { uniq } from "lodash"
 import { findNodeCycles } from "../../analysis/cycles"
+import RootInfo from "./info/RootInfo"
+import SelectedEdgeInfo from "./info/SelectedEdgeInfo"
+import ActiveNodeInfo from "./info/ActiveNodeInfo"
+import { Grid } from "@mui/material"
 
 type Props = {
   graph: Graph
@@ -247,6 +251,15 @@ function TreePage({
   const openNode = useCallback(
     (toNode: GraphNode) => {
       const run = async () => {
+        if (openedNodeIds.includes(toNode.id)) {
+          setSelectedEdgeId(
+            getEdgeId(
+              openedNodeIds[openedNodeIds.indexOf(toNode.id) - 1],
+              toNode.id
+            )
+          )
+          return
+        }
         const selectedEdge = resolveEdge(graph, selectedEdgeId)
         // Pick starting node that is included on the path
         const fromNode =
@@ -370,7 +383,17 @@ function TreePage({
           getChildEdges,
         }}
       >
-        <div className={classes.info}></div>
+        <Grid container spacing={2} className={classes.info}>
+          <Grid item xs={4}>
+            <RootInfo />
+          </Grid>
+          <Grid item xs={4}>
+            <SelectedEdgeInfo />
+          </Grid>
+          <Grid item xs={4}>
+            <ActiveNodeInfo />
+          </Grid>
+        </Grid>
         <div className={classes.treeLevels}>{treeLevels}</div>
         <LoadingBoundary fallback={"..."}>
           <NodeNavigator className={classes.navigator} modes={navigatorModes} />

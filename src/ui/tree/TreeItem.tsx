@@ -1,6 +1,7 @@
 import { ChangeCircle } from "@mui/icons-material"
 import {
   Checkbox,
+  IconButton,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -20,6 +21,9 @@ import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
 import { useTreeContext } from "./TreeContext"
+
+import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline"
+import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined"
 
 type Props = {
   className?: string
@@ -72,6 +76,7 @@ export default function TreeItem({
     chainedNodeIds,
     activeNodeId,
     openedNodeIds,
+    openNode,
   } = useTreeContext()
   const enabled =
     edge.async ||
@@ -128,6 +133,15 @@ export default function TreeItem({
     },
     [edge, graph, updateChanges]
   )
+
+  const checkboxProps = edge.async
+    ? ({
+        icon: <DownloadForOfflineOutlinedIcon />,
+        checkedIcon: <DownloadForOfflineIcon />,
+        color: "graphAsync",
+      } as const)
+    : {}
+
   return (
     <div style={style}>
       <ListItem
@@ -151,6 +165,7 @@ export default function TreeItem({
             <Checkbox
               checked={edge.enabled}
               disabled={!enabled}
+              {...checkboxProps}
               onClick={(event) => {
                 // so that edge isn't selected by clicking
                 event.stopPropagation()
@@ -162,7 +177,10 @@ export default function TreeItem({
           </ListItemIcon>
           <ListItemText
             primary={
-              <NodeName node={edge.to} hidePackage={hidePackage} tooltip />
+              edge.name || (
+                <NodeName node={edge.to} hidePackage={hidePackage} tooltip />
+              )
+              // <NodeName node={edge.to} hidePackage={hidePackage} tooltip />
             }
             primaryTypographyProps={{
               noWrap: true,
@@ -176,7 +194,17 @@ export default function TreeItem({
               />
             }
           />
-          {cycle && <ChangeCircle className={classes.cycle} />}
+          {cycle && (
+            <IconButton
+              className={classes.cycle}
+              onClick={(event) => {
+                event.stopPropagation()
+                openNode(edge.to)
+              }}
+            >
+              <ChangeCircle />
+            </IconButton>
+          )}
         </ListItemButton>
       </ListItem>
     </div>

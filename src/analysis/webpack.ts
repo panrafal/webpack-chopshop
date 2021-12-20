@@ -44,7 +44,7 @@ export async function readWebpackStats(
     }
   }
 
-  // create chunks
+  // create assets
   if (includeAssets) {
     for (const asset of assets) {
       addNode(graph, {
@@ -75,6 +75,13 @@ export async function readWebpackStats(
       name: module.name,
       file: isConcat ? undefined : (module.name || "").replace(/^.*!/),
       size: module.size,
+      exports: Array.isArray(module.providedExports)
+        ? module.providedExports
+        : undefined,
+      usedExports: Array.isArray(module.usedExports)
+        ? module.usedExports
+        : undefined,
+      source: module.source,
       original: module,
     })
     await graph.idle()
@@ -114,17 +121,23 @@ export async function readWebpackStats(
         // reason has been removed at optimization phase (concatenated, tree-shaken, etc)
         continue
       }
+      const fromNode = isEntry
+        ? graph.root
+        : getNode(graph, getNodeId("module", reason.moduleIdentifier))
+      if (fromNode === node) {
+        // we ignore self reference (eg. cjs self exports reference)
+        continue
+      }
       const async =
         isEntry || (type.includes("import()") && !type.includes("eager"))
       addEdge(graph, {
-        from: isEntry
-          ? graph.root
-          : getNode(graph, getNodeId("module", reason.moduleIdentifier)),
+        from: fromNode,
         to: node,
         kind: type,
         name: reason.userRequest,
         async,
         enabled: !async || enableAllAsyncImports ? true : false,
+        location: reason.loc,
         original: reason,
       })
     }
