@@ -135,87 +135,6 @@ function getCycledState({
   return false
 }
 
-const useStyles = makeStyles<
-  {
-    enabled: boolean
-    chained: EdgeChainState
-    cycled: EdgeChainState
-    activeNode: boolean
-    activeEdge: boolean
-    opened: boolean
-  },
-  "connectorLeft"
->({ name: "TreeItem" })(
-  (
-    theme,
-    { enabled, chained, activeNode, activeEdge, opened, cycled },
-    classes
-  ) => {
-    const background = theme.palette.background.default
-    const lineWidth = theme.graph.treeLevelGap / 2
-    const lineSize = theme.graph.treeLineSize
-    const lineColor = getLineColor(theme, {
-      enabled,
-      chained: activeNode || !!chained,
-      cycled: !!cycled,
-    })
-    const parentLineColor = getLineColor(theme, {
-      enabled,
-      chained: chained && chained !== "start",
-      cycled: cycled && cycled !== "start" && cycled !== "lone",
-    })
-    const childLineColor = getLineColor(theme, {
-      enabled,
-      chained: chained && chained !== "end",
-      cycled: cycled && cycled !== "end" && cycled !== "lone",
-    })
-    return {
-      root: {
-        height: 64,
-        padding: `2px ${lineWidth}px`,
-        background: `linear-gradient(90deg, transparent, ${background} ${
-          lineWidth - 4
-        }px, ${background} calc(100% - ${lineWidth - 4}px), transparent)`,
-        [`&:hover .${classes.connectorLeft}`]: {
-          opacity: 1,
-        },
-      },
-      edge: {
-        height: "100%",
-        border: "1px solid",
-        borderRadius: 2,
-        borderColor: lineColor,
-        borderLeftWidth:
-          cycled === "start" || (!cycled && chained === "start") ? 4 : 1,
-        borderRightWidth:
-          cycled === "end" || (!cycled && chained === "end") ? 4 : 1,
-        borderTopWidth: activeNode ? 4 : 1,
-        borderBottomWidth: activeNode ? 4 : 1,
-      },
-      cycleIcon: {
-        position: "absolute",
-        right: 0,
-      },
-      connector: {
-        position: "absolute",
-        width: lineWidth,
-        height: lineSize,
-        top: `calc(50% - ${lineSize / 2}px)`,
-      },
-      connectorLeft: {
-        left: 0,
-        opacity: opened ? 1 : 0,
-        background: `linear-gradient(90deg, ${theme.graph.treeRailColor}, ${parentLineColor})`,
-      },
-      connectorRight: {
-        right: 0,
-        opacity: opened ? 1 : 0,
-        background: `linear-gradient(90deg, ${childLineColor}, ${theme.graph.treeRailColor})`,
-      },
-    }
-  }
-)
-
 export default function TreeItem({
   className,
   style,
@@ -392,3 +311,84 @@ export default function TreeItem({
     </div>
   )
 }
+
+const useStyles = makeStyles<
+  {
+    enabled: boolean
+    chained: EdgeChainState
+    cycled: EdgeChainState
+    activeNode: boolean
+    activeEdge: boolean
+    opened: boolean
+  },
+  "connectorLeft"
+>({ name: "TreeItem" })(
+  (
+    theme,
+    { enabled, chained, activeNode, activeEdge, opened, cycled },
+    classes
+  ) => {
+    const background = theme.palette.background.default
+    const lineWidth = theme.graph.treeLevelGap / 2
+    const lineSize = theme.graph.treeLineSize
+    const lineColor = getLineColor(theme, {
+      enabled,
+      chained: activeNode || !!chained,
+      cycled: !!cycled,
+    })
+    const parentLineColor = getLineColor(theme, {
+      enabled,
+      chained: chained && chained !== "start",
+      cycled: cycled && cycled !== "start" && cycled !== "lone",
+    })
+    const childLineColor = getLineColor(theme, {
+      enabled,
+      chained: chained && chained !== "end",
+      cycled: cycled && cycled !== "end" && cycled !== "lone",
+    })
+    return {
+      root: {
+        height: 64,
+        padding: `2px ${lineWidth + 1}px`,
+        background: `linear-gradient(90deg, transparent, ${background} ${
+          lineWidth - 4
+        }px, ${background} calc(100% - ${lineWidth - 4}px), transparent)`,
+        [`&:hover .${classes.connectorLeft}`]: {
+          opacity: 1,
+        },
+      },
+      edge: {
+        height: "100%",
+        border: "1px solid",
+        borderRadius: 2,
+        borderColor: lineColor,
+        borderLeftWidth:
+          cycled === "start" || (!cycled && chained === "start") ? 4 : 1,
+        borderRightWidth:
+          cycled === "end" || (!cycled && chained === "end") ? 4 : 1,
+        borderTopWidth: activeNode ? 4 : 1,
+        borderBottomWidth: activeNode ? 4 : 1,
+      },
+      cycleIcon: {
+        position: "absolute",
+        right: 0,
+      },
+      connector: {
+        position: "absolute",
+        width: lineWidth,
+        height: lineSize,
+        top: `calc(50% - ${lineSize / 2}px)`,
+      },
+      connectorLeft: {
+        left: 0,
+        opacity: opened ? 1 : 0,
+        background: `linear-gradient(90deg, ${theme.graph.treeRailColor}, ${parentLineColor})`,
+      },
+      connectorRight: {
+        right: 0,
+        opacity: opened ? 1 : 0,
+        background: `linear-gradient(90deg, ${childLineColor}, ${theme.graph.treeRailColor})`,
+      },
+    }
+  }
+)

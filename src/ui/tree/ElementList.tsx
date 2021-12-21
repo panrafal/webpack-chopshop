@@ -48,6 +48,11 @@ export type RenderItemProps<T> = {
   style: React.CSSProperties
 }
 
+export type OrderBySpec = [
+  ReadonlyArray<string | ((d: any) => any)>,
+  ReadonlyArray<boolean | "asc" | "desc">
+]
+
 export type ElementListProps<T> = {
   graph: Graph
   items: ReadonlyArray<T>
@@ -59,8 +64,8 @@ export type ElementListProps<T> = {
   search?: string
   pinned: ReadonlyArray<GraphNodeID>
   groupItemsBy?: "" | "package"
-  orderItemsBy?: [string[], (boolean | "asc" | "desc")[]]
-  orderGroupsBy?: [string[], (boolean | "asc" | "desc")[]]
+  orderItemsBy?: OrderBySpec
+  orderGroupsBy?: OrderBySpec
   className?: string
   listClassName?: string
   children?: ReactNode
@@ -137,7 +142,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
     [items]
   )
 
-  const filteredItems = useMemo(() => {
+  const filteredItems = useMemo<ReadonlyArray<T>>(() => {
     const searchedItems = search
       ? fuse.search(search).map(({ item }) => item)
       : items

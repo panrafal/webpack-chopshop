@@ -4,7 +4,7 @@ import { Icon, LinearProgress } from "@mui/material"
 import BlockIcon from "@mui/icons-material/Block"
 
 import EmptyBox from "../EmptyBox"
-import ElementList from "./ElementList"
+import ElementList, { OrderBySpec } from "./ElementList"
 import { useTreeContext } from "./TreeContext"
 import TreeItem from "./TreeItem"
 import { forwardRef, ReactNode, useMemo } from "react"
@@ -12,6 +12,7 @@ import { makeStyles } from "../makeStyles"
 import { useStablePromise } from "../hooks/promises"
 import ErrorBox from "../ErrorBox"
 import NodeName from "../nodes/NodeName"
+import { getNodeGroup } from "../../analysis/groups"
 
 type Props = {
   parentNode?: GraphNode | null
@@ -55,6 +56,11 @@ const useStyles = makeStyles({ name: "TreeLevel" })((theme) => {
   }
 })
 
+const orderItemsBy: OrderBySpec = [
+  [(edge: GraphEdge) => getNodeGroup(edge.to).priority, "name"],
+  ["desc", "asc"],
+]
+
 function TreeLevel(
   {
     node,
@@ -97,6 +103,7 @@ function TreeLevel(
         items={edges || []}
         graph={graph}
         pinned={pinned}
+        orderItemsBy={orderItemsBy}
         itemSize={64}
         stickyItems={stickyItems}
         renderItem={({ item, ...itemProps }) => (

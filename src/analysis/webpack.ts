@@ -73,7 +73,7 @@ export async function readWebpackStats(
       originalId: module.id,
       kind,
       name: module.name,
-      file: isConcat ? undefined : (module.name || "").replace(/^.*!/),
+      file: (module.name || "").replace(/^.*!| \+ .+$/, ""),
       size: module.size,
       exports: Array.isArray(module.providedExports)
         ? module.providedExports
@@ -134,7 +134,7 @@ export async function readWebpackStats(
         from: fromNode,
         to: node,
         kind: type,
-        name: reason.userRequest,
+        name: isEntry ? node.name : reason.userRequest,
         async,
         enabled: !async || enableAllAsyncImports ? true : false,
         location: reason.loc,

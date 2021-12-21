@@ -35,7 +35,7 @@ import { findNodeCycles } from "../../analysis/cycles"
 import RootInfo from "./info/RootInfo"
 import ActiveEdgeInfo from "./info/ActiveEdgeInfo"
 import ActiveNodeInfo from "./info/ActiveNodeInfo"
-import { Grid } from "@mui/material"
+import { Grid, Paper } from "@mui/material"
 
 type Props = {
   graph: Graph
@@ -46,63 +46,6 @@ type Props = {
   updateChanges: UpdateChangesFn
   mode: "async" | "modules" | "cycles"
 }
-
-const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
-  TreePage: {
-    flexGrow: 1,
-    display: "grid",
-    grid: "[info] auto [navigation] 1fr / 1fr 350px",
-    gap: theme.spacing(3),
-    padding: theme.spacing(3),
-  },
-  info: {
-    gridArea: "info / span 2",
-  },
-  treeLevels: {
-    position: "relative",
-    gridArea: "navigation / span 1",
-    display: "grid",
-    grid: "100% / auto-flow",
-    gap: theme.graph.treeLevelGap,
-    overflowX: "auto",
-    justifyContent: "flex-start",
-    marginLeft: -theme.graph.treeLevelGap - 16,
-    "&:before": {
-      content: '""',
-      display: "block",
-      position: "sticky",
-      left: 0,
-      top: 0,
-      width: theme.spacing(2),
-      marginRight: -theme.spacing(2),
-      height: "100%",
-      background: `linear-gradient(90deg, ${theme.palette.background.default}, transparent)`,
-      zIndex: 1,
-    },
-    "&:after": {
-      content: '""',
-      display: "block",
-      position: "sticky",
-      right: 0,
-      top: 0,
-      width: theme.spacing(2),
-      marginLeft: -theme.spacing(2),
-      height: "100%",
-      background: `linear-gradient(-90deg, ${theme.palette.background.default}, transparent)`,
-      zIndex: 1,
-    },
-  },
-
-  treeLevel: {
-    width: 350,
-    height: "100%",
-    flexShrink: 0,
-    flexGrow: 0,
-  },
-  navigator: {
-    gridArea: "navigation / span 1",
-  },
-}))
 
 function TreePage({
   graph,
@@ -394,24 +337,75 @@ function TreePage({
           getChildEdges,
         }}
       >
-        <Grid container spacing={2} className={classes.info}>
-          <Grid item xs={4}>
-            <RootInfo />
-          </Grid>
-          <Grid item xs={4}>
-            <ActiveEdgeInfo />
-          </Grid>
-          <Grid item xs={4}>
-            <ActiveNodeInfo />
-          </Grid>
-        </Grid>
+        <div className={classes.info}>
+          <RootInfo />
+          <ActiveEdgeInfo />
+          <ActiveNodeInfo />
+        </div>
         <div className={classes.treeLevels}>{treeLevels}</div>
-        <LoadingBoundary fallback={"..."}>
-          <NodeNavigator className={classes.navigator} modes={navigatorModes} />
-        </LoadingBoundary>
+        <div className={classes.treeShadeLeft}></div>
+        <div className={classes.treeShadeRight}></div>
+        <Paper className={classes.navigator}>
+          <LoadingBoundary fallback={"..."}>
+            <NodeNavigator modes={navigatorModes} />
+          </LoadingBoundary>
+        </Paper>
       </TreeContextProvider>
     </div>
   )
 }
+
+const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
+  TreePage: {
+    flexGrow: 1,
+    display: "grid",
+    grid: "[info] auto [navigation] 1fr / 1fr 350px",
+    gap: theme.spacing(3),
+    padding: theme.spacing(3),
+  },
+  info: {
+    gridArea: "info / span 2",
+    display: "grid",
+    gridAutoFlow: "column",
+    gridAutoColumns: "1fr",
+    gap: theme.spacing(3),
+  },
+  treeLevels: {
+    position: "relative",
+    gridArea: "navigation / 1",
+    display: "grid",
+    grid: "100% / auto-flow",
+    gap: theme.graph.treeLevelGap,
+    overflowX: "auto",
+    justifyContent: "flex-start",
+    marginLeft: `-${theme.spacing(2)}`,
+    padding: `0px ${theme.spacing(2)}`,
+  },
+  treeShadeLeft: {
+    gridArea: "navigation / 1",
+    width: theme.spacing(2),
+    marginLeft: `-${theme.spacing(2)}`,
+    background: `linear-gradient(90deg, ${theme.palette.background.default}, transparent)`,
+    zIndex: 1,
+  },
+  treeShadeRight: {
+    gridArea: "navigation / 1",
+    width: theme.spacing(2),
+    justifySelf: "self-end",
+    background: `linear-gradient(-90deg, ${theme.palette.background.default}, transparent)`,
+    zIndex: 1,
+  },
+
+  treeLevel: {
+    width: 350,
+    height: "100%",
+    flexShrink: 0,
+    flexGrow: 0,
+  },
+  navigator: {
+    gridArea: "navigation / span 1",
+    padding: theme.spacing(2),
+  },
+}))
 
 export default TreePage
