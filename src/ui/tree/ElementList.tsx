@@ -12,6 +12,7 @@ import {
   Icon,
   ListItem,
   ListItemText,
+  ListItemButton,
 } from "@mui/material"
 
 import type {
@@ -77,7 +78,10 @@ const useStyles = makeStyles({ name: "ElementList" })((theme) => ({
     flexDirection: "column" as const,
     justifyContent: "stretch" as const,
   },
-  search: {},
+  search: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
   listContainer: {
     flexGrow: 1,
     position: "relative" as const,
@@ -193,7 +197,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
     .map((item) => listItems.indexOf(item))
     .filter((index) => index >= 0)
     .sort((a, b) => a - b)
-  console.log(stickyIndexes)
+
   const stickyElements = stickyIndexes.map((index, sticked) => {
     const item = listItems[index] as Exclude<T, Group>
     const lastIndex = (stickyIndexes[sticked - 1] ?? -1) + 1
@@ -205,7 +209,6 @@ function ElementList<T extends GraphNode | GraphEdge>({
           key: item.id,
           hidePackage: Boolean(groupItemsBy),
           style: {
-            // marginTop: ,
             top: Math.min(3, sticked) * itemSize,
             bottom: Math.min(3, stickyIndexes.length - sticked - 1) * itemSize,
             left: 0,
@@ -280,17 +283,19 @@ function ElementList<T extends GraphNode | GraphEdge>({
                           key={index}
                           divider
                         >
-                          <ListItemText
-                            primary={item.name}
-                            secondary={`${numeral(item.size).format(
-                              "0.0b"
-                            )} in ${item.children.length}`}
-                          />
-                          {isTreeExpanded(treeState, item, treeOptions) ? (
-                            <ExpandLessIcon />
-                          ) : (
-                            <ExpandMoreIcon />
-                          )}
+                          <ListItemButton>
+                            <ListItemText
+                              primary={item.name}
+                              secondary={`${numeral(item.size).format(
+                                "0.0b"
+                              )} in ${item.children.length}`}
+                            />
+                            {isTreeExpanded(treeState, item, treeOptions) ? (
+                              <ExpandLessIcon />
+                            ) : (
+                              <ExpandMoreIcon />
+                            )}
+                          </ListItemButton>
                         </ListItem>
                       )
                     } else {

@@ -29,7 +29,6 @@ import { makeStyles } from "../makeStyles"
 export type NavigatorMode = {
   getNodes: () => ReadonlyArray<GraphNode> | Promise<ReadonlyArray<GraphNode>>
   renderTitle: () => React.ReactNode
-  renderInfo: () => React.ReactNode
   renderEmpty: () => string
   listProps?: () => Partial<ElementListProps<GraphNode>>
   itemProps?: (a: RenderItemProps<GraphNode>) => Partial<NodeNavigatorItemProps>
@@ -100,10 +99,11 @@ export default function NodeNavigator({ className, modes }: Props) {
           ))}
         </Select>
       </FormControl>
-      <Typography variant="subtitle1" gutterBottom>
-        {mode.renderInfo()}
-      </Typography>
-      {<LinearProgress style={{ opacity: loading ? 1 : 0 }} />}
+      {
+        <LinearProgress
+          style={{ visibility: loading ? "visible" : "hidden" }}
+        />
+      }
       {error && <ErrorBox error={error} />}
       {nodes && (
         <ElementList

@@ -102,7 +102,6 @@ function TreePage({
                     uniq(edges.map((edge) => edge.to))
                   ),
                 renderTitle: () => "All Async Nodes",
-                renderInfo: () => "Select node to start from",
                 renderEmpty: () => "Nothing found",
               },
               children: {
@@ -112,7 +111,6 @@ function TreePage({
                     resolveEdge(graph, activeEdgeId)?.to || graph.root
                   ).then((edges) => uniq(edges.map((edge) => edge.to))),
                 renderTitle: () => "Child Async Nodes",
-                renderInfo: () => "Select node to start from",
                 renderEmpty: () => "Nothing found",
               },
             } as NavigatorModes,
@@ -129,7 +127,6 @@ function TreePage({
                     filter: currentGraphFilter,
                   }).then((ids) => getNodes(graph, ids)),
                 renderTitle: () => "Enabled Nodes",
-                renderInfo: () => "Select node to start from",
                 renderEmpty: () => "Nothing found",
               },
               children: {
@@ -142,13 +139,11 @@ function TreePage({
                     }
                   ).then((ids) => getNodes(graph, ids)),
                 renderTitle: () => "Enabled Children",
-                renderInfo: () => "Select node to start from",
                 renderEmpty: () => "Nothing found",
               },
               all: {
                 getNodes: () => getAllNodes(graph),
                 renderTitle: () => "All Nodes",
-                renderInfo: () => "Select node to start from",
                 renderEmpty: () => "Nothing found",
               },
             } as NavigatorModes,
@@ -169,7 +164,6 @@ function TreePage({
                       .map((cycleEnd) => getNode(graph, cycleEnd))
                   ),
                 renderTitle: () => "Cycles",
-                renderInfo: () => "Select node to start from",
                 renderEmpty: () => "Nothing found",
               },
             } as NavigatorModes,
@@ -399,12 +393,11 @@ const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
   treeLevel: {
     width: 350,
     height: "100%",
-    flexShrink: 0,
-    flexGrow: 0,
   },
   navigator: {
     gridArea: "navigation / span 1",
     padding: theme.spacing(2),
+    display: "grid",
   },
 }))
 

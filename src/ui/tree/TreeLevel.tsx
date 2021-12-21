@@ -36,6 +36,7 @@ const useStyles = makeStyles({ name: "TreeLevel" })((theme) => {
       flexGrow: 1,
     },
     listContainer: {
+      marginTop: theme.spacing(1),
       marginLeft: -theme.graph.treeLevelGap / 2 - railWidth / 2,
       marginRight: -theme.graph.treeLevelGap / 2 - railWidth / 2,
     },

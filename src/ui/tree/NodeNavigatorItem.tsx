@@ -1,6 +1,7 @@
 import { ListItem, ListItemText, ListItemButton } from "@mui/material"
 import { ReactNode } from "react"
 import { GraphNode } from "../../analysis/graph"
+import { getNodeGroup } from "../../analysis/groups"
 import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
@@ -45,9 +46,11 @@ export default function NodeNavigatorItem({
   onDoubleClick,
   children,
 }: NodeNavigatorItemProps) {
-  const { classes, cx } = useStyles()
+  const { classes, cx, theme } = useStyles()
   const { graph, updateChanges, activeNodeId } = useTreeContext()
   const active = activeNodeId === node.id
+  const group = getNodeGroup(node)
+
   return (
     <div style={style}>
       <ListItem
@@ -69,7 +72,7 @@ export default function NodeNavigatorItem({
             primary={<NodeName node={node} hidePackage={hidePackage} tooltip />}
             primaryTypographyProps={{
               noWrap: true,
-              // color: selected ? "secondary" : "initial",
+              color: theme.palette[group.colorName].main,
             }}
             secondary={
               <NodeSize
