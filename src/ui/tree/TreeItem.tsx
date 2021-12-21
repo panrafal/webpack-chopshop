@@ -31,6 +31,7 @@ import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
 import { TreeContextType, useTreeContext } from "./TreeContext"
+import { getNodeGroup } from "../../analysis/groups"
 
 import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline"
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined"
@@ -47,8 +48,8 @@ type Props = {
 
   selected?: boolean
 
-  onClick?: () => void
-  onDoubleClick?: () => void
+  onClick?: (event: MouseEvent<any>) => void
+  onDoubleClick?: (event: MouseEvent<any>) => void
 }
 
 type EdgeProps = {
@@ -84,7 +85,7 @@ function getChainedState({
   )
   const isChained = chainedNodeIds.includes(edge.to.id)
   if (hasChainedChildren && edge.from.id === ROOT_NODE_ID) return "start"
-  if (hasChainedChildren) return "middle"
+  if (isChained && hasChainedChildren) return "middle"
   return isChained ? "end" : false
 }
 
@@ -150,6 +151,7 @@ const useStyles = makeStyles<
     { enabled, chained, activeNode, activeEdge, opened, cycled },
     classes
   ) => {
+    const background = theme.palette.background.default
     const lineWidth = theme.graph.treeLevelGap / 2
     const lineSize = theme.graph.treeLineSize
     const lineColor = getLineColor(theme, {
@@ -171,6 +173,9 @@ const useStyles = makeStyles<
       root: {
         height: 64,
         padding: `2px ${lineWidth}px`,
+        background: `linear-gradient(90deg, transparent, ${background} ${
+          lineWidth - 4
+        }px, ${background} calc(100% - ${lineWidth - 4}px), transparent)`,
         [`&:hover .${classes.connectorLeft}`]: {
           opacity: 1,
         },
@@ -251,7 +256,7 @@ export default function TreeItem({
     levelIndex,
   })
 
-  const { classes, cx } = useStyles({
+  const { classes, cx, theme } = useStyles({
     enabled,
     chained,
     activeEdge,
@@ -308,13 +313,17 @@ export default function TreeItem({
     [edge, graph, updateChanges]
   )
 
+  const group = getNodeGroup(edge.to)
+
   const checkboxProps = edge.async
     ? ({
         icon: <DownloadForOfflineOutlinedIcon />,
         checkedIcon: <DownloadForOfflineIcon />,
-        color: "graphAsync",
+        color: group.colorName as any, // "graphAsync",
       } as const)
-    : {}
+    : {
+        color: group.colorName as any,
+      }
 
   return (
     <div style={style} className={classes.root}>
@@ -353,6 +362,7 @@ export default function TreeItem({
             primaryTypographyProps={{
               noWrap: true,
               fontWeight: activeEdge ? "bold" : "initial",
+              color: theme.palette[group.colorName].main,
             }}
             secondary={
               <NodeSize

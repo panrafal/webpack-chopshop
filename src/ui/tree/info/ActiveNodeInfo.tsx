@@ -26,8 +26,9 @@ export default function ActiveNodeInfo({ className }: Props) {
           <Box>Name: {node.name}</Box>
           <Box>Kind: {node.kind}</Box>
           <Box>File: {node.file}</Box>
-          <Box>Exports: {(node.exports || []).join(", ")}</Box>
-          <Box>Used Exports: {(node.usedExports || []).join(", ")}</Box>
+          <Box>Id: {node.id}</Box>
+          {/* <Box>Exports: {(node.exports || []).join(", ")}</Box>
+          <Box>Used Exports: {(node.usedExports || []).join(", ")}</Box> */}
           <Box>
             <NodeSize graph={graph} node={node} />
           </Box>

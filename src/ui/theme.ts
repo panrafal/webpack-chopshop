@@ -20,6 +20,12 @@ export type AppTheme = Theme & AppThemeExtension
 declare module "@mui/material/styles" {
   interface Palette {
     graphAsync: PaletteColor
+
+    groupCode: PaletteColor
+    groupStyles: PaletteColor
+    groupImages: PaletteColor
+    groupVendors: PaletteColor
+    groupOther: PaletteColor
   }
 }
 
@@ -39,6 +45,12 @@ export function createAppTheme() {
   return createTheme(baseTheme, {
     palette: {
       graphAsync: baseTheme.palette.success,
+
+      groupCode: baseTheme.palette.primary,
+      groupStyles: baseTheme.palette.warning,
+      groupImages: baseTheme.palette.success,
+      groupVendors: baseTheme.palette.secondary,
+      groupOther: { main: "#888888" },
     },
     graph: {
       treeLevelGap: 48,

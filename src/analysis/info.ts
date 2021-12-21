@@ -1,4 +1,4 @@
-import type { GraphNode, GraphNodeID } from "./graph"
+import type { GraphEdge, GraphNode, GraphNodeID } from "./graph"
 
 export type EdgePath = GraphNodeID[]
 
@@ -17,6 +17,11 @@ type ModuleInfo = {
   path?: string
   name?: string
   extension?: string
+}
+
+// Checks if edge between nodes is local (within the same package)
+export function isLocalEdge({ name }: GraphEdge): boolean {
+  return name && name.startsWith(".")
 }
 
 export function getModuleInfo({ file, name, id }: GraphNode): ModuleInfo {

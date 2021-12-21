@@ -1,7 +1,7 @@
 import numeral from "numeral"
 
 import Fuse from "fuse.js"
-import { groupBy, orderBy, map, sortBy, sumBy } from "lodash"
+import { groupBy, orderBy, map, sortBy, sumBy, uniq } from "lodash"
 
 import { FixedSizeList } from "react-window"
 import AutoSizer from "react-virtualized-auto-sizer"
@@ -51,6 +51,7 @@ export type RenderItemProps<T> = {
 export type ElementListProps<T> = {
   graph: Graph
   items: ReadonlyArray<T>
+  stickyItems?: ReadonlyArray<T>
   itemSize?: number
   getNode?: (item: T) => GraphNode
   renderItem: (p: RenderItemProps<T>) => ReactElement<any>
@@ -115,6 +116,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
   renderEmpty,
   items,
   itemSize,
+  stickyItems = [],
   getNode = getNodeFromElement,
   graph,
   pinned,
@@ -182,6 +184,35 @@ function ElementList<T extends GraphNode | GraphEdge>({
     search,
   ])
 
+  const stickyIndexes = uniq(stickyItems)
+    .map((item) => listItems.indexOf(item))
+    .filter((index) => index >= 0)
+    .sort((a, b) => a - b)
+  console.log(stickyIndexes)
+  const stickyElements = stickyIndexes.map((index, sticked) => {
+    const item = listItems[index] as Exclude<T, Group>
+    const lastIndex = (stickyIndexes[sticked - 1] ?? -1) + 1
+    return (
+      <>
+        <div style={{ height: (index - lastIndex) * itemSize }} />
+        {renderItem({
+          item: item,
+          key: item.id,
+          hidePackage: Boolean(groupItemsBy),
+          style: {
+            // marginTop: ,
+            top: Math.min(3, sticked) * itemSize,
+            bottom: Math.min(3, stickyIndexes.length - sticked - 1) * itemSize,
+            left: 0,
+            width: "100%",
+            height: itemSize,
+            position: "sticky",
+          },
+        })}
+      </>
+    )
+  })
+
   return (
     <div className={cx(className, classes.root)}>
       <Input
@@ -206,7 +237,16 @@ function ElementList<T extends GraphNode | GraphEdge>({
         placeholder="Search"
       />
       <div className={cx(classes.listContainer, listClassName)}>
-        <ListContext.Provider value={{ listChildren: children }}>
+        <ListContext.Provider
+          value={{
+            listChildren: (
+              <>
+                {children}
+                {stickyElements}
+              </>
+            ),
+          }}
+        >
           {listItems.length > 0 ? (
             <AutoSizer>
               {({ width, height }) => (
@@ -219,6 +259,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
                   innerElementType={InnerList}
                 >
                   {({ index, style }) => {
+                    if (stickyIndexes.includes(index)) return null
                     const item = listItems[index]
                     if ("group" in item && item.group) {
                       return (

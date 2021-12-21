@@ -7,7 +7,7 @@ import EmptyBox from "../EmptyBox"
 import ElementList from "./ElementList"
 import { useTreeContext } from "./TreeContext"
 import TreeItem from "./TreeItem"
-import { forwardRef, ReactNode } from "react"
+import { forwardRef, ReactNode, useMemo } from "react"
 import { makeStyles } from "../makeStyles"
 import { useStablePromise } from "../hooks/promises"
 import ErrorBox from "../ErrorBox"
@@ -67,9 +67,20 @@ function TreeLevel(
   }: Props,
   ref
 ) {
-  const { graph, pinned, getChildEdges } = useTreeContext()
+  const { graph, pinned, getChildEdges, chainedNodeIds, activeNodeId } =
+    useTreeContext()
   const { classes, cx } = useStyles()
   const { value: edges, loading, error } = useStablePromise(getChildEdges(node))
+  const stickyItems = useMemo(
+    () =>
+      [
+        ...(edges || []).filter((e) => e.to === childNode),
+        ...(edges || []).filter((e) => e.to.id === activeNodeId),
+        ...(edges || []).filter((e) => chainedNodeIds.includes(e.to.id)),
+      ].slice(0, 5),
+    [activeNodeId, chainedNodeIds, childNode, edges]
+  )
+
   return (
     <div className={cx(className, classes.root)} ref={ref}>
       <LinearProgress
@@ -87,6 +98,7 @@ function TreeLevel(
         graph={graph}
         pinned={pinned}
         itemSize={64}
+        stickyItems={stickyItems}
         renderItem={({ item, ...itemProps }) => (
           <TreeItem
             {...itemProps}
@@ -94,7 +106,10 @@ function TreeLevel(
             levelIndex={levelIndex}
             selected={item.to === childNode}
             retainerRootNode={graph.root}
-            onClick={() => {
+            onClick={(event) => {
+              if (event.shiftKey) {
+                activateNode(item.to)
+              }
               selectEdge(item)
             }}
             onDoubleClick={() => {
