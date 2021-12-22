@@ -31,7 +31,7 @@ export default function ActiveNodeInfo({ className }: Props) {
           {/* <Box>Exports: {(node.exports || []).join(", ")}</Box>
           <Box>Used Exports: {(node.usedExports || []).join(", ")}</Box> */}
           <Box>
-            <NodeSize graph={graph} node={node} />
+            <NodeSize node={node} />
           </Box>
           <GroupSizesInfo node={node} />
           {/* <pre>{JSON.stringify(node.original, null, "  ")}</pre> */}

@@ -47,7 +47,7 @@ export default function NodeNavigatorItem({
   children,
 }: NodeNavigatorItemProps) {
   const { classes, cx, theme } = useStyles()
-  const { graph, updateChanges, activeNodeId } = useTreeContext()
+  const { graph, graphWorker, updateChanges, activeNodeId } = useTreeContext()
   const active = activeNodeId === node.id
   const group = getNodeGroup(node)
 
@@ -75,11 +75,7 @@ export default function NodeNavigatorItem({
               color: theme.palette[group.colorName].main,
             }}
             secondary={
-              <NodeSize
-                graph={graph}
-                node={node}
-                retainerRootNode={retainerRootNode}
-              />
+              <NodeSize node={node} retainerRootNode={retainerRootNode} />
             }
           />
           {children}

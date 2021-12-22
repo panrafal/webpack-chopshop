@@ -9,7 +9,7 @@ import {
 } from "react"
 import { applyChanges, Change, revertGraph } from "../analysis/changes"
 import { Graph, modifyGraph } from "../analysis/graph"
-import { GraphWorkerClient } from "../analysis/GraphWorkerClient"
+import { GraphWorkerClient } from "../analysis/worker/GraphWorkerClient"
 import { readWebpackStats } from "../analysis/webpack"
 
 export type ChangesReducerFn = (
@@ -23,7 +23,7 @@ export function useGraphState({ trackLoading, onLoaded }) {
   const setGraph = useCallback(
     async (graph: Graph) => {
       setGraphObject(graph)
-      await graphWorker.setGraph(omit(graph, ["idle"]))
+      await graphWorker.setGraph(graph)
     },
     [setGraphObject, graphWorker]
   )

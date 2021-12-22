@@ -70,7 +70,7 @@ type Props = {
 export default function App({ className, trackLoading }: Props) {
   const { classes, cx } = useStyles()
 
-  const [page, setPage] = useState<string>("tree")
+  const [page, setPage] = useState<string>("open")
   // History ------------------------------------------
   // useEffect(() => {
   //   try {
@@ -217,59 +217,55 @@ export default function App({ className, trackLoading }: Props) {
     <div {...getRootProps({ className: cx(classes.root, className) })}>
       {/* @ts-expect-error */}
       <input {...getInputProps()} />
+      <AppBar position="static" color="primary">
+        <Toolbar className={classes.container} variant="dense">
+          {
+            <Tabs
+              value={page}
+              indicatorColor="secondary"
+              textColor="inherit"
+              onChange={(event, v) => setPage(v)}
+            >
+              <Tab
+                value="open"
+                label="Open stats"
+                onClick={(event) => {
+                  openFileDialog()
+                }}
+              />
+              <Tab disabled={!graph} value="tree/async" label="Split points" />
+              <Tab disabled={!graph} value="tree/modules" label="Modules" />
+              <Tab disabled={!graph} value="tree/cycles" label="Cycles" />
+              <Tab
+                disabled={!graph}
+                value="changes"
+                label={
+                  <Badge
+                    badgeContent={changes.length}
+                    invisible={changes.length === 0}
+                    color="secondary"
+                  >
+                    Show changes
+                  </Badge>
+                }
+                onClick={() => setShowChanges(true)}
+              />
+            </Tabs>
+          }
+          <Typography variant="h6" color="inherit" className={classes.title}>
+            Webpack Chop Shop
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      {graph && graph.errors.length > 0 && (
+        <WarningBar>
+          There where {graph.errors.length} errors found. Check the console for
+          more
+        </WarningBar>
+      )}
       <LoadingBoundary
         fallback={<LinearProgress className={classes.progress} />}
       >
-        <AppBar position="static" color="primary">
-          <Toolbar className={classes.container} variant="dense">
-            {
-              <Tabs
-                value={page}
-                indicatorColor="secondary"
-                textColor="inherit"
-                onChange={(event, v) => setPage(v)}
-              >
-                <Tab
-                  value="open"
-                  label="Open stats"
-                  onClick={(event) => {
-                    openFileDialog()
-                  }}
-                />
-                <Tab
-                  disabled={!graph}
-                  value="tree/async"
-                  label="Split points"
-                />
-                <Tab disabled={!graph} value="tree/modules" label="Modules" />
-                <Tab disabled={!graph} value="tree/cycles" label="Cycles" />
-                <Tab
-                  disabled={!graph}
-                  value="changes"
-                  label={
-                    <Badge
-                      badgeContent={changes.length}
-                      invisible={changes.length === 0}
-                      color="secondary"
-                    >
-                      Show changes
-                    </Badge>
-                  }
-                  onClick={() => setShowChanges(true)}
-                />
-              </Tabs>
-            }
-            <Typography variant="h6" color="inherit" className={classes.title}>
-              Webpack Chop Shop
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        {graph && graph.errors.length > 0 && (
-          <WarningBar>
-            There where {graph.errors.length} errors found. Check the console
-            for more
-          </WarningBar>
-        )}
         {pageElement}
       </LoadingBoundary>
     </div>

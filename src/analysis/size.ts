@@ -13,14 +13,13 @@ export type EdgePath = GraphNodeID[]
 export function calculateTreeSize(
   graph: Graph,
   node: GraphNode,
-  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
+  filter?: (e: GraphEdge) => boolean
 ): Promise<number> {
   const key = `calculateTreeSize:${node.id}:${getFilterKey(filter)}`
 
   if (!graph.cache[key]) {
-    graph.cache[key] = getDeepNodeChildren(graph, node, { filter }).then(
-      (tree) =>
-        tree.reduce((sum, id) => sum + getNode(graph, id).size, node.size)
+    graph.cache[key] = getDeepNodeChildren(graph, node, filter).then((tree) =>
+      tree.reduce((sum, id) => sum + getNode(graph, id).size, node.size)
     )
   }
   return graph.cache[key]
@@ -30,14 +29,14 @@ export function calculateRetainedTreeSize(
   graph: Graph,
   rootNode: GraphNode,
   node: GraphNode,
-  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
+  filter?: (e: GraphEdge) => boolean
 ): Promise<number> {
   const key = `calculateRetainedTreeSize:${rootNode.id}:${
     node.id
   }:${getFilterKey(filter)}`
 
   if (!graph.cache[key]) {
-    graph.cache[key] = getRetainedNodes(graph, rootNode, node, { filter }).then(
+    graph.cache[key] = getRetainedNodes(graph, rootNode, node, filter).then(
       (tree) => tree.reduce((sum, id) => sum + getNode(graph, id).size, 0)
     )
   }
@@ -53,15 +52,15 @@ export function calculateGroupSizes(
   graph: Graph,
   rootNode: GraphNode | undefined,
   node: GraphNode,
-  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
+  filter?: (e: GraphEdge) => boolean
 ): Promise<GroupSizeInfo[]> {
   const key = `calculateGroupSizes:${node.id}:${getFilterKey(filter)}`
 
   if (!graph.cache[key]) {
     const promise =
       !rootNode || rootNode === node
-        ? getDeepNodeChildren(graph, node, { filter })
-        : getRetainedNodes(graph, rootNode, node, { filter })
+        ? getDeepNodeChildren(graph, node, filter)
+        : getRetainedNodes(graph, rootNode, node, filter)
     graph.cache[key] = promise.then((tree) => {
       const infos = new Map<GroupInfo, GroupSizeInfo>()
       ;[node.id, ...tree].forEach((id) => {

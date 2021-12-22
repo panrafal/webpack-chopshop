@@ -35,7 +35,7 @@ export default function ActiveEdgeInfo({ className }: Props) {
           <Box>Kind: {edge.kind}</Box>
           <pre>{edge.fromSource}</pre>
           <Box>
-            <NodeSize graph={graph} node={edge.to} />
+            <NodeSize node={edge.to} />
           </Box>
           <GroupSizesInfo node={edge.to} />
           {/* <pre>{JSON.stringify(edge.original, null, "  ")}</pre> */}

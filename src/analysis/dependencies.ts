@@ -18,7 +18,7 @@ export function getFilterKey(f?: Function | null | undefined): string {
   return filterKeys.get(f)
 }
 
-const LAST_ITEM_IN_BRANCH = "last" as const
+export const LAST_ITEM_IN_BRANCH = "last" as const
 
 async function collectNodes(
   graph: Graph,
@@ -84,7 +84,7 @@ async function collectEdges(
 export function getDeepNodeChildren(
   graph: Graph,
   node: GraphNode,
-  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
+  filter?: (e: GraphEdge) => boolean
 ): Promise<ReadonlyArray<GraphNodeID>> {
   const key = `getDeepNodeChildren:${node.id}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {
@@ -104,7 +104,7 @@ export function getDeepNodeChildren(
 export function getDeepNodeParents(
   graph: Graph,
   node: GraphNode,
-  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
+  filter?: (e: GraphEdge) => boolean
 ): Promise<ReadonlyArray<GraphNodeID>> {
   const key = `getDeepNodeParents:${node.id}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {
@@ -128,14 +128,14 @@ export function getRetainedNodes(
   graph: Graph,
   rootNode: GraphNode,
   node: GraphNode,
-  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
+  filter?: (e: GraphEdge) => boolean
 ): Promise<ReadonlyArray<GraphNodeID>> {
   const key = `getRetainedNodes:${rootNode.id}:${node.id}:${getFilterKey(
     filter
   )}`
   if (!graph.cache[key]) {
     // Gather all children of the rootNode
-    const allChildrenPromise = getDeepNodeChildren(graph, rootNode, { filter })
+    const allChildrenPromise = getDeepNodeChildren(graph, rootNode, filter)
     // Mark `node` as visited and gather children again - children of `node` will be ignored
     // The difference between these two will be our answear
     const visited = {
@@ -186,11 +186,10 @@ export function getEnabledChildEdges(
 export function getAsyncEdges(
   graph: Graph,
   node: GraphNode,
+  filter?: (e: GraphEdge) => boolean | typeof LAST_ITEM_IN_BRANCH,
   {
-    filter,
     direction = "children",
   }: {
-    filter?: (e: GraphEdge) => boolean | typeof LAST_ITEM_IN_BRANCH
     direction?: "children" | "parents"
   } = {}
 ): Promise<ReadonlyArray<GraphEdge>> {
@@ -230,21 +229,4 @@ export function keepOnlyLeafModules(
 
 export function isEdgeEnabled(edge: GraphEdge) {
   return edge.enabled
-}
-
-export function currentGraphFilter(edge: GraphEdge) {
-  return edge.enabled
-}
-
-// Checks only async edges - all the rest are considered enabled
-export function baseGraphFilter(edge: GraphEdge) {
-  return !edge.async || edge.enabled
-}
-
-export function stopOnAsyncModulesFilter(edge: GraphEdge) {
-  return edge.async ? LAST_ITEM_IN_BRANCH : true
-}
-
-export function allAsyncAndEnabledFilter(edge: GraphEdge) {
-  return edge.async || edge.enabled
 }

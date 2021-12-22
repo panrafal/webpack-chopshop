@@ -9,18 +9,16 @@ import {
   calculateRetainedTreeSize,
 } from "../../analysis/size"
 import { useStablePromise } from "../hooks/promises"
-import {
-  baseGraphFilter,
-  currentGraphFilter,
-} from "../../analysis/dependencies"
+import { baseGraphFilter, currentGraphFilter } from "../../analysis/filters"
 import ErrorBox from "../ErrorBox"
 
 import { red, green } from "@mui/material/colors"
 import { makeStyles } from "../makeStyles"
 import { formatSize } from "../format"
+import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
+import { useTreeContext } from "../tree/TreeContext"
 
 type Props = {
-  graph: Graph
   retainerRootNode?: GraphNode | null
   node: GraphNode
 }
@@ -34,12 +32,13 @@ const useStyles = makeStyles({ name: "NodeSize" })((theme) => ({
   },
 }))
 
-export default function NodeSize({ graph, node, retainerRootNode }: Props) {
+export default function NodeSize({ node, retainerRootNode }: Props) {
   const { classes, cx } = useStyles()
+  const { graphWorker } = useTreeContext()
   const treeSizeCalculator = retainerRootNode
     ? (filter) =>
-        calculateRetainedTreeSize(graph, retainerRootNode, node, { filter })
-    : (filter) => calculateTreeSize(graph, node, { filter })
+        graphWorker.calculateRetainedTreeSize(retainerRootNode, node, filter)
+    : (filter) => graphWorker.calculateTreeSize(node, filter)
 
   const {
     value: baseTreeSize,

@@ -31,6 +31,7 @@ import { getPackageName } from "../../analysis/info"
 import {
   createContext,
   forwardRef,
+  Fragment,
   ReactElement,
   ReactNode,
   useContext,
@@ -202,7 +203,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
     const item = listItems[index] as Exclude<T, Group>
     const lastIndex = (stickyIndexes[sticked - 1] ?? -1) + 1
     return (
-      <>
+      <Fragment key={item.id}>
         <div style={{ height: (index - lastIndex) * itemSize }} />
         {renderItem({
           item: item,
@@ -217,7 +218,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
             position: "sticky",
           },
         })}
-      </>
+      </Fragment>
     )
   })
 

@@ -4,7 +4,7 @@ import {
   allAsyncAndEnabledFilter,
   baseGraphFilter,
   currentGraphFilter,
-} from "../../../analysis/dependencies"
+} from "../../../analysis/filters"
 import numeral from "numeral"
 
 import { calculateTreeSize } from "../../../analysis/size"
@@ -27,15 +27,17 @@ export default function RootInfo({ className }: Props) {
   const { graph } = useTreeContext()
 
   const sizePromise = useMemo(async () => {
-    const currentSize = await calculateTreeSize(graph, graph.root, {
-      filter: currentGraphFilter,
-    })
-    const baseSize = await calculateTreeSize(graph, graph.root, {
-      filter: baseGraphFilter,
-    })
-    const overallSize = await calculateTreeSize(graph, graph.root, {
-      filter: allAsyncAndEnabledFilter,
-    })
+    const currentSize = await calculateTreeSize(
+      graph,
+      graph.root,
+      currentGraphFilter
+    )
+    const baseSize = await calculateTreeSize(graph, graph.root, baseGraphFilter)
+    const overallSize = await calculateTreeSize(
+      graph,
+      graph.root,
+      allAsyncAndEnabledFilter
+    )
     return { currentSize, baseSize, overallSize }
   }, [graph])
 

@@ -8,7 +8,7 @@ import {
   GraphNode,
   GraphNodeID,
 } from "../../analysis/graph"
-import { GraphWorkerClient } from "../../analysis/GraphWorkerClient"
+import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
 import { UpdateChangesFn } from "../../logic/useGraphState"
 import { TogglePinnedFn } from "../../logic/usePinnedState"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"

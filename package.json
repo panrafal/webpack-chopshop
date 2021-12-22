@@ -60,6 +60,7 @@
     "react-window": "^1.8.6",
     "reselect": "^3.0.1",
     "source-map-explorer": "^1.8.0",
+    "throat": "^6.0.1",
     "tss-react": "^3.2.2",
     "type-fest": "^2.8.0",
     "typescript": "^4.5.3"

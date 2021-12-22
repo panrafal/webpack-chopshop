@@ -11,11 +11,11 @@ import { MouseEvent } from "react"
 import { ChangeEvent, useCallback } from "react"
 import { findChains } from "../../analysis/chains"
 import { addChange } from "../../analysis/changes"
+import { getAsyncEdges } from "../../analysis/dependencies"
 import {
   currentGraphFilter,
-  getAsyncEdges,
   stopOnAsyncModulesFilter,
-} from "../../analysis/dependencies"
+} from "../../analysis/filters"
 import {
   getEdgeId,
   getEdgesFromChain,
@@ -210,9 +210,11 @@ export default function TreeItem({
       if (edge.async && (event.shiftKey || event.altKey)) {
         // toggle all child async edges
         changeEdges.push(
-          ...(await getAsyncEdges(graph, edge.to, {
-            filter: event.shiftKey ? stopOnAsyncModulesFilter : undefined,
-          }))
+          ...(await getAsyncEdges(
+            graph,
+            edge.to,
+            event.shiftKey ? stopOnAsyncModulesFilter : undefined
+          ))
         )
       }
       // if (edge)
@@ -285,7 +287,6 @@ export default function TreeItem({
             }}
             secondary={
               <NodeSize
-                graph={graph}
                 node={edge.to}
                 retainerRootNode={retainerRootNode || graph.root}
               />

@@ -15,12 +15,14 @@ import {
 } from "../../analysis/graph"
 import TreeLevel from "./TreeLevel"
 import {
-  currentGraphFilter,
   getAsyncEdges,
   getDeepNodeChildren,
   getEnabledChildEdges,
-  stopOnAsyncModulesFilter,
 } from "../../analysis/dependencies"
+import {
+  currentGraphFilter,
+  stopOnAsyncModulesFilter,
+} from "../../analysis/filters"
 import { findChains } from "../../analysis/chains"
 import { useStablePromise } from "../hooks/promises"
 import { TreeContextProvider } from "./TreeContext"
@@ -36,7 +38,7 @@ import RootInfo from "./info/RootInfo"
 import ActiveEdgeInfo from "./info/ActiveEdgeInfo"
 import ActiveNodeInfo from "./info/ActiveNodeInfo"
 import { Grid, Paper } from "@mui/material"
-import { GraphWorkerClient } from "../../analysis/GraphWorkerClient"
+import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
 
 type Props = {
   graph: Graph
@@ -94,9 +96,7 @@ function TreePage({
                   resolveEdge(graph, getEdgeId(path[index - 1], nodeId))?.async
               ),
             getChildEdges: (node: GraphNode) =>
-              getAsyncEdges(graph, node, {
-                filter: stopOnAsyncModulesFilter,
-              }),
+              getAsyncEdges(graph, node, stopOnAsyncModulesFilter),
             renderEmptyChildren: () => "There are no deeper split points",
             navigatorModes: {
               all: {
@@ -126,9 +126,11 @@ function TreePage({
             navigatorModes: {
               enabled: {
                 getNodes: () =>
-                  getDeepNodeChildren(graph, graph.root, {
-                    filter: currentGraphFilter,
-                  }).then((ids) => getNodes(graph, ids)),
+                  getDeepNodeChildren(
+                    graph,
+                    graph.root,
+                    currentGraphFilter
+                  ).then((ids) => getNodes(graph, ids)),
                 renderTitle: () => "Enabled Nodes",
                 renderEmpty: () => "Nothing found",
               },
@@ -137,9 +139,7 @@ function TreePage({
                   getDeepNodeChildren(
                     graph,
                     resolveEdge(graph, activeEdgeId)?.to || graph.root,
-                    {
-                      filter: currentGraphFilter,
-                    }
+                    currentGraphFilter
                   ).then((ids) => getNodes(graph, ids)),
                 renderTitle: () => "Enabled Children",
                 renderEmpty: () => "Nothing found",
