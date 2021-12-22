@@ -77,5 +77,6 @@ export function getSourceLocation(
   const [colStart, colEnd = colStart + 1] = colsLoc.split("-").map(Number)
   const lines = source.split(/\n/g).slice(rowStart - 1, rowEnd - 1)
   if (lines.length > 1) return lines.join("\n")
+  if (!lines.length) return undefined
   return lines[0].slice(colStart, colEnd)
 }

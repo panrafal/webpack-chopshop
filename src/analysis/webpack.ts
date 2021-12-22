@@ -8,6 +8,8 @@ import {
 } from "./graph"
 
 import type { Graph } from "./graph"
+import { omit } from "lodash"
+import { getSourceLocation } from "./info"
 
 export async function readWebpackStats(
   stats: any,
@@ -17,6 +19,7 @@ export async function readWebpackStats(
     includeAssets?: boolean
   } = {}
 ): Promise<Graph> {
+  const debug = false
   const graph = createGraph()
   const {
     enableAllAsyncImports = false,
@@ -25,6 +28,7 @@ export async function readWebpackStats(
   } = options
 
   const { chunks = [], assets = [], modules = [] } = stats
+  const moduleMap = new Map()
 
   // create chunks
   if (includeChunks) {
@@ -38,7 +42,11 @@ export async function readWebpackStats(
             : "chunk",
         name: chunk.names[0],
         size: 0,
-        original: chunk,
+        ...(debug
+          ? {
+              original: chunk,
+            }
+          : null),
       })
       await graph.idle()
     }
@@ -53,7 +61,11 @@ export async function readWebpackStats(
         kind: "asset",
         name: asset.name,
         size: asset.size,
-        original: asset,
+        ...(debug
+          ? {
+              original: asset,
+            }
+          : null),
       })
       await graph.idle()
     }
@@ -65,6 +77,7 @@ export async function readWebpackStats(
       // module has been removed at optimization phase (concatenated, tree-shaken, etc)
       continue
     }
+    moduleMap.set(module.identifier, module)
     const isConcat = module.name.indexOf(" + ") > 0
     const isNamespace = module.name.indexOf(" namespace object") > 0
     const kind = isConcat ? "concat" : isNamespace ? "namespace" : "module"
@@ -81,8 +94,12 @@ export async function readWebpackStats(
       usedExports: Array.isArray(module.usedExports)
         ? module.usedExports
         : undefined,
-      source: module.source,
-      original: module,
+      ...(debug
+        ? {
+            source: module.source,
+            original: module,
+          }
+        : null),
     })
     await graph.idle()
   }
@@ -100,7 +117,11 @@ export async function readWebpackStats(
           from: getNode(graph, getNodeId("chunk", chunkId)),
           to: node,
           kind: "chunk child",
-          original: module,
+          ...(debug
+            ? {
+                original: module,
+              }
+            : null),
         })
       }
     }
@@ -110,7 +131,11 @@ export async function readWebpackStats(
           from: node,
           to: getNode(graph, getNodeId("asset", assetId)),
           kind: "asset child",
-          original: module,
+          ...(debug
+            ? {
+                original: module,
+              }
+            : null),
         })
       }
     }
@@ -128,6 +153,8 @@ export async function readWebpackStats(
         // we ignore self reference (eg. cjs self exports reference)
         continue
       }
+      const fromModule =
+        reason.moduleIdentifier && moduleMap.get(reason.moduleIdentifier)
       const async =
         isEntry || (type.includes("import()") && !type.includes("eager"))
       addEdge(graph, {
@@ -137,8 +164,13 @@ export async function readWebpackStats(
         name: isEntry ? node.name : reason.userRequest,
         async,
         enabled: !async || enableAllAsyncImports ? true : false,
-        location: reason.loc,
-        original: reason,
+        fromLoc: reason.loc,
+        fromSource: getSourceLocation(fromModule?.source, reason.loc),
+        ...(debug
+          ? {
+              original: reason,
+            }
+          : null),
       })
     }
     await graph.idle()

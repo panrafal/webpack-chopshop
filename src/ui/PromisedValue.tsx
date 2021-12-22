@@ -5,7 +5,7 @@ import { useStablePromise } from "./hooks/promises"
 type Props<T> = {
   className?: string
   promise: Promise<T> | T
-  render: (T) => ReactNode
+  render: (value: T) => ReactNode
   children?: never
 }
 

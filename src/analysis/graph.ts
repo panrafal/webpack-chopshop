@@ -15,8 +15,9 @@ export type GraphEdgeSpec = {
   kind: EdgeKind
   async?: boolean
   enabled?: boolean
+  fromSource?: string
   // Location in source code
-  location?: string
+  fromLoc?: string
   // Original source object
   original?: any
 }

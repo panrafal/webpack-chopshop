@@ -28,11 +28,11 @@ export default function ActiveEdgeInfo({ className }: Props) {
             To: <NodeName node={edge.to} />
           </Box>
           <Box>
-            {edge.from.file || null}@{edge.location || null}
+            {edge.from.file || null}@{edge.fromLoc || null}
           </Box>
           <Box>Name: {edge.name}</Box>
           <Box>Kind: {edge.kind}</Box>
-          <pre>{getSourceLocation(edge.from.source, edge.location)}</pre>
+          <pre>{edge.fromSource}</pre>
           <Box>
             <NodeSize graph={graph} node={edge.to} />
           </Box>
