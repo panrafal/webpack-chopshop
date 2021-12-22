@@ -8,12 +8,14 @@ import {
   GraphNode,
   GraphNodeID,
 } from "../../analysis/graph"
+import { GraphWorkerClient } from "../../analysis/GraphWorkerClient"
 import { UpdateChangesFn } from "../../logic/useGraphState"
 import { TogglePinnedFn } from "../../logic/usePinnedState"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
 
 export type TreeContextType = {
   graph: Graph
+  graphWorker: GraphWorkerClient
   pinned: ReadonlyArray<GraphNodeID>
   togglePinned: TogglePinnedFn
   enabledIds: ReadonlyArray<GraphElementID>

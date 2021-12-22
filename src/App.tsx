@@ -100,10 +100,11 @@ export default function App({ className, trackLoading }: Props) {
 
   // Graph handling -----------------------------------
 
-  const { graph, openGraph, changes, updateChanges } = useGraphState({
-    trackLoading,
-    onLoaded: () => setPage("tree/async"),
-  })
+  const { graph, graphWorker, openGraph, changes, updateChanges } =
+    useGraphState({
+      trackLoading,
+      onLoaded: () => setPage("tree/async"),
+    })
 
   const handleDrop = useCallback(
     ([file], [rejected]) => {
@@ -185,6 +186,7 @@ export default function App({ className, trackLoading }: Props) {
       <TreePage
         className={classes.container}
         graph={graph}
+        graphWorker={graphWorker}
         pinned={pinned}
         togglePinned={togglePinned}
         updateChanges={updateChanges}

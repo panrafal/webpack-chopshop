@@ -5209,6 +5209,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"comlink@npm:^4.3.1":
+  version: 4.3.1
+  resolution: "comlink@npm:4.3.1"
+  checksum: 557360a6558708c55aff74a25f834bfb9bfca8a42444682c4d5aead57681534a0206202be2a2760b4de124c3ba6d485b08978b6d5469cb3d26bf1438ee28a4f1
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.18.0, commander@npm:^2.20.0":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
@@ -16409,6 +16416,7 @@ __metadata:
     "@types/react-dom": ^17.0.11
     "@types/react-window": ^1.8.5
     classnames: ^2.3.1
+    comlink: ^4.3.1
     fuse.js: ^6.4.6
     gh-pages: ^3.2.3
     husky: ^7.0.4

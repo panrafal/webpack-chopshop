@@ -1,6 +1,15 @@
-import { useCallback, useEffect, useReducer, useState } from "react"
+import { omit } from "lodash"
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react"
 import { applyChanges, Change, revertGraph } from "../analysis/changes"
 import { Graph, modifyGraph } from "../analysis/graph"
+import { GraphWorkerClient } from "../analysis/GraphWorkerClient"
 import { readWebpackStats } from "../analysis/webpack"
 
 export type ChangesReducerFn = (
@@ -9,7 +18,15 @@ export type ChangesReducerFn = (
 export type UpdateChangesFn = (reducer: ChangesReducerFn) => void
 
 export function useGraphState({ trackLoading, onLoaded }) {
-  const [graph, setGraph] = useState<Graph | undefined | null>()
+  const [graph, setGraphObject] = useState<Graph | undefined | null>()
+  const graphWorker = useMemo(() => new GraphWorkerClient(), [])
+  const setGraph = useCallback(
+    async (graph: Graph) => {
+      setGraphObject(graph)
+      await graphWorker.setGraph(omit(graph, ["idle"]))
+    },
+    [setGraphObject, graphWorker]
+  )
 
   const openGraph = useCallback(
     async (callback: () => Promise<any | null>) => {
@@ -54,5 +71,5 @@ export function useGraphState({ trackLoading, onLoaded }) {
   //   const newChanges = dispatchUpdateChanges(fn)
   // }, [])
 
-  return { graph, openGraph, changes, updateChanges }
+  return { graph, graphWorker, openGraph, changes, updateChanges }
 }

@@ -44,7 +44,7 @@ export function calculateRetainedTreeSize(
   return graph.cache[key]
 }
 
-type GroupSizeInfo = {
+export type GroupSizeInfo = {
   group: GroupInfo
   size: number
   count: number

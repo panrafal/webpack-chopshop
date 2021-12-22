@@ -36,9 +36,11 @@ import RootInfo from "./info/RootInfo"
 import ActiveEdgeInfo from "./info/ActiveEdgeInfo"
 import ActiveNodeInfo from "./info/ActiveNodeInfo"
 import { Grid, Paper } from "@mui/material"
+import { GraphWorkerClient } from "../../analysis/GraphWorkerClient"
 
 type Props = {
   graph: Graph
+  graphWorker: GraphWorkerClient
   pinned: ReadonlyArray<GraphNodeID>
   togglePinned: TogglePinnedFn
   className?: string
@@ -49,6 +51,7 @@ type Props = {
 
 function TreePage({
   graph,
+  graphWorker,
   pinned,
   togglePinned,
   className,
@@ -315,6 +318,7 @@ function TreePage({
       <TreeContextProvider
         value={{
           graph,
+          graphWorker,
           pinned,
           togglePinned,
           enabledIds: enabledIds || [],
