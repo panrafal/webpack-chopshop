@@ -51,31 +51,34 @@ type GroupSizeInfo = {
 }
 export function calculateGroupSizes(
   graph: Graph,
+  rootNode: GraphNode | undefined,
   node: GraphNode,
   { filter }: { filter?: (e: GraphEdge) => boolean } = {}
 ): Promise<GroupSizeInfo[]> {
   const key = `calculateGroupSizes:${node.id}:${getFilterKey(filter)}`
 
   if (!graph.cache[key]) {
-    graph.cache[key] = getDeepNodeChildren(graph, node, { filter }).then(
-      (tree) => {
-        const infos = new Map<GroupInfo, GroupSizeInfo>()
-        tree.forEach((id) => {
-          const node = getNode(graph, id)
-          const group = getNodeGroup(node)
-          let info = infos.get(group)
-          if (!info) {
-            info = { group, count: 0, size: 0 }
-            infos.set(group, info)
-          }
-          info.count += 1
-          info.size += node.size
-        })
-        return Array.from(infos.values()).sort(
-          (a, b) => b.group.priority - a.group.priority
-        )
-      }
-    )
+    const promise =
+      !rootNode || rootNode === node
+        ? getDeepNodeChildren(graph, node, { filter })
+        : getRetainedNodes(graph, rootNode, node, { filter })
+    graph.cache[key] = promise.then((tree) => {
+      const infos = new Map<GroupInfo, GroupSizeInfo>()
+      ;[node.id, ...tree].forEach((id) => {
+        const node = getNode(graph, id)
+        const group = getNodeGroup(node)
+        let info = infos.get(group)
+        if (!info) {
+          info = { group, count: 0, size: 0 }
+          infos.set(group, info)
+        }
+        info.count += 1
+        info.size += node.size
+      })
+      return Array.from(infos.values()).sort(
+        (a, b) => b.group.priority - a.group.priority
+      )
+    })
   }
   return graph.cache[key]
 }

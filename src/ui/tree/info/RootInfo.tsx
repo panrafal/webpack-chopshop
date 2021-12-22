@@ -14,6 +14,7 @@ import NodeSize from "../../nodes/NodeSize"
 import PromisedValue from "../../PromisedValue"
 import { useTreeContext } from "../TreeContext"
 import ChangeValue from "../../ChangeValue"
+import GroupSizesInfo from "./GroupSizesInfo"
 
 type Props = {
   className?: string
@@ -79,6 +80,7 @@ export default function RootInfo({ className }: Props) {
         />
         {" difference"}
       </Box>
+      <GroupSizesInfo node={graph.root} />
     </Paper>
   )
 }

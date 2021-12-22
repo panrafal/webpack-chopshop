@@ -17,6 +17,7 @@ import ErrorBox from "../ErrorBox"
 
 import { red, green } from "@mui/material/colors"
 import { makeStyles } from "../makeStyles"
+import { formatSize } from "../format"
 
 type Props = {
   graph: Graph
@@ -58,9 +59,9 @@ export default function NodeSize({ graph, node, retainerRootNode }: Props) {
     <>
       {!retainerRootNode || treeSize > 0 ? (
         <>
-          <span>{numeral(node.size).format("0[.]0b")}</span>
+          <span>{formatSize(node.size)}</span>
           {" + "}
-          <span>{numeral(treeSize - node.size).format("0[.]0b")}</span>
+          <span>{formatSize(treeSize - node.size)}</span>
         </>
       ) : (
         "disconnected"
@@ -71,7 +72,7 @@ export default function NodeSize({ graph, node, retainerRootNode }: Props) {
         >
           {" ("}
           {treeSize > baseTreeSize ? "+" : "-"}
-          {numeral(Math.abs(treeSize - baseTreeSize)).format("0[.]0b")}
+          {formatSize(Math.abs(treeSize - baseTreeSize))}
           {")"}
         </span>
       ) : null}

@@ -50,7 +50,10 @@ export function createAppTheme() {
       groupStyles: baseTheme.palette.warning,
       groupImages: baseTheme.palette.success,
       groupVendors: baseTheme.palette.secondary,
-      groupOther: { main: "#fff" },
+      groupOther: {
+        main: baseTheme.palette.common.white,
+        contrastText: baseTheme.palette.common.black,
+      },
     },
     graph: {
       treeLevelGap: 48,

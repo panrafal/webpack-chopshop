@@ -5,6 +5,7 @@ import { makeStyles } from "../../makeStyles"
 import NodeName from "../../nodes/NodeName"
 import NodeSize from "../../nodes/NodeSize"
 import { useTreeContext } from "../TreeContext"
+import GroupSizesInfo from "./GroupSizesInfo"
 
 type Props = {
   className?: string
@@ -36,6 +37,7 @@ export default function ActiveEdgeInfo({ className }: Props) {
           <Box>
             <NodeSize graph={graph} node={edge.to} />
           </Box>
+          <GroupSizesInfo node={edge.to} />
           {/* <pre>{JSON.stringify(edge.original, null, "  ")}</pre> */}
         </>
       ) : (
