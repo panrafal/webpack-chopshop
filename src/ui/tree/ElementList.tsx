@@ -1,15 +1,17 @@
 import ClearIcon from "@mui/icons-material/Clear"
 import { IconButton, Input, InputAdornment } from "@mui/material"
 import Fuse from "fuse.js"
-import { groupBy, map, orderBy, sortBy, sumBy, uniq } from "lodash"
+import { groupBy, map, omit, orderBy, sortBy, sumBy, uniq } from "lodash"
 import {
   createContext,
   forwardRef,
   Fragment,
   ReactElement,
   ReactNode,
+  useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
 } from "react"
 import AutoSizer from "react-virtualized-auto-sizer"
@@ -30,6 +32,7 @@ import {
   TreeState,
 } from "../tree"
 import ElementListGroup from "./ElementListGroup"
+import { useVirtual } from "react-virtual"
 
 export type RenderItemProps<T> = {
   item: T
@@ -81,12 +84,11 @@ const useStyles = makeStyles({ name: "ElementList" })((theme) => ({
   listContainer: {
     flexGrow: 1,
     position: "relative" as const,
+    overflow: "auto",
   },
   list: {
-    outline: 0,
-    "& > div": {
-      position: "relative",
-    },
+    width: "100%",
+    position: "relative" as const,
   },
 }))
 
@@ -198,16 +200,38 @@ function ElementList<T extends GraphNode | GraphEdge>({
     .filter((index) => index >= 0)
     .sort((a, b) => a - b)
 
+  const renderIndex = ({ index, style }) => {
+    if (stickyIndexes.includes(index) && style.position !== "sticky")
+      return null
+    const item = listItems[index]
+    if ("group" in item && item.group) {
+      return (
+        <ElementListGroup
+          group={item}
+          expanded={isTreeExpanded(treeState, item, treeOptions)}
+          onClick={() => setTreeState(toggleTreeRowState(item, treeOptions))}
+          // drop `bottom` for sticky group headers
+          style={omit(style, ["bottom"]) as any}
+          key={index}
+        />
+      )
+    } else {
+      return renderItem({
+        item: item as Exclude<T, Group>,
+        key: String(index),
+        hidePackage: Boolean(groupItemsBy),
+        style,
+      })
+    }
+  }
+
   const stickyElements = stickyIndexes.map((index, sticked) => {
-    const item = listItems[index] as Exclude<T, Group>
     const lastIndex = (stickyIndexes[sticked - 1] ?? -1) + 1
     return (
-      <Fragment key={item.id}>
+      <Fragment key={String(index)}>
         <div style={{ height: (index - lastIndex) * itemSize }} />
-        {renderItem({
-          item: item,
-          key: item.id,
-          hidePackage: Boolean(groupItemsBy),
+        {renderIndex({
+          index,
           style: {
             top: Math.min(3, sticked) * itemSize,
             bottom: Math.min(3, stickyIndexes.length - sticked - 1) * itemSize,
@@ -219,6 +243,14 @@ function ElementList<T extends GraphNode | GraphEdge>({
         })}
       </Fragment>
     )
+  })
+
+  const estimateSize = useCallback(() => itemSize ?? 64, [itemSize])
+  const parentRef = useRef()
+  const { virtualItems, totalSize } = useVirtual({
+    size: listItems.length,
+    parentRef,
+    estimateSize,
   })
 
   return (
@@ -244,63 +276,26 @@ function ElementList<T extends GraphNode | GraphEdge>({
         }
         placeholder="Search"
       />
-      <div className={cx(classes.listContainer, listClassName)}>
-        <ListContext.Provider
-          value={{
-            listChildren: (
-              <>
-                {children}
-                {stickyElements}
-              </>
-            ),
-          }}
-        >
-          {listItems.length > 0 ? (
-            <AutoSizer>
-              {({ width, height }) => (
-                <FixedSizeList
-                  className={classes.list}
-                  width={width}
-                  height={height}
-                  itemCount={listItems.length}
-                  itemSize={itemSize ?? 64}
-                  innerElementType={InnerList}
-                >
-                  {({ index, style }) => {
-                    if (stickyIndexes.includes(index)) return null
-                    const item = listItems[index]
-                    if ("group" in item && item.group) {
-                      return (
-                        <ElementListGroup
-                          group={item}
-                          expanded={isTreeExpanded(
-                            treeState,
-                            item,
-                            treeOptions
-                          )}
-                          onClick={() =>
-                            setTreeState(toggleTreeRowState(item, treeOptions))
-                          }
-                          style={style as any}
-                          key={index}
-                        />
-                      )
-                    } else {
-                      return renderItem({
-                        item: item as Exclude<T, Group>,
-                        key: String(index),
-                        hidePackage: Boolean(groupItemsBy),
-                        style,
-                      })
-                    }
-                  }}
-                </FixedSizeList>
-              )}
-            </AutoSizer>
-          ) : (
-            renderEmpty()
-          )}
-        </ListContext.Provider>
+      <div className={cx(classes.listContainer, listClassName)} ref={parentRef}>
+        <div style={{ height: 0 }}>
+          <div className={cx(classes.list)} style={{ height: totalSize }}>
+            {virtualItems.map((row) =>
+              renderIndex({
+                index: row.index,
+                style: {
+                  position: "absolute",
+                  left: 0,
+                  width: "100%",
+                  top: row.start,
+                  height: itemSize,
+                },
+              })
+            )}
+            {listItems.length === 0 ? renderEmpty() : null}
+            {children}
+            {stickyElements}
+          </div>
+        </div>
       </div>
     </div>
   )

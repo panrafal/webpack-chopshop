@@ -35,8 +35,8 @@ const useStyles = makeStyles({ name: "NodeSize" })((theme) => ({
 }))
 
 export default function NodeSize({ node, retainerRootNode }: Props) {
-  const { classes, cx } = useStyles()
-  const { graphWorker } = useTreeContext()
+  const { classes } = useStyles()
+  const { graph, graphWorker } = useTreeContext()
 
   const promise = useMemo(async () => {
     const treeSizeCalculator = retainerRootNode
@@ -47,7 +47,7 @@ export default function NodeSize({ node, retainerRootNode }: Props) {
       baseTreeSize: await treeSizeCalculator(baseGraphFilter),
       treeSize: await treeSizeCalculator(currentGraphFilter),
     }
-  }, [])
+  }, [graph, graphWorker, node, retainerRootNode])
 
   return (
     <PromisedValue

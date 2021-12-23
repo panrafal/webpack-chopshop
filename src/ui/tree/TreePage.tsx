@@ -1,4 +1,11 @@
-import { createRef, useCallback, useEffect, useMemo, useState } from "react"
+import {
+  createRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import {
   getAllNodes,
   getEdgeId,
@@ -291,7 +298,7 @@ function TreePage({
     [graph, trackLoading, openedNodeIds, activeEdgeId, normalizePath]
   )
 
-  const selectedTreeLevelRef = createRef<HTMLDivElement>()
+  const selectedTreeLevelRef = useRef<HTMLDivElement>()
 
   // Scroll selected into view
   useEffect(() => {

@@ -16,6 +16,7 @@ const useStyles = makeStyles({ name: "ErrorBox" })((theme) => ({
     display: "flex",
     alignItems: "center",
     flexShrink: 0,
+    height: "max-content",
   },
   icon: {
     marginRight: 8,

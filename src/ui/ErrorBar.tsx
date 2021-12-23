@@ -17,6 +17,7 @@ const useStyles = makeStyles({ name: "ErrorBar" })((theme) => ({
     alignItems: "center",
     flexShrink: 0,
     justifyContent: "center",
+    height: "max-content",
   },
   icon: {
     marginRight: 8,

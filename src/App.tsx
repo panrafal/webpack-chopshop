@@ -28,11 +28,14 @@ const ChangesPage = lazy(() => import("./ui/changes/ChangesPage"))
 
 const useStyles = makeStyles({ name: "App" })((theme) => ({
   root: {
-    display: "flex",
+    display: "grid",
+    gridAutoFlow: "row",
+    gridAutoRows: "auto 1fr",
     height: "100vh",
+
     // minWidth: 1200,
-    flexDirection: "column",
-    justifyContent: "stretch",
+    // flexDirection: "column",
+    // justifyContent: "stretch",
   },
   container: {
     // maxWidth: 2000,
