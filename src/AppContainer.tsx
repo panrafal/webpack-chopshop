@@ -1,7 +1,7 @@
 import { CssBaseline, LinearProgress } from "@mui/material"
 import { fontSize } from "@mui/system"
-import { lazy } from "react"
-import { isAbortSignal } from "./analysis/utils"
+import { lazy, useMemo } from "react"
+import { isAbortSignal } from "./analysis/parallel"
 import ErrorBar from "./ui/ErrorBar"
 import { usePromiseTracker } from "./ui/hooks/usePromiseTracker"
 import LoadingBoundary from "./ui/LoadingBoundary"
@@ -10,7 +10,9 @@ import { makeStyles } from "./ui/makeStyles"
 const App = lazy(() => import("./App"))
 
 const useStyles = makeStyles({ name: "AppContainer" })((theme) => ({
-  AppContainer: {},
+  root: {
+    touchAction: "none",
+  },
   progress: {
     position: "fixed",
     left: 0,
@@ -39,13 +41,14 @@ function Error({ error }) {
 function AppContainer() {
   const { classes } = useStyles()
   const [{ loading, error }, trackLoading] = usePromiseTracker()
+  const app = useMemo(() => <App trackLoading={trackLoading} />, [trackLoading])
   return (
-    <div className={classes.AppContainer}>
+    <div className={classes.root}>
       <CssBaseline />
       <LoadingBoundary fallback={<Loading />} errorComponent={Error}>
         {loading && <Loading />}
         {error && !isAbortSignal(error) && <Error error={error} />}
-        <App trackLoading={trackLoading} />
+        {app}
       </LoadingBoundary>
     </div>
   )

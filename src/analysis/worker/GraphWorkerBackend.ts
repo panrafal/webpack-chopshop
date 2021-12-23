@@ -15,7 +15,7 @@ import {
 } from "../dependencies"
 import { expose } from "comlink"
 import { registerTransferHandlers } from "./transferHandlers"
-import { backgroundProcessor } from "../utils"
+import { createParallelProcessor } from "../parallel"
 
 let graph: Graph
 
@@ -29,10 +29,12 @@ function bindGraph<Args extends Array<any>, Ret>(
 }
 
 const backend = {
-  async test(data: any) {
-    return true
-  },
-  async setGraph(newGraph: Graph) {
+  async setGraph(
+    newGraph: Omit<Graph, "cache" | "errors" | "revert" | "parallel">
+  ) {
+    if (graph) {
+      graph.parallel.abort(`Worker Abort v${graph.version}`)
+    }
     registerTransferHandlers()
     console.log("[worker] setting graph")
     graph = {
@@ -40,7 +42,7 @@ const backend = {
       cache: {},
       errors: [],
       revert: [],
-      idle: backgroundProcessor(),
+      parallel: createParallelProcessor({ maxDelay: 100 }),
     }
   },
 

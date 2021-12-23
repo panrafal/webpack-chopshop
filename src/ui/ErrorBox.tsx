@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Icon } from "@mui/material"
 import { makeStyles } from "./makeStyles"
+import ErrorIcon from "@mui/icons-material/Error"
 
 type Props = {
   error?: any
@@ -26,7 +27,7 @@ const ErrorBox = ({ error, children }: Props) => {
   if (children === undefined) children = String(error)
   return (
     <span className={classes.root}>
-      <Icon className={classes.icon}>error</Icon>
+      <ErrorIcon className={classes.icon} />
       <span>
         {React.isValidElement(children) ? children : String(children)}
       </span>

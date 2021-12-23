@@ -23,7 +23,9 @@ export type NodeNavigatorItemProps = {
 }
 
 const useStyles = makeStyles({ name: "NodeNavigatorItem" })((theme) => ({
-  NodeNavigatorItem: {},
+  NodeNavigatorItem: {
+    padding: 0,
+  },
   disabled: {
     opacity: 0.5,
   },

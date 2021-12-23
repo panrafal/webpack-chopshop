@@ -17,6 +17,8 @@ import { makeStyles } from "../makeStyles"
 import { formatSize } from "../format"
 import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
 import { useTreeContext } from "../tree/TreeContext"
+import { useMemo } from "react"
+import PromisedValue from "../PromisedValue"
 
 type Props = {
   retainerRootNode?: GraphNode | null
@@ -35,46 +37,46 @@ const useStyles = makeStyles({ name: "NodeSize" })((theme) => ({
 export default function NodeSize({ node, retainerRootNode }: Props) {
   const { classes, cx } = useStyles()
   const { graphWorker } = useTreeContext()
-  const treeSizeCalculator = retainerRootNode
-    ? (filter) =>
-        graphWorker.calculateRetainedTreeSize(retainerRootNode, node, filter)
-    : (filter) => graphWorker.calculateTreeSize(node, filter)
 
-  const {
-    value: baseTreeSize,
-    loading: baseLoading,
-    error: baseError,
-  } = useStablePromise(treeSizeCalculator(baseGraphFilter))
-  const {
-    value: treeSize,
-    loading: currentLoading,
-    error: currentError,
-  } = useStablePromise(treeSizeCalculator(currentGraphFilter))
-  if (baseLoading || currentLoading) return <Skeleton variant="text" />
-  if (baseError || currentError)
-    return <ErrorBox>"Failed to calculate size"</ErrorBox>
+  const promise = useMemo(async () => {
+    const treeSizeCalculator = retainerRootNode
+      ? (filter) =>
+          graphWorker.calculateRetainedTreeSize(retainerRootNode, node, filter)
+      : (filter) => graphWorker.calculateTreeSize(node, filter)
+    return {
+      baseTreeSize: await treeSizeCalculator(baseGraphFilter),
+      treeSize: await treeSizeCalculator(currentGraphFilter),
+    }
+  }, [])
 
   return (
-    <>
-      {!retainerRootNode || treeSize > 0 ? (
+    <PromisedValue
+      promise={promise}
+      render={({ baseTreeSize, treeSize }) => (
         <>
-          <span>{formatSize(node.size)}</span>
-          {" + "}
-          <span>{formatSize(treeSize - node.size)}</span>
+          {!retainerRootNode || treeSize > 0 ? (
+            <>
+              <span>{formatSize(node.size)}</span>
+              {" + "}
+              <span>{formatSize(treeSize - node.size)}</span>
+            </>
+          ) : (
+            "disconnected"
+          )}
+          {baseTreeSize != null && treeSize !== baseTreeSize ? (
+            <span
+              className={
+                treeSize > baseTreeSize ? classes.bigger : classes.smaller
+              }
+            >
+              {" ("}
+              {treeSize > baseTreeSize ? "+" : "-"}
+              {formatSize(Math.abs(treeSize - baseTreeSize))}
+              {")"}
+            </span>
+          ) : null}
         </>
-      ) : (
-        "disconnected"
       )}
-      {baseTreeSize != null && treeSize !== baseTreeSize ? (
-        <span
-          className={treeSize > baseTreeSize ? classes.bigger : classes.smaller}
-        >
-          {" ("}
-          {treeSize > baseTreeSize ? "+" : "-"}
-          {formatSize(Math.abs(treeSize - baseTreeSize))}
-          {")"}
-        </span>
-      ) : null}
-    </>
+    />
   )
 }

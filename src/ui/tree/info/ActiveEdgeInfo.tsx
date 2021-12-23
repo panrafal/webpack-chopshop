@@ -1,5 +1,5 @@
 import { Box, Paper } from "@mui/material"
-import { resolveEdge } from "../../../analysis/graph"
+import { getNode, resolveEdge } from "../../../analysis/graph"
 import { getSourceLocation } from "../../../analysis/info"
 import { makeStyles } from "../../makeStyles"
 import NodeName from "../../nodes/NodeName"
@@ -23,21 +23,21 @@ export default function ActiveEdgeInfo({ className }: Props) {
       {edge ? (
         <>
           <Box>
-            From: <NodeName node={edge.from} />
+            From: <NodeName node={getNode(graph, edge.fromId)} />
           </Box>
           <Box>
-            To: <NodeName node={edge.to} />
+            To: <NodeName node={getNode(graph, edge.toId)} />
           </Box>
           <Box>
-            {edge.from.file || null}@{edge.fromLoc || null}
+            {getNode(graph, edge.fromId).file || null}@{edge.fromLoc || null}
           </Box>
           <Box>Name: {edge.name}</Box>
           <Box>Kind: {edge.kind}</Box>
           <pre>{edge.fromSource}</pre>
           <Box>
-            <NodeSize node={edge.to} />
+            <NodeSize node={getNode(graph, edge.toId)} />
           </Box>
-          <GroupSizesInfo node={edge.to} />
+          <GroupSizesInfo node={getNode(graph, edge.toId)} />
           {/* <pre>{JSON.stringify(edge.original, null, "  ")}</pre> */}
         </>
       ) : (

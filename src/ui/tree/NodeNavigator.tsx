@@ -1,4 +1,4 @@
-import { GraphNode, resolveEdge } from "../../analysis/graph"
+import { GraphNode, resolveEdge, resolveNode } from "../../analysis/graph"
 
 import {
   ListItem,
@@ -118,7 +118,10 @@ export default function NodeNavigator({ className, modes }: Props) {
             <NodeNavigatorItem
               {...itemProps}
               node={item}
-              selected={item === resolveEdge(graph, activeEdgeId)?.to}
+              selected={
+                item ===
+                resolveNode(graph, resolveEdge(graph, activeEdgeId)?.toId)
+              }
               retainerRootNode={graph.root}
               onClick={() => {
                 openNode(item)

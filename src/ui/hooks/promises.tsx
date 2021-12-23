@@ -45,10 +45,10 @@ const promiseReducer = (state, action): PromiseState<any> => {
       return { ...state, ...action.payload }
     case "START":
       return {
+        ...state,
         called: true,
         loading: true,
         error: undefined,
-        value: state.value,
         promise: action.payload,
       }
     case "RESOLVE":

@@ -24,17 +24,18 @@ const useStyles = makeStyles({ name: "RootInfo" })({})
 
 export default function RootInfo({ className }: Props) {
   const { classes, cx } = useStyles()
-  const { graph } = useTreeContext()
+  const { graph, graphWorker } = useTreeContext()
 
   const sizePromise = useMemo(async () => {
-    const currentSize = await calculateTreeSize(
-      graph,
+    const currentSize = await graphWorker.calculateTreeSize(
       graph.root,
       currentGraphFilter
     )
-    const baseSize = await calculateTreeSize(graph, graph.root, baseGraphFilter)
-    const overallSize = await calculateTreeSize(
-      graph,
+    const baseSize = await graphWorker.calculateTreeSize(
+      graph.root,
+      baseGraphFilter
+    )
+    const overallSize = await graphWorker.calculateTreeSize(
       graph.root,
       allAsyncAndEnabledFilter
     )

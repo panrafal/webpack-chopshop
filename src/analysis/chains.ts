@@ -26,17 +26,17 @@ async function gatherChains(
   const paths = []
 
   // prefer shortest paths first
-  if (node.children.find((e) => e.to.id === toId && (!filter || filter(e)))) {
+  if (node.children.find((e) => e.toId === toId && (!filter || filter(e)))) {
     paths.push([...currentPath, toId])
   }
 
   for (const edge of node.children) {
-    if (visited[edge.to.id]) continue
-    if (edge.to.id === toId) continue
+    if (visited[edge.toId]) continue
+    if (edge.toId === toId) continue
     if (filter && !filter(edge)) continue
     const result = await gatherChains(
       graph,
-      edge.to,
+      getNode(graph, edge.toId),
       toId,
       currentPath,
       options
@@ -44,7 +44,7 @@ async function gatherChains(
     if (result.length > 0) {
       paths.push(...result)
     }
-    await graph.idle()
+    await graph.parallel.yield()
   }
   return paths
 }
@@ -53,7 +53,7 @@ export async function findChains(
   graph: Graph,
   fromNode: GraphNode,
   toNode: GraphNode,
-  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
+  filter?: (e: GraphEdge) => boolean
 ): Promise<EdgeChain[]> {
   const key = `findChains:${fromNode.id}:${toNode.id}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {

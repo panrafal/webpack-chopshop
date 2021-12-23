@@ -96,23 +96,35 @@ function TreePage({
                   resolveEdge(graph, getEdgeId(path[index - 1], nodeId))?.async
               ),
             getChildEdges: (node: GraphNode) =>
-              getAsyncEdges(graph, node, stopOnAsyncModulesFilter),
+              graphWorker
+                .getAsyncEdges(node, stopOnAsyncModulesFilter)
+                .then((ids) => getEdges(graph, ids)),
             renderEmptyChildren: () => "There are no deeper split points",
             navigatorModes: {
               all: {
                 getNodes: () =>
-                  getAsyncEdges(graph, graph.root).then((edges) =>
-                    uniq(edges.map((edge) => edge.to))
-                  ),
+                  graphWorker
+                    .getAsyncEdges(graph.root)
+                    .then((ids) => getEdges(graph, ids))
+                    .then((edges) =>
+                      uniq(edges.map((edge) => getNode(graph, edge.toId)))
+                    ),
                 renderTitle: () => "All Async Nodes",
                 renderEmpty: () => "Nothing found",
               },
               children: {
                 getNodes: () =>
-                  getAsyncEdges(
-                    graph,
-                    resolveEdge(graph, activeEdgeId)?.to || graph.root
-                  ).then((edges) => uniq(edges.map((edge) => edge.to))),
+                  graphWorker
+                    .getAsyncEdges(
+                      resolveNode(
+                        graph,
+                        resolveEdge(graph, activeEdgeId)?.toId
+                      ) || graph.root
+                    )
+                    .then((ids) => getEdges(graph, ids))
+                    .then((edges) =>
+                      uniq(edges.map((edge) => getNode(graph, edge.toId)))
+                    ),
                 renderTitle: () => "Child Async Nodes",
                 renderEmpty: () => "Nothing found",
               },
@@ -126,21 +138,23 @@ function TreePage({
             navigatorModes: {
               enabled: {
                 getNodes: () =>
-                  getDeepNodeChildren(
-                    graph,
-                    graph.root,
-                    currentGraphFilter
-                  ).then((ids) => getNodes(graph, ids)),
+                  graphWorker
+                    .getDeepNodeChildren(graph.root, currentGraphFilter)
+                    .then((ids) => getNodes(graph, ids)),
                 renderTitle: () => "Enabled Nodes",
                 renderEmpty: () => "Nothing found",
               },
               children: {
                 getNodes: () =>
-                  getDeepNodeChildren(
-                    graph,
-                    resolveEdge(graph, activeEdgeId)?.to || graph.root,
-                    currentGraphFilter
-                  ).then((ids) => getNodes(graph, ids)),
+                  graphWorker
+                    .getDeepNodeChildren(
+                      resolveNode(
+                        graph,
+                        resolveEdge(graph, activeEdgeId)?.toId
+                      ) || graph.root,
+                      currentGraphFilter
+                    )
+                    .then((ids) => getNodes(graph, ids)),
                 renderTitle: () => "Enabled Children",
                 renderEmpty: () => "Nothing found",
               },
@@ -159,13 +173,13 @@ function TreePage({
             navigatorModes: {
               cycles: {
                 getNodes: () =>
-                  findNodeCycles(graph, graph.root, {
-                    filter: currentGraphFilter,
-                  }).then((cycles) =>
-                    cycles
-                      .map((cycle) => cycle[cycle.length - 1])
-                      .map((cycleEnd) => getNode(graph, cycleEnd))
-                  ),
+                  graphWorker
+                    .findNodeCycles(graph.root, currentGraphFilter)
+                    .then((cycles) =>
+                      cycles
+                        .map((cycle) => cycle[cycle.length - 1])
+                        .map((cycleEnd) => getNode(graph, cycleEnd))
+                    ),
                 renderTitle: () => "Cycles",
                 renderEmpty: () => "Nothing found",
               },
@@ -176,27 +190,33 @@ function TreePage({
 
   const { value: enabledIds, promise: enabledIdsPromise } = useStablePromise(
     useMemo(async () => {
-      const edgeIds = await getEnabledChildEdges(graph, graph.root)
-      const nodeIds = getEdges(graph, edgeIds).map((e) => e.to.id)
+      const edgeIds = await graphWorker.getEnabledChildEdges(graph.root)
+      const nodeIds = getEdges(graph, edgeIds).map((e) => e.toId)
       return [...edgeIds, ...nodeIds]
     }, [graph])
   )
-  trackLoading(enabledIdsPromise)
+  useEffect(() => {
+    trackLoading(enabledIdsPromise)
+  }, [enabledIdsPromise, trackLoading])
 
   const { value: [chains, chainedNodeIds] = [], promise: chainsPromise } =
     useStablePromise(
       useMemo(async () => {
         const activeNode = resolveNode(graph, activeNodeId)
         const chains = activeNode
-          ? await findChains(graph, graph.root, activeNode, {
-              filter: currentGraphFilter,
-            })
+          ? await graphWorker.findChains(
+              graph.root,
+              activeNode,
+              currentGraphFilter
+            )
           : []
         const chainedNodeIds = chains.flat()
         return [chains, chainedNodeIds] as const
       }, [graph, activeNodeId])
     )
-  trackLoading(chainsPromise)
+  useEffect(() => {
+    trackLoading(chainsPromise)
+  }, [chainsPromise, trackLoading])
 
   const openNode = useCallback(
     (toNode: GraphNode) => {
@@ -213,20 +233,22 @@ function TreePage({
         const activeEdge = resolveEdge(graph, activeEdgeId)
         // Pick starting node that is included on the path
         const fromNode =
-          activeEdge && openedNodeIds.includes(activeEdge.to.id)
-            ? activeEdge.to
+          activeEdge && openedNodeIds.includes(activeEdge.toId)
+            ? getNode(graph, activeEdge.toId)
             : graph.root
         const openedBeforeFromNode = openedNodeIds.slice(
           0,
           openedNodeIds.findIndex((id) => id === fromNode.id)
         )
         // Try to find connection between currently selected & opening node.
-        let chains = await findChains(graph, fromNode, toNode, {
-          filter: currentGraphFilter,
-        })
+        let chains = await graphWorker.findChains(
+          fromNode,
+          toNode,
+          currentGraphFilter
+        )
         // If there's no active connection - pick disabled ones
         if (chains.length === 0) {
-          chains = await findChains(graph, fromNode, toNode)
+          chains = await graphWorker.findChains(fromNode, toNode)
         }
         // Remove chains that would open a dependency cycle (they include an opened node)
         chains = chains.filter(
@@ -235,12 +257,14 @@ function TreePage({
         // If there's no connection from selected node, start from root
         if (fromNode !== graph.root) {
           if (chains.length === 0) {
-            chains = await findChains(graph, graph.root, toNode, {
-              filter: currentGraphFilter,
-            })
+            chains = await graphWorker.findChains(
+              graph.root,
+              toNode,
+              currentGraphFilter
+            )
           }
           if (chains.length === 0) {
-            chains = await findChains(graph, graph.root, toNode)
+            chains = await graphWorker.findChains(graph.root, toNode)
           }
         }
         if (chains.length === 0) {
@@ -277,11 +301,11 @@ function TreePage({
 
   // Normalize path after node change
   useEffect(() => {
-    openNode(activeEdge?.to || graph.root)
+    openNode(resolveNode(graph, activeEdge?.toId) || graph.root)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modeId])
 
-  const selectedTreeLevelIndex = openedNodeIds.lastIndexOf(activeEdge?.to.id)
+  const selectedTreeLevelIndex = openedNodeIds.lastIndexOf(activeEdge?.toId)
   const treeLevels = openedNodeIds.map((nodeId, index) => (
     <TreeLevel
       key={index}
@@ -291,7 +315,7 @@ function TreePage({
       node={getNode(graph, nodeId)}
       childNode={resolveNode(graph, openedNodeIds[index + 1])}
       selectEdge={(edge) => {
-        const node = edge.to
+        const node = getNode(graph, edge.toId)
         // ignore if this edge is already opened or there's a dependency cycle
         const alreadyOpened = openedNodeIds[index + 1] === node.id
         const belongsToCycle = openedNodeIds

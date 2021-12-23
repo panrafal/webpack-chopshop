@@ -7,7 +7,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material"
-import { MouseEvent } from "react"
+import { MouseEvent, useEffect } from "react"
 import { ChangeEvent, useCallback } from "react"
 import { findChains } from "../../analysis/chains"
 import { addChange } from "../../analysis/changes"
@@ -18,7 +18,9 @@ import {
 } from "../../analysis/filters"
 import {
   getEdgeId,
+  getEdges,
   getEdgesFromChain,
+  getNode,
   Graph,
   GraphEdge,
   GraphNode,
@@ -74,17 +76,19 @@ export function getLineColor(
 type EdgeChainState = false | "start" | "end" | "middle" | "lone"
 
 function getChainedState({
+  graph,
   edge,
   chainedNodeIds,
 }: {
+  graph: Graph
   edge: GraphEdge
   chainedNodeIds: GraphNodeID[]
 }): EdgeChainState {
-  const hasChainedChildren = edge.to.children.some(({ to }) =>
-    chainedNodeIds.includes(to.id)
+  const hasChainedChildren = getNode(graph, edge.toId).children.some(
+    ({ toId }) => chainedNodeIds.includes(toId)
   )
-  const isChained = chainedNodeIds.includes(edge.to.id)
-  if (hasChainedChildren && edge.from.id === ROOT_NODE_ID) return "start"
+  const isChained = chainedNodeIds.includes(edge.toId)
+  if (hasChainedChildren && edge.fromId === ROOT_NODE_ID) return "start"
   if (isChained && hasChainedChildren) return "middle"
   return isChained ? "end" : false
 }
@@ -103,8 +107,8 @@ function getCycledState({
   openedNodeIds: ReadonlyArray<GraphNodeID>
 }): EdgeChainState {
   // is this edge already opened?
-  const isCycleEnd = openedNodeIds.slice(0, levelIndex + 1).includes(edge.to.id)
-  const isOpened = openedNodeIds[levelIndex + 1] === edge.to.id
+  const isCycleEnd = openedNodeIds.slice(0, levelIndex + 1).includes(edge.toId)
+  const isOpened = openedNodeIds[levelIndex + 1] === edge.toId
 
   let cycleStartIndex
   let cycleEndIndex = isCycleEnd ? levelIndex : undefined
@@ -148,6 +152,7 @@ export default function TreeItem({
 }: Props) {
   const {
     graph,
+    graphWorker,
     updateChanges,
     enabledIds,
     chainedNodeIds,
@@ -156,17 +161,17 @@ export default function TreeItem({
     openedNodeIds,
     openNode,
   } = useTreeContext()
-  const activeNode = activeNodeId === edge.to.id
+  const activeNode = activeNodeId === edge.toId
   const activeEdge = activeEdgeId === edge.id
-  const opened = openedNodeIds[levelIndex + 1] === edge.to.id
+  const opened = openedNodeIds[levelIndex + 1] === edge.toId
 
   const enabled = enabledIds.includes(edge.id)
   const toggleable =
     edge.async ||
     enabledIds.includes(edge.id) ||
-    enabledIds.includes(edge.from.id)
+    enabledIds.includes(edge.fromId)
 
-  const chained = getChainedState({ edge, chainedNodeIds })
+  const chained = getChainedState({ graph, edge, chainedNodeIds })
   const cycled = getCycledState({
     graph,
     edge,
@@ -174,6 +179,10 @@ export default function TreeItem({
     openedNodeIds,
     levelIndex,
   })
+
+  useEffect(() => {
+    console.log("Mounted TreeItem")
+  }, [])
 
   const { classes, cx, theme } = useStyles({
     enabled,
@@ -191,14 +200,15 @@ export default function TreeItem({
       if (edge.async && enabled) {
         // for async edges, we want to enable async parent edges (on a single chain is enough)
         // but only if it's not already enabled...
-        const [parentChain] = await findChains(graph, graph.root, edge.to, {
-          filter: currentGraphFilter,
-        })
+        const [parentChain] = await graphWorker.findChains(
+          graph.root,
+          getNode(graph, edge.toId),
+          currentGraphFilter
+        )
         if (!parentChain) {
-          const [parentDisabledChain = []] = await findChains(
-            graph,
+          const [parentDisabledChain = []] = await graphWorker.findChains(
             graph.root,
-            edge.to
+            getNode(graph, edge.toId)
           )
           changeEdges.push(
             ...getEdgesFromChain(graph, parentDisabledChain).filter(
@@ -210,11 +220,13 @@ export default function TreeItem({
       if (edge.async && (event.shiftKey || event.altKey)) {
         // toggle all child async edges
         changeEdges.push(
-          ...(await getAsyncEdges(
+          ...getEdges(
             graph,
-            edge.to,
-            event.shiftKey ? stopOnAsyncModulesFilter : undefined
-          ))
+            await graphWorker.getAsyncEdges(
+              getNode(graph, edge.toId),
+              event.shiftKey ? stopOnAsyncModulesFilter : undefined
+            )
+          )
         )
       }
       // if (edge)
@@ -223,8 +235,8 @@ export default function TreeItem({
           (changes, changeEdge) =>
             addChange(graph, changes, {
               change: "edge",
-              from: changeEdge.from.id,
-              to: changeEdge.to.id,
+              from: changeEdge.fromId,
+              to: changeEdge.toId,
               enabled,
             }),
           changes
@@ -234,7 +246,7 @@ export default function TreeItem({
     [edge, graph, updateChanges]
   )
 
-  const group = getNodeGroup(edge.to)
+  const group = getNodeGroup(getNode(graph, edge.toId))
 
   const checkboxProps = edge.async
     ? ({
@@ -276,9 +288,13 @@ export default function TreeItem({
           <ListItemText
             primary={
               edge.name || (
-                <NodeName node={edge.to} hidePackage={hidePackage} tooltip />
+                <NodeName
+                  node={getNode(graph, edge.toId)}
+                  hidePackage={hidePackage}
+                  tooltip
+                />
               )
-              // <NodeName node={edge.to} hidePackage={hidePackage} tooltip />
+              // <NodeName node={getNode(graph, edge.toId)} hidePackage={hidePackage} tooltip />
             }
             primaryTypographyProps={{
               noWrap: true,
@@ -287,7 +303,7 @@ export default function TreeItem({
             }}
             secondary={
               <NodeSize
-                node={edge.to}
+                node={getNode(graph, edge.toId)}
                 retainerRootNode={retainerRootNode || graph.root}
               />
             }
@@ -297,7 +313,7 @@ export default function TreeItem({
               className={classes.cycleIcon}
               onClick={(event) => {
                 event.stopPropagation()
-                openNode(edge.to)
+                openNode(getNode(graph, edge.toId))
               }}
             >
               <ChangeCircle />
@@ -305,7 +321,7 @@ export default function TreeItem({
           )}
         </ListItemButton>
       </ListItem>
-      {edge.from !== graph.root ? (
+      {getNode(graph, edge.fromId) !== graph.root ? (
         <div className={cx(classes.connector, classes.connectorLeft)} />
       ) : null}
       <div className={cx(classes.connector, classes.connectorRight)} />

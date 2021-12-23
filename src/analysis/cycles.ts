@@ -1,6 +1,13 @@
 import { EdgeChain } from "./chains"
 import { getFilterKey } from "./dependencies"
-import { Graph, GraphEdge, GraphEdgeID, GraphNode, GraphNodeID } from "./graph"
+import {
+  getNode,
+  Graph,
+  GraphEdge,
+  GraphEdgeID,
+  GraphNode,
+  GraphNodeID,
+} from "./graph"
 
 async function collectNodeCycles(
   graph: Graph,
@@ -22,26 +29,26 @@ async function collectNodeCycles(
     const included = filter ? filter(edge) : true
     if (!included) continue
 
-    const cycleStart = branch.indexOf(edge.to.id)
+    const cycleStart = branch.indexOf(edge.toId)
     if (cycleStart >= 0) {
       cycles.push(branch.slice(cycleStart))
     } else {
-      if (visited[edge.to.id]) continue
-      await collectNodeCycles(graph, edge.to, {
+      if (visited[edge.toId]) continue
+      await collectNodeCycles(graph, getNode(graph, edge.toId), {
         branch,
         visited,
         filter,
         cycles,
       })
     }
-    await graph.idle()
+    await graph.parallel.yield()
   }
 }
 
 export async function findNodeCycles(
   graph: Graph,
   fromNode: GraphNode,
-  { filter }: { filter?: (e: GraphEdge) => boolean } = {}
+  filter?: (e: GraphEdge) => boolean
 ): Promise<EdgeChain[]> {
   const key = `findNodeCycles:${fromNode.id}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {

@@ -1,4 +1,4 @@
-import type { GraphEdge, GraphNode } from "../../analysis/graph"
+import { getNode, GraphEdge, GraphNode } from "../../analysis/graph"
 
 import { Icon, LinearProgress } from "@mui/material"
 import BlockIcon from "@mui/icons-material/Block"
@@ -57,11 +57,6 @@ const useStyles = makeStyles({ name: "TreeLevel" })((theme) => {
   }
 })
 
-const orderItemsBy: OrderBySpec = [
-  [(edge: GraphEdge) => getNodeGroup(edge.to).priority, "name"],
-  ["desc", "asc"],
-]
-
 function TreeLevel(
   {
     node,
@@ -77,15 +72,32 @@ function TreeLevel(
   const { graph, pinned, getChildEdges, chainedNodeIds, activeNodeId } =
     useTreeContext()
   const { classes, cx } = useStyles()
-  const { value: edges, loading, error } = useStablePromise(getChildEdges(node))
+
+  const {
+    value: edges,
+    loading,
+    error,
+  } = useStablePromise(
+    useMemo(() => getChildEdges(node), [getChildEdges, node])
+  )
   const stickyItems = useMemo(
     () =>
       [
-        ...(edges || []).filter((e) => e.to === childNode),
-        ...(edges || []).filter((e) => e.to.id === activeNodeId),
-        ...(edges || []).filter((e) => chainedNodeIds.includes(e.to.id)),
+        ...(edges || []).filter((e) => getNode(graph, e.toId) === childNode),
+        ...(edges || []).filter((e) => e.toId === activeNodeId),
+        ...(edges || []).filter((e) => chainedNodeIds.includes(e.toId)),
       ].slice(0, 5),
-    [activeNodeId, chainedNodeIds, childNode, edges]
+    [graph, activeNodeId, chainedNodeIds, childNode, edges]
+  )
+  const orderItemsBy: OrderBySpec = useMemo(
+    () => [
+      [
+        (edge: GraphEdge) => getNodeGroup(getNode(graph, edge.toId)).priority,
+        "name",
+      ],
+      ["desc", "asc"],
+    ],
+    [graph]
   )
 
   return (
@@ -110,18 +122,19 @@ function TreeLevel(
         renderItem={({ item, ...itemProps }) => (
           <TreeItem
             {...itemProps}
+            key={item.id}
             edge={item}
             levelIndex={levelIndex}
-            selected={item.to === childNode}
+            selected={item.toId === childNode?.id}
             retainerRootNode={graph.root}
             onClick={(event) => {
               if (event.shiftKey) {
-                activateNode(item.to)
+                activateNode(getNode(graph, item.toId))
               }
               selectEdge(item)
             }}
             onDoubleClick={() => {
-              activateNode(item.to)
+              activateNode(getNode(graph, item.toId))
             }}
             // checked={selected ? selected.id === itemProps.node.id : false}
           />

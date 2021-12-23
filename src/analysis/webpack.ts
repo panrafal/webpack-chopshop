@@ -48,7 +48,7 @@ export async function readWebpackStats(
             }
           : null),
       })
-      await graph.idle()
+      await graph.parallel.yield()
     }
   }
 
@@ -67,7 +67,7 @@ export async function readWebpackStats(
             }
           : null),
       })
-      await graph.idle()
+      await graph.parallel.yield()
     }
   }
 
@@ -101,7 +101,7 @@ export async function readWebpackStats(
           }
         : null),
     })
-    await graph.idle()
+    await graph.parallel.yield()
   }
 
   // create edges
@@ -114,8 +114,8 @@ export async function readWebpackStats(
     if (includeChunks) {
       for (const chunkId of module.chunks) {
         addEdge(graph, {
-          from: getNode(graph, getNodeId("chunk", chunkId)),
-          to: node,
+          fromId: getNodeId("chunk", chunkId),
+          toId: node.id,
           kind: "chunk child",
           ...(debug
             ? {
@@ -128,8 +128,8 @@ export async function readWebpackStats(
     if (includeAssets) {
       for (const assetId of module.assets) {
         addEdge(graph, {
-          from: node,
-          to: getNode(graph, getNodeId("asset", assetId)),
+          fromId: node.id,
+          toId: getNodeId("asset", assetId),
           kind: "asset child",
           ...(debug
             ? {
@@ -158,8 +158,8 @@ export async function readWebpackStats(
       const async =
         isEntry || (type.includes("import()") && !type.includes("eager"))
       addEdge(graph, {
-        from: fromNode,
-        to: node,
+        fromId: fromNode.id,
+        toId: node.id,
         kind: type,
         name: isEntry ? node.name : reason.userRequest,
         async,
@@ -173,7 +173,7 @@ export async function readWebpackStats(
           : null),
       })
     }
-    await graph.idle()
+    await graph.parallel.yield()
   }
   return graph
 }

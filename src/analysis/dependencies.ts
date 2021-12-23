@@ -35,7 +35,7 @@ async function collectNodes(
   visited[node.id] = node
 
   for (const edge of node[direction]) {
-    if (visited[edge.to.id]) continue
+    if (visited[edge.toId]) continue
     let included = filter ? filter(edge) : true
     if (!included) continue
     if (included === LAST_ITEM_IN_BRANCH) {
@@ -44,10 +44,12 @@ async function collectNodes(
     }
     await collectNodes(
       graph,
-      direction === "children" ? edge.to : edge.from,
+      direction === "children"
+        ? getNode(graph, edge.toId)
+        : getNode(graph, edge.fromId),
       options
     )
-    await graph.idle()
+    await graph.parallel.yield()
   }
 }
 
@@ -74,10 +76,12 @@ async function collectEdges(
     }
     await collectEdges(
       graph,
-      direction === "children" ? edge.to : edge.from,
+      direction === "children"
+        ? getNode(graph, edge.toId)
+        : getNode(graph, edge.fromId),
       options
     )
-    await graph.idle()
+    await graph.parallel.yield()
   }
 }
 
@@ -192,7 +196,7 @@ export function getAsyncEdges(
   }: {
     direction?: "children" | "parents"
   } = {}
-): Promise<ReadonlyArray<GraphEdge>> {
+): Promise<ReadonlyArray<GraphEdgeID>> {
   const key = `getAsyncEdges:${node.id}:${direction}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {
     const visited: Record<GraphEdgeID, GraphEdge> = {}
@@ -201,7 +205,9 @@ export function getAsyncEdges(
       direction,
       filter,
     }).then(() => {
-      return Object.values(visited).filter((e) => e.async)
+      return Object.values(visited)
+        .filter((e) => e.async)
+        .map((e) => e.id)
     })
   }
   return graph.cache[key]
@@ -213,7 +219,9 @@ export function keepOnlyEntryModules(
 ) {
   return nodes.filter((node: GraphNode) => {
     if (node.kind !== "module") return false
-    return node.parents.every((edge) => edge.from.kind !== "module")
+    return node.parents.every(
+      (edge) => getNode(graph, edge.fromId).kind !== "module"
+    )
   })
 }
 

@@ -15,11 +15,12 @@ import {
   ListItemButton,
 } from "@mui/material"
 
-import type {
+import {
   GraphNode,
   Graph,
   GraphNodeID,
   GraphEdge,
+  getNode,
 } from "../../analysis/graph"
 import {
   flattenTreeToRows,
@@ -35,6 +36,7 @@ import {
   ReactElement,
   ReactNode,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react"
@@ -60,7 +62,7 @@ export type ElementListProps<T> = {
   items: ReadonlyArray<T>
   stickyItems?: ReadonlyArray<T>
   itemSize?: number
-  getNode?: (item: T) => GraphNode
+  getNode?: (graph: Graph, item: T) => GraphNode
   renderItem: (p: RenderItemProps<T>) => ReactElement<any>
   renderEmpty: () => React.ReactNode
   search?: string
@@ -104,8 +106,11 @@ type Group = {
 
 const treeOptions = { getKey: (group) => group.name }
 
-function getNodeFromElement(element: GraphNode | GraphEdge): GraphNode {
-  return "to" in element ? element.to : element
+function getNodeFromElement(
+  graph: Graph,
+  element: GraphNode | GraphEdge
+): GraphNode {
+  return "toId" in element ? getNode(graph, element.toId) : element
 }
 
 const ListContext = createContext<{ listChildren?: ReactNode }>(null)
@@ -141,7 +146,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
 
   const fuse = useMemo(
     () =>
-      new Fuse(items, {
+      new Fuse([], {
         keys: ["name", "id", "kind", "to.name", "to.id"],
       }),
     [items]
@@ -158,7 +163,8 @@ function ElementList<T extends GraphNode | GraphEdge>({
   }, [fuse, items, search, orderItemsBy])
 
   const pinnedItems = useMemo(
-    () => filteredItems.filter((item) => pinned.includes(getNode(item).id)),
+    () =>
+      filteredItems.filter((item) => pinned.includes(getNode(graph, item).id)),
     [pinned, filteredItems, getNode]
   )
 
@@ -166,7 +172,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
     let rows: Array<Group | GraphEdge | GraphNode>
     if (!search && groupItemsBy === "package") {
       const groups = groupBy(filteredItems, (item) => {
-        const node = getNode(item)
+        const node = getNode(graph, item)
         if (node.kind === "module") {
           return getPackageName(node) || "(root modules)"
         }
@@ -221,6 +227,11 @@ function ElementList<T extends GraphNode | GraphEdge>({
       </Fragment>
     )
   })
+
+  useEffect(() => {
+    console.log("Mounted ElementList")
+  }, [])
+  console.log("Render ElementList", listItems)
 
   return (
     <div className={cx(className, classes.root)}>

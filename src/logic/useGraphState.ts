@@ -23,7 +23,9 @@ export function useGraphState({ trackLoading, onLoaded }) {
   const setGraph = useCallback(
     async (graph: Graph) => {
       setGraphObject(graph)
-      await graphWorker.setGraph(graph)
+      if (graph) {
+        await graphWorker.setGraph(graph)
+      }
     },
     [setGraphObject, graphWorker]
   )

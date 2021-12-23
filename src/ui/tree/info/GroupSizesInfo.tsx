@@ -25,8 +25,16 @@ type Props = {
 const useStyles = makeStyles({ name: "GroupSizesInfo" })({
   bar: {
     display: "flex",
+    borderRadius: 2,
+    overflow: "hidden",
+    transition: "opacity 100ms",
+    opacity: 1,
+  },
+  loading: {
+    opacity: 0.5,
   },
   part: {
+    transition: "width 100ms",
     overflow: "hidden",
     textIndent: 4,
     marginRight: 1,
@@ -41,17 +49,19 @@ export default function GroupSizesInfo({ className, node }: Props) {
   const { graph, graphWorker } = useTreeContext()
 
   const { value, loading, error } = useStablePromise(
-    calculateGroupSizes(
-      graph,
-      graph.root,
-      node /*, { filter: currentGraphFilter }*/
-    )
+    graphWorker.calculateGroupSizes(graph.root, node, currentGraphFilter)
   )
   const groups = value || []
   const overalSize = groups.reduce((sum, { size }) => sum + size, 0)
 
   return (
-    <div className={cx(className, classes.bar)}>
+    <div
+      className={cx(
+        className,
+        classes.bar,
+        (loading || error) && classes.loading
+      )}
+    >
       {groups.map(({ group, count, size }) => (
         <Tooltip
           key={group.name}

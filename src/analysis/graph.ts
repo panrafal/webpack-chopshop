@@ -1,5 +1,9 @@
 import { EdgeChain } from "./chains"
-import { AbortSignal, BackgroundProcessor, backgroundProcessor } from "./utils"
+import {
+  AbortSignal,
+  ParallelProcessor,
+  createParallelProcessor,
+} from "./parallel"
 
 export const ROOT_NODE_ID = "root"
 export type GraphNodeID = string
@@ -10,8 +14,8 @@ export type EdgeKind = string
 
 export type GraphEdgeSpec = {
   name?: string
-  from: GraphNode
-  to: GraphNode
+  fromId: GraphNodeID
+  toId: GraphNodeID
   kind: EdgeKind
   async?: boolean
   enabled?: boolean
@@ -60,7 +64,7 @@ export type Graph = {
   }
   errors: Array<any>
   cache: any
-  idle: BackgroundProcessor
+  parallel: ParallelProcessor
   revert: Array<() => void>
 }
 
@@ -82,7 +86,7 @@ export function createGraph(): Graph {
     edges: {},
     errors: [],
     cache: {},
-    idle: backgroundProcessor(),
+    parallel: createParallelProcessor(),
     revert: [],
   }
   return graph
@@ -170,14 +174,14 @@ export function addNode(graph: Graph, _node: GraphNodeSpec): GraphNode {
 }
 
 export function addEdge(graph: Graph, _edge: GraphEdgeSpec): GraphEdge {
-  const id = getEdgeId(_edge.from.id, _edge.to.id)
+  const id = getEdgeId(_edge.fromId, _edge.toId)
   const edge = { enabled: true, id, ..._edge }
   if (graph.edges[id]) {
     return graph.edges[id]
   }
   graph.edges[id] = edge
-  edge.from.children.push(edge)
-  edge.to.parents.push(edge)
+  graph.nodes[edge.fromId].children.push(edge)
+  graph.nodes[edge.toId].parents.push(edge)
   return edge
 }
 
@@ -190,13 +194,17 @@ export async function modifyGraph(
   graph: Graph,
   fn: (graph: Graph) => void | Promise<void>
 ): Promise<Graph> {
-  await graph.idle.abort(new AbortSignal(`Abort v${graph.version}`))
   const newGraph = {
     ...graph,
     version: graph.version + 1,
     cache: {},
-    idle: backgroundProcessor(),
+    parallel: createParallelProcessor(),
   }
   await fn(newGraph)
+  // Abort the old graph computations only once the new one is set-up
+  // This allows the UI to switch to the new version before receiving abort messages
+  // workers should not modify the graph itself, they only interact with the graph's cache
+  // which is bound to the old `graph` object. So keeping them around should be safe.
+  await graph.parallel.abort(new AbortSignal(`Abort v${graph.version}`))
   return newGraph
 }

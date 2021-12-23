@@ -59,8 +59,8 @@ export default function ChangesPage({
           .map((change, index) => {
             const edge = resolveEdgeForNodes(graph, change.from, change.to)
             if (!edge) return null
-            const fromNode = edge.from
-            const toNode = edge.to
+            const fromNode = getNode(graph, edge.fromId)
+            const toNode = getNode(graph, edge.toId)
             const fromName = fromNode.file || fromNode.name || fromNode.id
             const toName = edge.name || toNode.name || toNode.id
             textsToCopy.push(

@@ -41,12 +41,33 @@ export class GraphWorkerClient implements GraphWorkerBackend {
     prop: Prop
   ): GraphWorkerBackend[Prop] {
     return (...args: any) => {
-      if (!this.graph) throw new Error("Graph is not set!")
-      const cacheKey = getCacheKey(...args) + this.graph.version
+      const graph = this.graph
+      if (!graph) throw new Error("Graph is not set!")
+      const cacheKey = `${graph.version}:${prop}:${getCacheKey(...args)}`
       if (this.cache[cacheKey]) return this.cache[cacheKey]
-      console.time(`rpc: ${prop}`)
-      const promise = this.throttled(() => this.backend[prop](...args) as any)
-      console.timeEnd(`rpc: ${prop}`)
+      const queueStart = performance.now()
+      const promise = this.throttled(async () => {
+        // don't make a call when aborted
+        if (graph.parallel.aborted) {
+          console.warn("ABORTING", prop)
+          throw graph.parallel.aborted
+        }
+        const workStart = performance.now()
+        let error
+        try {
+          return await Promise.race([
+            graph.parallel.abortSignal,
+            this.backend[prop](...args),
+          ])
+        } finally {
+          console.log(
+            `[RPC] ${prop}: work: ${Math.round(
+              performance.now() - workStart
+            )}ms queue: ${Math.round(performance.now() - queueStart)}ms`
+          )
+        }
+      })
+
       this.cache[cacheKey] = promise
       return promise
     }
@@ -54,20 +75,15 @@ export class GraphWorkerClient implements GraphWorkerBackend {
 
   setGraph(graph: Graph): any {
     this.graph = graph
-    if (!graph) return
     console.time("graph copy")
-    const promise = this.throttled(async () => {
-      await this.backend.test("hello!")
-      console.log("helloed")
-      await this.backend.test(
-        Object.values(graph.nodes).map((e) => omit(e, ["parents", "children"]))
-      )
-      console.log("edged")
-      await this.backend.setGraph(
-        // @ts-ignore
-        omit(graph, ["idle", "cache", "errors", "revert"])
-      )
-    })
+    const promise = this.throttled(() =>
+      this.backend.setGraph({
+        version: graph.version,
+        root: graph.root,
+        nodes: graph.nodes,
+        edges: graph.edges,
+      })
+    )
     console.timeEnd("graph copy")
     return promise
   }
@@ -83,5 +99,4 @@ export class GraphWorkerClient implements GraphWorkerBackend {
   getEnabledChildEdges = this.implement("getEnabledChildEdges")
   getRetainedNodes = this.implement("getRetainedNodes")
   getDeepNodeParents = this.implement("getDeepNodeParents")
-  test = this.implement("test")
 }

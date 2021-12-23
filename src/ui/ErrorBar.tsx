@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Icon } from "@mui/material"
 import { makeStyles } from "./makeStyles"
+import ErrorIcon from "@mui/icons-material/Error"
 
 type Props = {
   children: React.ReactNode
@@ -18,7 +19,7 @@ const useStyles = makeStyles({ name: "ErrorBar" })((theme) => ({
     justifyContent: "center",
   },
   icon: {
-    "margin-right": 8,
+    marginRight: 8,
   },
 }))
 
@@ -26,7 +27,7 @@ export default function ErrorBar({ className, children }: Props) {
   const { classes, cx } = useStyles()
   return (
     <div className={cx(className, classes.root)}>
-      <Icon className={classes.icon}>error</Icon>
+      <ErrorIcon className={classes.icon} />
       <span>{children}</span>
     </div>
   )

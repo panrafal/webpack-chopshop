@@ -29,9 +29,7 @@ export function usePromiseTracker(): [TrackerState, PromiseTrackerFn] {
             }
           })
         inst.allPromise = allPromise
-        // delay to the next frame
-        setTimeout(inst.startLoading, 0)
-        return allPromise
+        inst.startLoading()
       },
     }),
     []
