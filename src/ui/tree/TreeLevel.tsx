@@ -1,18 +1,15 @@
+import { LinearProgress } from "@mui/material"
+import { forwardRef, ReactNode, useMemo } from "react"
 import { getNode, GraphEdge, GraphNode } from "../../analysis/graph"
-
-import { Icon, LinearProgress } from "@mui/material"
-import BlockIcon from "@mui/icons-material/Block"
-
+import { getNodeGroup } from "../../analysis/groups"
 import EmptyBox from "../EmptyBox"
+import ErrorBox from "../ErrorBox"
+import { useStablePromise } from "../hooks/promises"
+import { makeStyles } from "../makeStyles"
+import NodeName from "../nodes/NodeName"
 import ElementList, { OrderBySpec } from "./ElementList"
 import { useTreeContext } from "./TreeContext"
 import TreeItem from "./TreeItem"
-import { forwardRef, ReactNode, useMemo } from "react"
-import { makeStyles } from "../makeStyles"
-import { useStablePromise } from "../hooks/promises"
-import ErrorBox from "../ErrorBox"
-import NodeName from "../nodes/NodeName"
-import { getNodeGroup } from "../../analysis/groups"
 
 type Props = {
   parentNode?: GraphNode | null

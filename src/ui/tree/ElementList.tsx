@@ -1,34 +1,7 @@
-import numeral from "numeral"
-
+import ClearIcon from "@mui/icons-material/Clear"
+import { IconButton, Input, InputAdornment } from "@mui/material"
 import Fuse from "fuse.js"
-import { groupBy, orderBy, map, sortBy, sumBy, uniq } from "lodash"
-
-import { FixedSizeList } from "react-window"
-import AutoSizer from "react-virtualized-auto-sizer"
-import {
-  Input,
-  InputAdornment,
-  IconButton,
-  Icon,
-  ListItem,
-  ListItemText,
-  ListItemButton,
-} from "@mui/material"
-
-import {
-  GraphNode,
-  Graph,
-  GraphNodeID,
-  GraphEdge,
-  getNode,
-} from "../../analysis/graph"
-import {
-  flattenTreeToRows,
-  toggleTreeRowState,
-  isTreeExpanded,
-  TreeState,
-} from "../tree"
-import { getPackageName } from "../../analysis/info"
+import { groupBy, map, orderBy, sortBy, sumBy, uniq } from "lodash"
 import {
   createContext,
   forwardRef,
@@ -36,20 +9,40 @@ import {
   ReactElement,
   ReactNode,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react"
+import AutoSizer from "react-virtualized-auto-sizer"
+import { FixedSizeList } from "react-window"
+import {
+  getNode,
+  Graph,
+  GraphEdge,
+  GraphNode,
+  GraphNodeID,
+} from "../../analysis/graph"
+import { getPackageName } from "../../analysis/info"
 import { makeStyles } from "../makeStyles"
-import ClearIcon from "@mui/icons-material/Clear"
-import ExpandLessIcon from "@mui/icons-material/ExpandLess"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
+import {
+  flattenTreeToRows,
+  isTreeExpanded,
+  toggleTreeRowState,
+  TreeState,
+} from "../tree"
+import ElementListGroup from "./ElementListGroup"
 
 export type RenderItemProps<T> = {
   item: T
   key: string
   hidePackage: boolean
   style: React.CSSProperties
+}
+
+export type GroupElement = {
+  name: string
+  children: ReadonlyArray<any>
+  size: number
+  group: true
 }
 
 export type OrderBySpec = [
@@ -228,11 +221,6 @@ function ElementList<T extends GraphNode | GraphEdge>({
     )
   })
 
-  useEffect(() => {
-    console.log("Mounted ElementList")
-  }, [])
-  console.log("Render ElementList", listItems)
-
   return (
     <div className={cx(className, classes.root)}>
       <Input
@@ -283,32 +271,19 @@ function ElementList<T extends GraphNode | GraphEdge>({
                     const item = listItems[index]
                     if ("group" in item && item.group) {
                       return (
-                        <ListItem
-                          dense
-                          // @ts-expect-error mui
-                          ContainerComponent="div"
+                        <ElementListGroup
+                          group={item}
+                          expanded={isTreeExpanded(
+                            treeState,
+                            item,
+                            treeOptions
+                          )}
                           onClick={() =>
                             setTreeState(toggleTreeRowState(item, treeOptions))
                           }
-                          disableGutters
                           style={style as any}
                           key={index}
-                          divider
-                        >
-                          <ListItemButton>
-                            <ListItemText
-                              primary={item.name}
-                              secondary={`${numeral(item.size).format(
-                                "0.0b"
-                              )} in ${item.children.length}`}
-                            />
-                            {isTreeExpanded(treeState, item, treeOptions) ? (
-                              <ExpandLessIcon />
-                            ) : (
-                              <ExpandMoreIcon />
-                            )}
-                          </ListItemButton>
-                        </ListItem>
+                        />
                       )
                     } else {
                       return renderItem({

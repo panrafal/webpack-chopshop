@@ -3165,6 +3165,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@reach/observe-rect@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "@reach/observe-rect@npm:1.2.0"
+  checksum: 7dd903eeaad0e22c6d973bd26265d91eadba56ab5134701ceb3e85214db75339fae94aa7e8b88a65e8daa64bc7cf1b915d4ffcdfd324466b561dc6adc3c6e070
+  languageName: node
+  linkType: hard
+
 "@rollup/plugin-babel@npm:^5.2.0":
   version: 5.3.0
   resolution: "@rollup/plugin-babel@npm:5.3.0"
@@ -12081,6 +12088,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-virtual@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "react-virtual@npm:2.10.0"
+  dependencies:
+    "@reach/observe-rect": ^1.1.0
+  peerDependencies:
+    react: ^16.6.3 || ^17.0.0
+  checksum: 87f87c736dc1f4526446952d81491a682df3cf8d8e7e6f4dc291c698b88ef83cd20c3de5f764f39978310adbe7f81a0d12e60e63653685ba727c909d32c4895d
+  languageName: node
+  linkType: hard
+
 "react-virtualized-auto-sizer@npm:^1.0.6":
   version: 1.0.6
   resolution: "react-virtualized-auto-sizer@npm:1.0.6"
@@ -14144,6 +14162,7 @@ __metadata:
     react-hot-loader: ^4.13.0
     react-promise: ^2.1.0
     react-scripts: ^5.0.0
+    react-virtual: ^2.10.0
     react-virtualized: ^9.22.3
     react-virtualized-auto-sizer: ^1.0.6
     react-window: ^1.8.6

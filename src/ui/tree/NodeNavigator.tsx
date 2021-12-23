@@ -1,30 +1,23 @@
-import { GraphNode, resolveEdge, resolveNode } from "../../analysis/graph"
-
-import {
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Typography,
-  Icon,
-  Menu,
-  MenuItem,
-  ListItemSecondaryAction,
-  IconButton,
-  LinearProgress,
-  InputLabel,
-  FormControl,
-  Select,
-} from "@mui/material"
 import BlockIcon from "@mui/icons-material/Block"
 import StarIcon from "@mui/icons-material/Star"
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  LinearProgress,
+  ListItemSecondaryAction,
+  MenuItem,
+  Select,
+} from "@mui/material"
 import { useMemo, useState } from "react"
+import { GraphNode, resolveEdge, resolveNode } from "../../analysis/graph"
+import EmptyBox from "../EmptyBox"
+import ErrorBox from "../ErrorBox"
+import { useStablePromise } from "../hooks/promises"
+import { makeStyles } from "../makeStyles"
 import ElementList, { ElementListProps, RenderItemProps } from "./ElementList"
 import NodeNavigatorItem, { NodeNavigatorItemProps } from "./NodeNavigatorItem"
-import EmptyBox from "../EmptyBox"
-import { useStablePromise } from "../hooks/promises"
 import { useTreeContext } from "./TreeContext"
-import ErrorBox from "../ErrorBox"
-import { makeStyles } from "../makeStyles"
 
 export type NavigatorMode = {
   getNodes: () => ReadonlyArray<GraphNode> | Promise<ReadonlyArray<GraphNode>>
