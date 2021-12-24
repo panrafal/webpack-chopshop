@@ -18,25 +18,15 @@ export type ChangesReducerFn = (
 export type UpdateChangesFn = (reducer: ChangesReducerFn) => void
 
 export function useGraphState({ trackLoading, onLoaded }) {
-  const [graph, setGraphObject] = useState<Graph | undefined | null>()
+  const [graph, setLocalGraph] = useState<Graph | undefined | null>()
   const graphWorker = useMemo(() => new GraphWorkerClient(), [])
-  const setGraph = useCallback(
-    async (graph: Graph) => {
-      setGraphObject(graph)
-      if (graph) {
-        await graphWorker.setGraph(graph)
-      }
-    },
-    [setGraphObject, graphWorker]
-  )
 
   const openGraph = useCallback(
     async (callback: () => Promise<any | null>) => {
       const run = async () => {
-        setGraph(null)
+        // setLocalGraph(null)
         const json = await callback()
         if (json === null) {
-          this.setState({ loading: false })
           return
         }
         console.time("conversion")
@@ -44,7 +34,8 @@ export function useGraphState({ trackLoading, onLoaded }) {
         console.timeEnd("conversion")
         console.log("Graph: ", graph)
         console.warn("Errors found: ", graph.errors)
-        setGraph(graph)
+        graphWorker.setGraph(graph)
+        setLocalGraph(graph)
         onLoaded()
       }
       trackLoading(run())
@@ -63,7 +54,9 @@ export function useGraphState({ trackLoading, onLoaded }) {
       revertGraph(newGraph)
       applyChanges(newGraph, changes)
       console.log("will set new graph", newGraph.version)
-      setGraph(newGraph)
+      // graphWorker.setGraphAndApplyChanges(newGraph, changes)
+      graphWorker.setGraph(newGraph)
+      setLocalGraph(newGraph)
       console.log("new graph set", newGraph.version)
     })
     //

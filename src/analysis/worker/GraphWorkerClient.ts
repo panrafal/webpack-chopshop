@@ -5,6 +5,7 @@ import { Graph } from "../graph"
 import { GraphWorkerBackend, localBackend } from "./GraphWorkerBackend"
 import { registerTransferHandlers } from "./transferHandlers"
 import throat from "throat"
+import { Change } from "../changes"
 // import { GraphWorkerBackend } from "./GraphWorkerBackend"
 
 function getCacheKey(...args: any[]): string {
@@ -21,7 +22,9 @@ function getCacheKey(...args: any[]): string {
   return key
 }
 
-export class GraphWorkerClient implements GraphWorkerBackend {
+export class GraphWorkerClient
+  implements Omit<GraphWorkerBackend, "applyChanges">
+{
   private backend: Remote<GraphWorkerBackend>
   private cache = {}
   private graph: Graph
@@ -75,17 +78,22 @@ export class GraphWorkerClient implements GraphWorkerBackend {
 
   setGraph(graph: Graph): any {
     this.graph = graph
+    this.cache = {}
     console.time("graph copy")
-    const promise = this.throttled(() =>
-      this.backend.setGraph({
-        version: graph.version,
-        root: graph.root,
-        nodes: graph.nodes,
-        edges: graph.edges,
-      })
-    )
+    const promise = this.backend.setGraph({
+      version: graph.version,
+      root: graph.root,
+      nodes: graph.nodes,
+      edges: graph.edges,
+    })
     console.timeEnd("graph copy")
     return promise
+  }
+
+  async setGraphAndApplyChanges(graph: Graph, changes: ReadonlyArray<Change>) {
+    this.graph = graph
+    this.cache = {}
+    return this.backend.applyChanges(changes)
   }
 
   calculateGroupSizes = this.implement("calculateGroupSizes")

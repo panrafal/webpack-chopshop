@@ -1,4 +1,4 @@
-import { Graph, GraphEdge, GraphNode } from "../graph"
+import { Graph, GraphEdge, GraphNode, modifyGraph } from "../graph"
 import {
   calculateRetainedTreeSize,
   calculateTreeSize,
@@ -16,6 +16,7 @@ import {
 import { expose } from "comlink"
 import { registerTransferHandlers } from "./transferHandlers"
 import { createParallelProcessor } from "../parallel"
+import { applyChanges, Change, revertGraph } from "../changes"
 
 let graph: Graph
 
@@ -44,6 +45,15 @@ const backend = {
       revert: [],
       parallel: createParallelProcessor({ maxDelay: 100 }),
     }
+  },
+
+  async applyChanges(changes: ReadonlyArray<Change>) {
+    await modifyGraph(graph, (newGraph) => {
+      revertGraph(newGraph)
+      applyChanges(newGraph, changes)
+      newGraph.parallel = createParallelProcessor({ maxDelay: 100 })
+      graph = newGraph
+    })
   },
 
   calculateGroupSizes: bindGraph(calculateGroupSizes),
