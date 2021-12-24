@@ -33,6 +33,7 @@ import {
 } from "../tree"
 import ElementListGroup from "./ElementListGroup"
 import { useVirtual } from "react-virtual"
+import { searchItems } from "../../analysis/search"
 
 export type RenderItemProps<T> = {
   item: T
@@ -139,23 +140,13 @@ function ElementList<T extends GraphNode | GraphEdge>({
   const [search, setSearch] = useState("")
   const [treeState, setTreeState] = useState<TreeState>({ expanded: [] })
 
-  const fuse = useMemo(
-    () =>
-      new Fuse([], {
-        keys: ["name", "id", "kind", "to.name", "to.id"],
-      }),
-    [items]
-  )
-
   const filteredItems = useMemo<ReadonlyArray<T>>(() => {
-    const searchedItems = search
-      ? fuse.search(search).map(({ item }) => item)
-      : items
+    const searchedItems = search ? searchItems(graph, items, search) : items
     if (orderItemsBy && !search) {
       return orderBy(searchedItems, ...orderItemsBy)
     }
     return searchedItems
-  }, [fuse, items, search, orderItemsBy])
+  }, [graph, items, search, orderItemsBy])
 
   const pinnedItems = useMemo(
     () =>
