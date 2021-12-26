@@ -46,6 +46,7 @@ import ActiveEdgeInfo from "./info/ActiveEdgeInfo"
 import ActiveNodeInfo from "./info/ActiveNodeInfo"
 import { Grid, Paper } from "@mui/material"
 import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
+import { useVirtual } from "react-virtual"
 
 type Props = {
   graph: Graph
@@ -57,6 +58,8 @@ type Props = {
   updateChanges: UpdateChangesFn
   mode: "async" | "modules" | "cycles"
 }
+
+const getTreeLevelWidth = () => 350
 
 function TreePage({
   graph,
@@ -75,15 +78,6 @@ function TreePage({
     ROOT_NODE_ID,
   ])
   const activeEdge = resolveEdge(graph, activeEdgeId)
-
-  // const selectNode = useCallback(() => async (nextNode: GraphNode) => {
-  //   // already opened
-  //   if (path.includes(nextNode.id)) return
-  //   for (const nodeId of path.reverse()) {
-  //     const node = getNode(graph, nodeId)
-  //     const chains = await findAllChains(graph, node, nextNode)
-  //   }
-  // }, [path])
 
   // Tree Mode -------------------------------------
   const { getChildEdges, renderEmptyChildren, navigatorModes, normalizePath } =
@@ -313,36 +307,50 @@ function TreePage({
   }, [modeId])
 
   const selectedTreeLevelIndex = openedNodeIds.lastIndexOf(activeEdge?.toId)
-  const treeLevels = openedNodeIds.map((nodeId, index) => (
-    <TreeLevel
-      key={index}
-      levelIndex={index}
-      className={classes.treeLevel}
-      ref={selectedTreeLevelIndex === index ? selectedTreeLevelRef : null}
-      node={getNode(graph, nodeId)}
-      childNode={resolveNode(graph, openedNodeIds[index + 1])}
-      selectEdge={(edge) => {
-        const node = getNode(graph, edge.toId)
-        // ignore if this edge is already opened or there's a dependency cycle
-        const alreadyOpened = openedNodeIds[index + 1] === node.id
-        const belongsToCycle = openedNodeIds
-          .slice(0, index + 1)
-          .includes(node.id)
-        if (!alreadyOpened && !belongsToCycle) {
-          const newOpened = [...openedNodeIds.slice(0, index + 1), node.id]
-          // check if there's a chain starting with these nodes... if yes - open it
-          const chain = chains.find((chain) => chain.includes(node.id))
-          if (chain) newOpened.push(...chain.slice(chain.indexOf(node.id) + 1))
-          setOpenedNodeIds(newOpened)
-        }
-        setActiveEdgeId(edge.id)
-      }}
-      activateNode={(node) => {
-        setActiveNodeId(node.id)
-      }}
-      renderEmpty={renderEmptyChildren}
-    />
-  ))
+
+  const treeLevelsRef = useRef()
+  const { virtualItems: virtualTreeLevels, totalSize } = useVirtual({
+    size: openedNodeIds.length,
+    parentRef: treeLevelsRef,
+    horizontal: true,
+    estimateSize: getTreeLevelWidth,
+  })
+
+  const treeLevels = openedNodeIds.map((nodeId, index) => {
+    if (!virtualTreeLevels.find((vtr) => vtr.index === index))
+      return <div key={index} className={classes.treeLevel}></div>
+    return (
+      <TreeLevel
+        key={index}
+        levelIndex={index}
+        className={classes.treeLevel}
+        ref={selectedTreeLevelIndex === index ? selectedTreeLevelRef : null}
+        node={getNode(graph, nodeId)}
+        childNode={resolveNode(graph, openedNodeIds[index + 1])}
+        selectEdge={(edge) => {
+          const node = getNode(graph, edge.toId)
+          // ignore if this edge is already opened or there's a dependency cycle
+          const alreadyOpened = openedNodeIds[index + 1] === node.id
+          const belongsToCycle = openedNodeIds
+            .slice(0, index + 1)
+            .includes(node.id)
+          if (!alreadyOpened && !belongsToCycle) {
+            const newOpened = [...openedNodeIds.slice(0, index + 1), node.id]
+            // check if there's a chain starting with these nodes... if yes - open it
+            const chain = chains.find((chain) => chain.includes(node.id))
+            if (chain)
+              newOpened.push(...chain.slice(chain.indexOf(node.id) + 1))
+            setOpenedNodeIds(newOpened)
+          }
+          setActiveEdgeId(edge.id)
+        }}
+        activateNode={(node) => {
+          setActiveNodeId(node.id)
+        }}
+        renderEmpty={renderEmptyChildren}
+      />
+    )
+  })
 
   return (
     <div className={cx(className, classes.TreePage)}>
@@ -371,7 +379,9 @@ function TreePage({
           <ActiveEdgeInfo />
           <ActiveNodeInfo />
         </div>
-        <div className={classes.treeLevels}>{treeLevels}</div>
+        <div className={classes.treeLevels} ref={treeLevelsRef}>
+          {treeLevels}
+        </div>
         <div className={classes.treeShadeLeft}></div>
         <div className={classes.treeShadeRight}></div>
         <Paper className={classes.navigator}>
@@ -426,7 +436,7 @@ const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
   },
 
   treeLevel: {
-    width: 350,
+    width: getTreeLevelWidth(),
     height: "100%",
   },
   navigator: {

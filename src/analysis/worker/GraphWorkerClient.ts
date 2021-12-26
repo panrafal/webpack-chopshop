@@ -3,6 +3,7 @@ import throat from "throat"
 import { Changes } from "../changes"
 import { getFilterKey } from "../dependencies"
 import { Graph } from "../graph"
+import { AbortSignal } from "../parallel"
 import { GraphWorkerBackend } from "./GraphWorkerBackend"
 import { registerTransferHandlers } from "./transferHandlers"
 // import { GraphWorkerBackend } from "./GraphWorkerBackend"
@@ -19,6 +20,12 @@ function getCacheKey(...args: any[]): string {
     }
   }
   return key
+}
+
+function timeout(ms: number) {
+  return new Promise((_, reject) =>
+    setTimeout(() => reject(new AbortSignal("Timeout")), ms)
+  )
 }
 
 export class GraphWorkerClient
@@ -63,6 +70,7 @@ export class GraphWorkerClient
         try {
           return await Promise.race([
             graph.parallel.abortSignal,
+            timeout(15000),
             this.backend[prop](...args),
           ])
         } finally {
