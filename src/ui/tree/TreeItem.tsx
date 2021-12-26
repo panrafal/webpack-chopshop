@@ -1,4 +1,6 @@
 import { ChangeCircle } from "@mui/icons-material"
+import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline"
+import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined"
 import {
   Checkbox,
   IconButton,
@@ -7,11 +9,8 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material"
-import { MouseEvent, useEffect } from "react"
-import { ChangeEvent, useCallback } from "react"
-import { findChains } from "../../analysis/chains"
-import { addChange } from "../../analysis/changes"
-import { getAsyncEdges } from "../../analysis/dependencies"
+import { MouseEvent, useCallback, useEffect } from "react"
+import { addEdgeToggleChange } from "../../analysis/changes"
 import {
   currentGraphFilter,
   stopOnAsyncModulesFilter,
@@ -29,15 +28,12 @@ import {
   resolveNode,
   ROOT_NODE_ID,
 } from "../../analysis/graph"
+import { getNodeGroup } from "../../analysis/groups"
 import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
-import { TreeContextType, useTreeContext } from "./TreeContext"
-import { getNodeGroup } from "../../analysis/groups"
-
-import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline"
-import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined"
 import { AppTheme } from "../theme"
+import { useTreeContext } from "./TreeContext"
 
 type Props = {
   className?: string
@@ -233,12 +229,7 @@ export default function TreeItem({
       updateChanges((changes) =>
         changeEdges.reduce(
           (changes, changeEdge) =>
-            addChange(graph, changes, {
-              change: "edge",
-              from: changeEdge.fromId,
-              to: changeEdge.toId,
-              enabled,
-            }),
+            addEdgeToggleChange(graph, changes, changeEdge, enabled),
           changes
         )
       )

@@ -15,9 +15,10 @@ const useStyles = makeStyles({ name: "WarningBar" })((theme) => ({
     alignItems: "center",
     flexShrink: 0,
     justifyContent: "center",
+    height: "max-content",
   },
   icon: {
-    "margin-right": 8,
+    marginRight: 8,
   },
 }))
 

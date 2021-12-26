@@ -1,22 +1,22 @@
-import { Graph, GraphEdge, GraphNode, modifyGraph } from "../graph"
-import {
-  calculateRetainedTreeSize,
-  calculateTreeSize,
-  calculateGroupSizes,
-} from "../size"
+import { expose } from "comlink"
 import { findAllChains, findChains } from "../chains"
+import { applyChanges, Changes, revertGraph } from "../changes"
 import { findNodeCycles } from "../cycles"
 import {
   getAsyncEdges,
   getDeepNodeChildren,
+  getDeepNodeParents,
   getEnabledChildEdges,
   getRetainedNodes,
-  getDeepNodeParents,
 } from "../dependencies"
-import { expose } from "comlink"
-import { registerTransferHandlers } from "./transferHandlers"
+import { Graph, modifyGraph } from "../graph"
 import { createParallelProcessor } from "../parallel"
-import { applyChanges, Change, revertGraph } from "../changes"
+import {
+  calculateGroupSizes,
+  calculateRetainedTreeSize,
+  calculateTreeSize,
+} from "../size"
+import { registerTransferHandlers } from "./transferHandlers"
 
 let graph: Graph
 
@@ -47,7 +47,7 @@ const backend = {
     }
   },
 
-  async applyChanges(changes: ReadonlyArray<Change>) {
+  async applyChanges(changes: Changes) {
     await modifyGraph(graph, (newGraph) => {
       revertGraph(newGraph)
       applyChanges(newGraph, changes)

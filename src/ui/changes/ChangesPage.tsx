@@ -1,29 +1,36 @@
-import type { Graph, GraphNodeID } from "../../analysis/graph"
-import type { Change } from "../../analysis/changes"
-
+import {
+  Button,
+  Icon,
+  IconButton,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  Toolbar,
+} from "@mui/material"
+import { omit, without } from "lodash"
 import * as React from "react"
-import { without } from "lodash"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import {
-  IconButton,
-  Icon,
-  List,
-  Toolbar,
-  Button,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-} from "@mui/material"
-import { resolveEdgeForNodes, getNode } from "../../analysis/graph"
+  addEdgeToggleChange,
+  Changes,
+  hasChanges,
+} from "../../analysis/changes"
+import { Graph, GraphNodeID, resolveEdge } from "../../analysis/graph"
+import { getNode, resolveEdgeForNodes } from "../../analysis/graph"
+import { UpdateChangesFn } from "../../logic/useGraphState"
+import {
+  decodeUrlStateHash,
+  encodeUrlStateHash,
+} from "../../logic/useHistoryState"
 import EmptyBox from "../EmptyBox"
-import { encodeUrlStateHash, decodeUrlStateHash } from "../../history"
 import { makeStyles } from "../makeStyles"
 
 type Props = {
   graph: Graph
-  changes: ReadonlyArray<Change>
+  changes: Changes
   pinned: ReadonlyArray<GraphNodeID>
-  onChangesUpdate: (a: ReadonlyArray<Change>) => void
+  updateChanges: UpdateChangesFn
 }
 
 const useStyles = makeStyles({ name: "ChangesPage" })((theme) => ({
@@ -39,7 +46,7 @@ export default function ChangesPage({
   graph,
   changes,
   pinned,
-  onChangesUpdate,
+  updateChanges,
 }: Props) {
   const { classes } = useStyles()
   const textsToCopy = []
@@ -55,9 +62,11 @@ export default function ChangesPage({
   return (
     <div>
       <List className={classes.list}>
-        {changes
-          .map((change, index) => {
-            const edge = resolveEdgeForNodes(graph, change.from, change.to)
+        {Object.entries(changes.edgeToggles || {})
+          .map(([edgeId, enabled]) => {
+            // ignore enabled async edges
+            if (enabled) return null
+            const edge = resolveEdge(graph, edgeId)
             if (!edge) return null
             const fromNode = getNode(graph, edge.fromId)
             const toNode = getNode(graph, edge.toId)
@@ -69,11 +78,16 @@ export default function ChangesPage({
                 : `In "${fromName}" remove "${toName}"`
             )
             return (
-              <ListItem key={index}>
+              <ListItem key={edgeId}>
                 <IconButton
                   aria-label="Delete"
                   className={classes.delete}
-                  onClick={() => onChangesUpdate(without(changes, change))}
+                  onClick={() =>
+                    updateChanges((changes) => ({
+                      ...changes,
+                      edgeToggles: omit(changes.edgeToggles, [edgeId]),
+                    }))
+                  }
                   size="large"
                 >
                   <Icon>delete</Icon>
@@ -96,14 +110,16 @@ export default function ChangesPage({
             )
           })
           .reverse()}
-        {changes.length === 0 && (
+        {!hasChanges(changes) && (
           <EmptyBox icon={<Icon>block</Icon>}>
             No changes applied. Try breaking links between dependencies
           </EmptyBox>
         )}
       </List>
       <Toolbar>
-        <Button onClick={() => onChangesUpdate([])}>Reset changes</Button>
+        <Button onClick={() => updateChanges((changes) => ({}))}>
+          Reset changes
+        </Button>
         {textsToCopy.length > 0 ? (
           <CopyToClipboard text={textsToCopy.join("\n\n")}>
             <Button>Copy changes to clipboard</Button>

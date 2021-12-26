@@ -22,6 +22,10 @@ export type ElementListGroupProps = {
 const useStyles = makeStyles({ name: "ElementListGroup" })((theme) => ({
   root: {
     padding: 0,
+    background: theme.palette.background.paper,
+    backgroundImage:
+      "linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05))",
+    zIndex: 1,
   },
 }))
 
@@ -42,7 +46,12 @@ export default function ElementListGroup({
       ContainerComponent="div"
       onClick={onClick}
       disableGutters
-      style={style as any}
+      style={
+        // sticky groups should only stick to top and be covered by other groups
+        (style?.position === "sticky"
+          ? { ...style, top: 0, bottom: undefined, zIndex: 0 }
+          : style) as any
+      }
       divider
     >
       <ListItemButton>

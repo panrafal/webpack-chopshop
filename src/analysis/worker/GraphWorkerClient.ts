@@ -1,11 +1,10 @@
 import { Remote, wrap } from "comlink"
-import { omit } from "lodash"
+import throat from "throat"
+import { Changes } from "../changes"
 import { getFilterKey } from "../dependencies"
 import { Graph } from "../graph"
-import { GraphWorkerBackend, localBackend } from "./GraphWorkerBackend"
+import { GraphWorkerBackend } from "./GraphWorkerBackend"
 import { registerTransferHandlers } from "./transferHandlers"
-import throat from "throat"
-import { Change } from "../changes"
 // import { GraphWorkerBackend } from "./GraphWorkerBackend"
 
 function getCacheKey(...args: any[]): string {
@@ -32,6 +31,10 @@ export class GraphWorkerClient
   constructor() {
     registerTransferHandlers()
     this.backend = this.createBackend()
+  }
+
+  get currentGraph(): Graph | null {
+    return this.graph
   }
 
   private createBackend() {
@@ -90,7 +93,7 @@ export class GraphWorkerClient
     return promise
   }
 
-  async setGraphAndApplyChanges(graph: Graph, changes: ReadonlyArray<Change>) {
+  async setGraphAndApplyChanges(graph: Graph, changes: Changes) {
     this.graph = graph
     this.cache = {}
     return this.backend.applyChanges(changes)

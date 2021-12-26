@@ -6,6 +6,7 @@ import registerServiceWorker from "./registerServiceWorker"
 import { createTheme, ThemeProvider, StyledEngineProvider } from "@mui/material"
 import { createAppTheme } from "./ui/theme"
 import { hot } from "react-hot-loader"
+import { HistoryContextProvider } from "./logic/useHistoryState"
 
 registerServiceWorker()
 
@@ -15,7 +16,9 @@ export default function AppRoot() {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
-        <AppContainer />
+        <HistoryContextProvider>
+          <AppContainer />
+        </HistoryContextProvider>
       </ThemeProvider>
     </StyledEngineProvider>
   )

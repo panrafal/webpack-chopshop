@@ -1,41 +1,58 @@
-import type { Graph, GraphNodeID } from "./graph"
+import {
+  getEdge,
+  Graph,
+  GraphEdge,
+  GraphEdgeID,
+  GraphNodeID,
+  resolveEdge,
+} from "./graph"
 
-import { reject, pick } from "lodash"
+import { reject, pick, omit } from "lodash"
 import { toggleEdge, addEdge, resolveEdgeForNodes } from "./graph"
+import { nullFormat } from "numeral"
 
-export type EdgeChange = {
-  change: "edge"
-  from: GraphNodeID
-  to: GraphNodeID
-  enabled: boolean
+export type Changes = {
+  edgeToggles?: Record<GraphEdgeID, boolean>
 }
-
-export type Change = EdgeChange
 
 export const MOCKED_EDGE_KIND = "mocked"
 
-export function addChange(
-  graph: Graph,
-  changes: ReadonlyArray<Change>,
-  change: Change
-): ReadonlyArray<Change> {
-  // Remove same changes from queue
-  // @ts-expect-error
-  const newChanges: Array<Change> = reject(
-    changes,
-    pick(change, ["change", "from", "to"])
+export function hasChanges(changes: Changes): boolean {
+  return (
+    (changes.edgeToggles && Object.values(changes.edgeToggles).length > 0) ||
+    false
   )
-  if (change.change === "edge") {
-    const edge = resolveEdgeForNodes(graph, change.from, change.to)
-    const wasOriginallyEnabled = edge
-      ? edge.kind !== MOCKED_EDGE_KIND && !edge.async
-      : false
-    // Add to queue only if it's a different state than originally
-    if (change.enabled !== wasOriginallyEnabled) {
-      newChanges.push(change)
+}
+
+export function countVisibleChanges(changes: Changes): number {
+  return changes.edgeToggles
+    ? Object.values(changes.edgeToggles).reduce(
+        (sum, enabled) => sum + (enabled ? 0 : 1),
+        0
+      )
+    : 0
+}
+
+export function addEdgeToggleChange(
+  graph: Graph,
+  changes: Changes,
+  edge: GraphEdge,
+  enabled: boolean
+): Changes {
+  const wasOriginallyEnabled = edge
+    ? edge.kind !== MOCKED_EDGE_KIND && !edge.async
+    : false
+  // Add to queue only if it's a different state than originally
+  if (enabled !== wasOriginallyEnabled) {
+    return {
+      ...changes,
+      edgeToggles: { ...changes.edgeToggles, [edge.id]: enabled },
     }
   }
-  return newChanges
+  if (changes.edgeToggles && changes.edgeToggles[edge.id] != null) {
+    return { ...changes, edgeToggles: omit(changes.edgeToggles, [edge.id]) }
+  }
+  return changes
 }
 
 export function revertGraph(graph: Graph) {
@@ -45,28 +62,19 @@ export function revertGraph(graph: Graph) {
   graph.revert.splice(0)
 }
 
-export function applyChanges(graph: Graph, changes: ReadonlyArray<Change>) {
-  for (const change of changes) {
-    if (change.change === "edge") {
-      const fromNode = graph.nodes[change.from]
-      const toNode = graph.nodes[change.to]
-      if (!fromNode || !toNode) {
-        graph.errors.push({
-          message: `One of the nodes is missing, cannot apply the change`,
-          change,
-        })
-        continue
-      }
-
-      let edge = resolveEdgeForNodes(graph, change.from, change.to)
-      if (!edge) {
-        console.warn(`Edge ${change.from} -> ${change.to} doesnt exist`)
-      }
-      const prevEnabled = edge.enabled
-      graph.revert.push(() => {
-        toggleEdge(graph, edge, prevEnabled)
+export function applyChanges(graph: Graph, changes: Changes) {
+  for (const [edgeId, enabled] of Object.entries(changes.edgeToggles || {})) {
+    const edge = resolveEdge(graph, edgeId)
+    if (!edge) {
+      graph.errors.push({
+        message: `Edge ${edgeId} doesnt exist`,
       })
-      toggleEdge(graph, edge, change.enabled)
+      continue
     }
+    const prevEnabled = edge.enabled
+    graph.revert.push(() => {
+      toggleEdge(graph, edge, prevEnabled)
+    })
+    toggleEdge(graph, edge, enabled)
   }
 }

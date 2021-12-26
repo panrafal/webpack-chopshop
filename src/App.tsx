@@ -1,6 +1,6 @@
 import { useDropzone } from "react-dropzone"
 
-import { encodeUrlStateHash } from "./history"
+import { encodeUrlStateHash } from "./logic/useHistoryState"
 import { lazy, useCallback, useEffect, useState } from "react"
 import { PromiseTrackerFn } from "./ui/hooks/usePromiseTracker"
 import { usePinnedState } from "./logic/usePinnedState"
@@ -22,6 +22,7 @@ import WarningBar from "./ui/WarningBar"
 import EmptyBox from "./ui/EmptyBox"
 import { makeStyles } from "./ui/makeStyles"
 import OpenStatsPage from "./ui/open/OpenStatsPage"
+import { countVisibleChanges, hasChanges } from "./analysis/changes"
 
 const TreePage = lazy(() => import("./ui/tree/TreePage"))
 const ChangesPage = lazy(() => import("./ui/changes/ChangesPage"))
@@ -160,7 +161,7 @@ export default function App({ className, trackLoading }: Props) {
         return json
       })
     }
-  }, [openGraph])
+  }, [])
 
   // Pinned items ---------------------------------------
   const [pinned, togglePinned] = usePinnedState()
@@ -211,7 +212,7 @@ export default function App({ className, trackLoading }: Props) {
         graph={graph}
         changes={changes}
         pinned={pinned}
-        onChangesUpdate={() => {}}
+        updateChanges={updateChanges}
       />
     )
   }
@@ -244,8 +245,8 @@ export default function App({ className, trackLoading }: Props) {
                 value="changes"
                 label={
                   <Badge
-                    badgeContent={changes.length}
-                    invisible={changes.length === 0}
+                    badgeContent={countVisibleChanges(changes)}
+                    invisible={countVisibleChanges(changes) === 0}
                     color="secondary"
                   >
                     Show changes

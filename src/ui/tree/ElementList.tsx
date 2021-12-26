@@ -72,6 +72,10 @@ export type ElementListProps<T> = {
   children?: ReactNode
 }
 
+function isGroup(item: any): item is GroupElement {
+  return "group" in item && item.group === true
+}
+
 const useStyles = makeStyles({ name: "ElementList" })((theme) => ({
   root: {
     display: "flex",
@@ -126,7 +130,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
   renderItem,
   renderEmpty,
   items,
-  itemSize,
+  itemSize = 64,
   stickyItems = [],
   getNode = getNodeFromElement,
   graph,
@@ -186,7 +190,18 @@ function ElementList<T extends GraphNode | GraphEdge>({
     search,
   ])
 
-  const stickyIndexes = uniq(stickyItems)
+  const stickyGroupHeaders = useMemo(() => {
+    if (!groupItemsBy) return []
+    let stickyGroupHeaders = []
+    for (const item of listItems) {
+      if (isGroup(item) && isTreeExpanded(treeState, item, treeOptions)) {
+        stickyGroupHeaders.push(item)
+      }
+    }
+    return stickyGroupHeaders
+  }, [groupItemsBy, listItems, treeState, treeOptions])
+
+  const stickyIndexes = uniq([...stickyItems, ...stickyGroupHeaders])
     .map((item) => listItems.indexOf(item))
     .filter((index) => index >= 0)
     .sort((a, b) => a - b)
@@ -195,14 +210,14 @@ function ElementList<T extends GraphNode | GraphEdge>({
     if (stickyIndexes.includes(index) && style.position !== "sticky")
       return null
     const item = listItems[index]
-    if ("group" in item && item.group) {
+    if (isGroup(item)) {
       return (
         <ElementListGroup
           group={item}
           expanded={isTreeExpanded(treeState, item, treeOptions)}
           onClick={() => setTreeState(toggleTreeRowState(item, treeOptions))}
           // drop `bottom` for sticky group headers
-          style={omit(style, ["bottom"]) as any}
+          style={style as any}
           key={index}
         />
       )
@@ -210,7 +225,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
       return renderItem({
         item: item as Exclude<T, Group>,
         key: String(index),
-        hidePackage: Boolean(groupItemsBy),
+        hidePackage: Boolean(groupItemsBy && !search),
         style,
       })
     }
