@@ -1,11 +1,12 @@
+import { Paper } from "@mui/material"
+import { uniq } from "lodash"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useVirtual } from "react-virtual"
+import { EdgeChain } from "../../analysis/chains"
 import {
-  createRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react"
+  currentGraphFilter,
+  stopOnAsyncModulesFilter,
+} from "../../analysis/filters"
 import {
   getAllNodes,
   getEdgeId,
@@ -20,33 +21,19 @@ import {
   resolveNode,
   ROOT_NODE_ID,
 } from "../../analysis/graph"
-import TreeLevel from "./TreeLevel"
-import {
-  getAsyncEdges,
-  getDeepNodeChildren,
-  getEnabledChildEdges,
-} from "../../analysis/dependencies"
-import {
-  currentGraphFilter,
-  stopOnAsyncModulesFilter,
-} from "../../analysis/filters"
-import { findChains } from "../../analysis/chains"
-import { useStablePromise } from "../hooks/promises"
-import { TreeContextProvider } from "./TreeContext"
+import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
 import { UpdateChangesFn } from "../../logic/useGraphState"
-import NodeNavigator, { NavigatorModes } from "./NodeNavigator"
 import { TogglePinnedFn } from "../../logic/usePinnedState"
-import LoadingBoundary from "../LoadingBoundary"
+import { useStablePromise } from "../hooks/promises"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
+import LoadingBoundary from "../LoadingBoundary"
 import { makeStyles } from "../makeStyles"
-import { uniq } from "lodash"
-import { findNodeCycles } from "../../analysis/cycles"
-import RootInfo from "./info/RootInfo"
 import ActiveEdgeInfo from "./info/ActiveEdgeInfo"
 import ActiveNodeInfo from "./info/ActiveNodeInfo"
-import { Grid, Paper } from "@mui/material"
-import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
-import { useVirtual } from "react-virtual"
+import RootInfo from "./info/RootInfo"
+import NodeNavigator, { NavigatorMode, NavigatorModes } from "./NodeNavigator"
+import { TreeContextProvider } from "./TreeContext"
+import TreeLevel from "./TreeLevel"
 
 type Props = {
   graph: Graph
@@ -79,7 +66,8 @@ function TreePage({
   ])
   const activeEdge = resolveEdge(graph, activeEdgeId)
 
-  // Tree Mode -------------------------------------
+  // Tree Modes -------------------------------------
+
   const { getChildEdges, renderEmptyChildren, navigatorModes, normalizePath } =
     useMemo(() => {
       const defaults = {
@@ -103,7 +91,7 @@ function TreePage({
             renderEmptyChildren: () => "There are no deeper split points",
             navigatorModes: {
               all: {
-                getNodes: () =>
+                getItems: () =>
                   graphWorker
                     .getAsyncEdges(graph.root)
                     .then((ids) => getEdges(graph, ids))
@@ -114,7 +102,7 @@ function TreePage({
                 renderEmpty: () => "Nothing found",
               },
               children: {
-                getNodes: () =>
+                getItems: () =>
                   graphWorker
                     .getAsyncEdges(
                       resolveNode(
@@ -131,6 +119,7 @@ function TreePage({
               },
             } as NavigatorModes,
           }
+
         case "modules":
           return {
             ...defaults,
@@ -138,7 +127,7 @@ function TreePage({
             getChildEdges: (node: GraphNode) => node.children,
             navigatorModes: {
               enabled: {
-                getNodes: () =>
+                getItems: () =>
                   graphWorker
                     .getDeepNodeChildren(graph.root, currentGraphFilter)
                     .then((ids) => getNodes(graph, ids)),
@@ -146,7 +135,7 @@ function TreePage({
                 renderEmpty: () => "Nothing found",
               },
               children: {
-                getNodes: () =>
+                getItems: () =>
                   graphWorker
                     .getDeepNodeChildren(
                       resolveNode(
@@ -160,12 +149,13 @@ function TreePage({
                 renderEmpty: () => "Nothing found",
               },
               all: {
-                getNodes: () => getAllNodes(graph),
+                getItems: () => getAllNodes(graph),
                 renderTitle: () => "All Nodes",
                 renderEmpty: () => "Nothing found",
               },
             } as NavigatorModes,
           }
+
         case "cycles":
           return {
             ...defaults,
@@ -173,28 +163,26 @@ function TreePage({
             getChildEdges: (node: GraphNode) => node.children,
             navigatorModes: {
               cycles: {
-                getNodes: () =>
-                  graphWorker
-                    .findNodeCycles(graph.root, currentGraphFilter)
-                    .then((cycles) =>
-                      cycles
-                        .map((cycle) => cycle[cycle.length - 1])
-                        .map((cycleEnd) => getNode(graph, cycleEnd))
-                    ),
+                getItems: () =>
+                  graphWorker.findNodeCycles(graph.root, currentGraphFilter),
+                getItemNode: (graph, cycle) =>
+                  getNode(graph, cycle[cycle.length - 1]),
                 renderTitle: () => "Cycles",
                 renderEmpty: () => "Nothing found",
-              },
+              } as NavigatorMode<EdgeChain>,
             } as NavigatorModes,
           }
       }
-    }, [graph, modeId, activeEdgeId])
+    }, [modeId, graph, graphWorker, activeEdgeId])
+
+  // Analyse tree based on current choice
 
   const { value: enabledIds, promise: enabledIdsPromise } = useStablePromise(
     useMemo(async () => {
       const edgeIds = await graphWorker.getEnabledChildEdges(graph.root)
       const nodeIds = getEdges(graph, edgeIds).map((e) => e.toId)
       return [...edgeIds, ...nodeIds]
-    }, [graph])
+    }, [graph, graphWorker])
   )
   useEffect(() => {
     trackLoading(enabledIdsPromise)
@@ -213,54 +201,59 @@ function TreePage({
           : []
         const chainedNodeIds = chains.flat()
         return [chains, chainedNodeIds] as const
-      }, [graph, activeNodeId])
+      }, [graph, activeNodeId, graphWorker])
     )
   useEffect(() => {
     trackLoading(chainsPromise)
   }, [chainsPromise, trackLoading])
 
-  // Smooth scrolling to index
+  // Smooth scrolling to index ------------------------------
+
   const treeLevelsRef = useRef<HTMLDivElement>()
   const scrollToTimerRef = useRef<number>()
-  const scrollToTreeIndex = useCallback((index) => {
-    if (scrollToTimerRef.current) cancelAnimationFrame(scrollToTimerRef.current)
-    scrollToTimerRef.current = null
-
-    const levelWidth = getTreeLevelWidth()
-    const padding = 16
-    const left = padding + index * (levelWidth + theme.graph.treeLevelGap)
-    const maxScrollLeft = left - padding
-    const minScrollLeft = Math.max(
-      0,
-      maxScrollLeft -
-        treeLevelsRef.current.offsetWidth +
-        levelWidth +
-        2 * padding
-    )
-    if (
-      treeLevelsRef.current.scrollLeft >= minScrollLeft &&
-      treeLevelsRef.current.scrollLeft <= maxScrollLeft
-    ) {
-      // within bounds - nothing to do
-      return
-    }
-    const scrollTo =
-      treeLevelsRef.current.scrollLeft > maxScrollLeft
-        ? maxScrollLeft
-        : minScrollLeft
-    console.log("scroll!")
-    const diff = scrollTo - treeLevelsRef.current.scrollLeft
-    if (Math.abs(diff) > 5) {
-      treeLevelsRef.current.scrollLeft += diff / 2
+  const scrollToTreeIndex = useCallback(
+    (index) => {
       if (scrollToTimerRef.current)
         cancelAnimationFrame(scrollToTimerRef.current)
-      scrollToTimerRef.current = requestAnimationFrame(() =>
-        scrollToTreeIndex(index)
+      scrollToTimerRef.current = null
+
+      const levelWidth = getTreeLevelWidth()
+      const padding = 16
+      const left = padding + index * (levelWidth + theme.graph.treeLevelGap)
+      const maxScrollLeft = left - padding
+      const minScrollLeft = Math.max(
+        0,
+        maxScrollLeft -
+          treeLevelsRef.current.offsetWidth +
+          levelWidth +
+          2 * padding
       )
-    } else {
-      treeLevelsRef.current.scrollLeft = scrollTo
-    }
-  }, [])
+      if (
+        treeLevelsRef.current.scrollLeft >= minScrollLeft &&
+        treeLevelsRef.current.scrollLeft <= maxScrollLeft
+      ) {
+        // within bounds - nothing to do
+        return
+      }
+      const scrollTo =
+        treeLevelsRef.current.scrollLeft > maxScrollLeft
+          ? maxScrollLeft
+          : minScrollLeft
+      console.log("scroll!")
+      const diff = scrollTo - treeLevelsRef.current.scrollLeft
+      if (Math.abs(diff) > 5) {
+        treeLevelsRef.current.scrollLeft += diff / 2
+        if (scrollToTimerRef.current)
+          cancelAnimationFrame(scrollToTimerRef.current)
+        scrollToTimerRef.current = requestAnimationFrame(() =>
+          scrollToTreeIndex(index)
+        )
+      } else {
+        treeLevelsRef.current.scrollLeft = scrollTo
+      }
+    },
+    [theme]
+  )
 
   const openNode = useCallback(
     (toNode: GraphNode) => {
@@ -313,10 +306,12 @@ function TreePage({
           }
         }
         if (chains.length === 0) {
+          // eslint-disable-next-line no-throw-literal
           throw `Node ${toNode.name || toNode.id} is not connected to anything`
         }
         const chain = chains[0]
         const chainStart = chain[0]
+        // Add the found chain to the currently opened path
         const newOpenedIds = normalizePath([
           ...openedNodeIds.slice(
             0,
@@ -324,8 +319,6 @@ function TreePage({
           ),
           ...chain,
         ])
-
-        // Add the found chain to the currently opened path
         setOpenedNodeIds(newOpenedIds)
         setActiveEdgeId(
           getEdgeId(chain[chain.length - 2], chain[chain.length - 1])
@@ -334,7 +327,15 @@ function TreePage({
       }
       trackLoading(run())
     },
-    [graph, trackLoading, openedNodeIds, activeEdgeId, normalizePath]
+    [
+      trackLoading,
+      openedNodeIds,
+      graph,
+      activeEdgeId,
+      graphWorker,
+      normalizePath,
+      scrollToTreeIndex,
+    ]
   )
 
   // Normalize path after node change
@@ -347,7 +348,10 @@ function TreePage({
     size: openedNodeIds.length,
     parentRef: treeLevelsRef,
     horizontal: true,
-    estimateSize: getTreeLevelWidth,
+    estimateSize: useCallback(
+      () => getTreeLevelWidth() + theme.graph.treeLevelGap,
+      [theme]
+    ),
   })
 
   const treeLevels = openedNodeIds.map((nodeId, index) => {
@@ -360,7 +364,7 @@ function TreePage({
         className={classes.treeLevel}
         node={getNode(graph, nodeId)}
         childNode={resolveNode(graph, openedNodeIds[index + 1])}
-        selectEdge={(edge) => {
+        activateEdge={(edge) => {
           const node = getNode(graph, edge.toId)
           // ignore if this edge is already opened or there's a dependency cycle
           const alreadyOpened = openedNodeIds[index + 1] === node.id

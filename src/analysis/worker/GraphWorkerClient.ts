@@ -12,11 +12,11 @@ function getCacheKey(...args: any[]): string {
   let key = ""
   for (const arg of args) {
     if (typeof arg === "function") {
-      key += getFilterKey(arg)
+      key += getFilterKey(arg) + ":"
     } else if (typeof arg === "object" && arg && "id" in arg) {
-      key += arg.id
+      key += arg.id + ":"
     } else {
-      key += JSON.stringify(arg)
+      key += JSON.stringify(arg) + ":"
     }
   }
   return key

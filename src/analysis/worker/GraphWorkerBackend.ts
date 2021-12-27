@@ -18,7 +18,8 @@ import {
 } from "../size"
 import { registerTransferHandlers } from "./transferHandlers"
 
-let graph: Graph
+// @ts-expect-error
+let graph: Graph = module.hot?.data?.graph
 
 function bindGraph<Args extends Array<any>, Ret>(
   fn: (graph: Graph, ...args: Args) => Ret
@@ -51,7 +52,6 @@ const backend = {
     await modifyGraph(graph, (newGraph) => {
       revertGraph(newGraph)
       applyChanges(newGraph, changes)
-      newGraph.parallel = createParallelProcessor({ maxDelay: 100 })
       graph = newGraph
     })
   },
@@ -74,3 +74,12 @@ export type GraphWorkerBackend = typeof backend
 export { backend as localBackend }
 
 expose(backend)
+
+if ("hot" in module) {
+  // @ts-expect-error
+  module.hot.dispose((data) => {
+    data.graph = graph
+  })
+  // @ts-expect-error
+  module.hot.accept()
+}

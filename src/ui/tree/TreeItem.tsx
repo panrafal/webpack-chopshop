@@ -125,7 +125,8 @@ function getCycledState({
       cycleEndIndex = openedNodeIds.indexOf(cyclingNodeId)
     }
   }
-  if (isCycleEnd && cycleStartIndex == null) return "lone"
+  if (isCycleEnd && (cycleStartIndex == null || activeNode?.id !== edge.toId))
+    return "lone"
   if (isCycleEnd) return "end"
   if (!isOpened || cycleStartIndex == null || cycleEndIndex == null)
     return false
@@ -300,15 +301,7 @@ export default function TreeItem({
             }
           />
           {(cycled === "lone" || cycled === "end") && (
-            <IconButton
-              className={classes.cycleIcon}
-              onClick={(event) => {
-                event.stopPropagation()
-                openNode(getNode(graph, edge.toId))
-              }}
-            >
-              <ChangeCircle />
-            </IconButton>
+            <ChangeCircle className={classes.cycleIcon} />
           )}
         </ListItemButton>
       </ListItem>

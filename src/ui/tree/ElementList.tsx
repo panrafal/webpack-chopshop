@@ -166,8 +166,8 @@ function ElementList<T>({
       })
       rows = map(groups, (children, name) => ({
         name,
-        children: sortBy(children, "file"),
-        size: sumBy(children, "size"),
+        children: sortBy(children, (item) => getNode(graph, item).file),
+        size: sumBy(children, (item) => getNode(graph, item).size),
         group: true,
       }))
       rows = orderBy(rows, ...orderGroupsBy)

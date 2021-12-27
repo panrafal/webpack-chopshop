@@ -9,8 +9,8 @@ import {
   MenuItem,
   Select,
 } from "@mui/material"
-import { useMemo, useState } from "react"
-import { GraphNode, resolveEdge, resolveNode } from "../../analysis/graph"
+import { MouseEvent, useMemo, useState } from "react"
+import { Graph, GraphNode } from "../../analysis/graph"
 import EmptyBox from "../EmptyBox"
 import ErrorBox from "../ErrorBox"
 import { useStablePromise } from "../hooks/promises"
@@ -19,15 +19,17 @@ import ElementList, { ElementListProps, RenderItemProps } from "./ElementList"
 import NodeNavigatorItem, { NodeNavigatorItemProps } from "./NodeNavigatorItem"
 import { useTreeContext } from "./TreeContext"
 
-export type NavigatorMode = {
-  getNodes: () => ReadonlyArray<GraphNode> | Promise<ReadonlyArray<GraphNode>>
+export type NavigatorMode<T> = {
+  getItems: () => ReadonlyArray<T> | Promise<ReadonlyArray<T>>
+  getItemNode?: (graph: Graph, item: T) => GraphNode
+  activateItem?: (item: T, event: MouseEvent<any>) => void
   renderTitle: () => React.ReactNode
   renderEmpty: () => string
-  listProps?: () => Partial<ElementListProps<GraphNode>>
-  itemProps?: (a: RenderItemProps<GraphNode>) => Partial<NodeNavigatorItemProps>
+  listProps?: () => Partial<ElementListProps<T>>
+  itemProps?: (a: RenderItemProps<T>) => Partial<NodeNavigatorItemProps>
 }
 
-export type NavigatorModes = Record<string, NavigatorMode>
+export type NavigatorModes = Record<string, NavigatorMode<any>>
 
 type Props = {
   className?: string
@@ -65,7 +67,9 @@ export default function NodeNavigator({ className, modes }: Props) {
     openNode,
   } = useTreeContext()
 
-  const nodesPromise = useMemo(() => mode.getNodes(), [mode])
+  const { getItemNode = (_, item) => item } = mode
+
+  const nodesPromise = useMemo(() => mode.getItems(), [mode])
 
   const { value: nodes, loading, error } = useStablePromise(nodesPromise)
 
@@ -102,42 +106,43 @@ export default function NodeNavigator({ className, modes }: Props) {
         <ElementList
           className={classes.list}
           items={nodes}
+          getNode={getItemNode}
           graph={graph}
           pinned={pinned}
           groupItemsBy="package"
           orderItemsBy={undefined}
           orderGroupsBy={[["size"], ["desc"]]}
-          renderItem={({ item, ...itemProps }) => (
-            <NodeNavigatorItem
-              {...itemProps}
-              node={item}
-              selected={
-                item ===
-                resolveNode(graph, resolveEdge(graph, activeEdgeId)?.toId)
-              }
-              retainerRootNode={graph.root}
-              onClick={() => {
-                openNode(item)
-              }}
-              onDoubleClick={() => {
-                setActiveNodeId(item.id)
-              }}
-              {...(mode.itemProps && mode.itemProps({ item, ...itemProps }))}
-            >
-              {pinned.indexOf(item.id) >= 0 ? (
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => {
-                      togglePinned({ id: item.id, set: false })
-                    }}
-                    size="large"
-                  >
-                    <StarIcon color="disabled" />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              ) : null}
-            </NodeNavigatorItem>
-          )}
+          renderItem={({ item, ...itemProps }) => {
+            const node = getItemNode(graph, item)
+            return (
+              <NodeNavigatorItem
+                {...itemProps}
+                node={node}
+                retainerRootNode={graph.root}
+                onClick={(event) => {
+                  if (mode.activateItem) mode.activateItem(item, event)
+                  else {
+                    if (event.shiftKey) setActiveNodeId(node.id)
+                    openNode(node)
+                  }
+                }}
+                {...(mode.itemProps && mode.itemProps({ item, ...itemProps }))}
+              >
+                {pinned.indexOf(node.id) >= 0 ? (
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      onClick={() => {
+                        togglePinned({ id: node.id, set: false })
+                      }}
+                      size="large"
+                    >
+                      <StarIcon color="disabled" />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                ) : null}
+              </NodeNavigatorItem>
+            )
+          }}
           renderEmpty={() => (
             <EmptyBox icon={<BlockIcon />}>{mode.renderEmpty()}</EmptyBox>
           )}

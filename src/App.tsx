@@ -256,17 +256,17 @@ export default function App({ className, trackLoading }: Props) {
           </Typography>
         </Toolbar>
       </AppBar>
+      <LoadingBoundary
+        fallback={<LinearProgress className={classes.progress} />}
+      >
+        {pageElement}
+      </LoadingBoundary>
       {graph && graph.errors.length > 0 && (
         <WarningBar>
           There where {graph.errors.length} errors found. Check the console for
           more
         </WarningBar>
       )}
-      <LoadingBoundary
-        fallback={<LinearProgress className={classes.progress} />}
-      >
-        {pageElement}
-      </LoadingBoundary>
     </div>
   )
 }

@@ -28,7 +28,7 @@ export type ParallelProcessor = {
 
 //
 export const createParallelProcessor = ({
-  maxDelay = 16,
+  maxDelay = typeof window === "undefined" ? 100 : 16,
 }: { maxDelay?: number } = {}): ParallelProcessor => {
   let abortSignalReject
   let aborted

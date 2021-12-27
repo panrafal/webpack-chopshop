@@ -1,6 +1,6 @@
 import { ListItem, ListItemText, ListItemButton } from "@mui/material"
-import { ReactNode } from "react"
-import { GraphNode } from "../../analysis/graph"
+import { MouseEvent, ReactNode } from "react"
+import { GraphNode, resolveEdge } from "../../analysis/graph"
 import { getNodeGroup } from "../../analysis/groups"
 import { makeStyles } from "../makeStyles"
 import NodeName from "../nodes/NodeName"
@@ -18,8 +18,8 @@ export type NodeNavigatorItemProps = {
   selected?: boolean
   children?: ReactNode
 
-  onClick?: () => void
-  onDoubleClick?: () => void
+  onClick?: (event: MouseEvent<any>) => void
+  onDoubleClick?: (event: MouseEvent<any>) => void
 }
 
 const useStyles = makeStyles({ name: "NodeNavigatorItem" })((theme) => ({
@@ -29,11 +29,9 @@ const useStyles = makeStyles({ name: "NodeNavigatorItem" })((theme) => ({
   disabled: {
     opacity: 0.5,
   },
-  chained: {
-    border: "1px solid red",
-  },
-  active: {
-    border: "4px solid red",
+  activeNode: {
+    border: `1px solid ${theme.graph.treeLineColor.chained}`,
+    borderRadius: 2,
   },
 }))
 
@@ -49,8 +47,11 @@ export default function NodeNavigatorItem({
   children,
 }: NodeNavigatorItemProps) {
   const { classes, cx, theme } = useStyles()
-  const { graph, graphWorker, updateChanges, activeNodeId } = useTreeContext()
-  const active = activeNodeId === node.id
+  const { graph, graphWorker, updateChanges, activeNodeId, activeEdgeId } =
+    useTreeContext()
+  const activeEdge = resolveEdge(graph, activeEdgeId)
+  const isActiveNode = activeNodeId === node.id
+  const isActiveEdge = activeEdge?.toId === node.id
   const group = getNodeGroup(node)
 
   return (
@@ -60,13 +61,13 @@ export default function NodeNavigatorItem({
         disableGutters
         // @ts-expect-error mui
         ContainerComponent="div"
-        selected={selected}
+        selected={isActiveEdge}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
         className={cx(
           className,
           classes.NodeNavigatorItem,
-          active && classes.active
+          isActiveNode && classes.activeNode
         )}
       >
         <ListItemButton>
@@ -75,6 +76,7 @@ export default function NodeNavigatorItem({
             primaryTypographyProps={{
               noWrap: true,
               color: theme.palette[group.colorName].main,
+              fontWeight: isActiveEdge ? "bold" : "initial",
             }}
             secondary={
               <NodeSize node={node} retainerRootNode={retainerRootNode} />

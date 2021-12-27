@@ -15,7 +15,7 @@ type Props = {
   parentNode?: GraphNode | null
   node: GraphNode
   childNode?: GraphNode | null
-  selectEdge: (node: GraphEdge) => void
+  activateEdge: (node: GraphEdge) => void
   activateNode: (node: GraphNode) => void
   className?: string
   levelIndex: number
@@ -58,7 +58,7 @@ function TreeLevel(
   {
     node,
     childNode,
-    selectEdge,
+    activateEdge,
     activateNode,
     className,
     levelIndex,
@@ -128,10 +128,7 @@ function TreeLevel(
               if (event.shiftKey) {
                 activateNode(getNode(graph, item.toId))
               }
-              selectEdge(item)
-            }}
-            onDoubleClick={() => {
-              activateNode(getNode(graph, item.toId))
+              activateEdge(item)
             }}
             // checked={selected ? selected.id === itemProps.node.id : false}
           />
