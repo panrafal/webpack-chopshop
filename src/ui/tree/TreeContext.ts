@@ -24,7 +24,7 @@ export type TreeContextType = {
   activeNodeId: GraphNodeID | null
   setActiveNodeId: (n: GraphNodeID | null) => void
   activeEdgeId: GraphEdgeID | null
-  openNode(n: GraphNode)
+  openNodeChain(n: ReadonlyArray<GraphNode>)
   trackLoading: PromiseTrackerFn
   updateChanges: UpdateChangesFn
   chains: EdgeChain[]

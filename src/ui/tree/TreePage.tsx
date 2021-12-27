@@ -1,5 +1,6 @@
 import { Paper } from "@mui/material"
-import { uniq } from "lodash"
+import { first, intersection, isEqual, last, nth, uniq } from "lodash"
+import { normalize } from "path/posix"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useVirtual } from "react-virtual"
 import { EdgeChain } from "../../analysis/chains"
@@ -167,6 +168,10 @@ function TreePage({
                   graphWorker.findNodeCycles(graph.root, currentGraphFilter),
                 getItemNode: (graph, cycle) =>
                   getNode(graph, cycle[cycle.length - 1]),
+                activateItem: (cycle, event) => {
+                  setActiveNodeId(first(cycle))
+                  openNodeChain(getNodes(graph, cycle))
+                },
                 renderTitle: () => "Cycles",
                 renderEmpty: () => "Nothing found",
               } as NavigatorMode<EdgeChain>,
@@ -255,92 +260,163 @@ function TreePage({
     [theme]
   )
 
-  const openNode = useCallback(
-    (toNode: GraphNode) => {
+  // Opens a specific node or chain of nodes trying not to change the currently opened tree as much as possible
+  // To open a cycle, first and last nodes should be the same
+  const openNodeChain = useCallback(
+    (nodes: ReadonlyArray<GraphNode>) => {
       const run = async () => {
-        if (openedNodeIds.includes(toNode.id)) {
-          setActiveEdgeId(
-            getEdgeId(
-              openedNodeIds[openedNodeIds.indexOf(toNode.id) - 1],
-              toNode.id
+        const nodeIds = nodes.map(({ id }) => id)
+        const openingCycle = nodes.length > 1 && first(nodes) === last(nodes)
+
+        // Checks if one array contains another in full
+        function includesArray(
+          big: ReadonlyArray<any>,
+          small: ReadonlyArray<any>
+        ) {
+          if (big.length < small.length) return false
+          for (let i = 0; i <= big.length - small.length; ++i) {
+            if (isEqual(big.slice(i, i + small.length), small)) return true
+          }
+          return false
+        }
+
+        // Checks if path prefix doesn't introduce cycles when combined with suffix
+        function isCorrectNodePathPrefix(
+          prefix: GraphNodeID[],
+          suffix: GraphNodeID[]
+        ) {
+          // prefix cannot contain cycles itself
+          if (prefix.length !== uniq(prefix).length) return false
+          return intersection(prefix, suffix).length === 0
+        }
+
+        // yields chains that lead to the node in order of their usefullness
+        async function* findPrefixChains(toNode: GraphNode) {
+          const openedIndex = openedNodeIds.indexOf(toNode.id)
+          if (openedIndex > 0) {
+            // start with currently opened
+            yield openedNodeIds.slice(0, openedIndex + 1)
+          }
+          if (activeEdge && openedNodeIds.includes(activeEdge.id)) {
+            const prefix = openedNodeIds.slice(
+              0,
+              openedNodeIds.indexOf(activeEdge.id)
             )
-          )
-          scrollToTreeIndex(openedNodeIds.indexOf(toNode.id))
-          return
-        }
-        const activeEdge = resolveEdge(graph, activeEdgeId)
-        // Pick starting node that is included on the path
-        const fromNode =
-          activeEdge && openedNodeIds.includes(activeEdge.toId)
-            ? getNode(graph, activeEdge.toId)
-            : graph.root
-        const openedBeforeFromNode = openedNodeIds.slice(
-          0,
-          openedNodeIds.findIndex((id) => id === fromNode.id)
-        )
-        // Try to find connection between currently selected & opening node.
-        let chains = await graphWorker.findChains(
-          fromNode,
-          toNode,
-          currentGraphFilter
-        )
-        // If there's no active connection - pick disabled ones
-        if (chains.length === 0) {
-          chains = await graphWorker.findChains(fromNode, toNode)
-        }
-        // Remove chains that would open a dependency cycle (they include an opened node)
-        chains = chains.filter(
-          (chain) => !chain.some((id) => openedBeforeFromNode.includes(id))
-        )
-        // If there's no connection from selected node, start from root
-        if (fromNode !== graph.root) {
-          if (chains.length === 0) {
-            chains = await graphWorker.findChains(
-              graph.root,
+            // try enabled chains starting from active edge
+            let chains = await graphWorker.findChains(
+              getNode(graph, activeEdge.toId),
               toNode,
               currentGraphFilter
             )
+            yield* chains.map((chain) => [...prefix, ...chain])
+            // try all chains starting from active edge
+            chains = await graphWorker.findChains(
+              getNode(graph, activeEdge.toId),
+              toNode,
+              currentGraphFilter
+            )
+            yield* chains.map((chain) => [...prefix, ...chain])
           }
-          if (chains.length === 0) {
-            chains = await graphWorker.findChains(graph.root, toNode)
-          }
+          // enabled chains from root
+          yield* await graphWorker.findChains(
+            graph.root,
+            toNode,
+            currentGraphFilter
+          )
+          // all chains from root
+          yield* await graphWorker.findChains(graph.root, toNode)
         }
-        if (chains.length === 0) {
-          // eslint-disable-next-line no-throw-literal
-          throw `Node ${toNode.name || toNode.id} is not connected to anything`
-        }
-        const chain = chains[0]
-        const chainStart = chain[0]
-        // Add the found chain to the currently opened path
-        const newOpenedIds = normalizePath([
-          ...openedNodeIds.slice(
+
+        let newOpenedNodeIds
+        let prefixedNodeIds
+        // if path is already opened - don't change it
+        if (includesArray(openedNodeIds, normalizePath(nodeIds))) {
+          newOpenedNodeIds = openedNodeIds
+          prefixedNodeIds = openedNodeIds.slice(
             0,
-            openedNodeIds.findIndex((id) => id === chainStart)
-          ),
-          ...chain,
-        ])
-        setOpenedNodeIds(newOpenedIds)
-        setActiveEdgeId(
-          getEdgeId(chain[chain.length - 2], chain[chain.length - 1])
+            openedNodeIds.lastIndexOf(last(nodeIds)) + 1
+          )
+        } else if (first(nodes) === graph.root) {
+          newOpenedNodeIds = nodeIds
+        } else {
+          // iterate through possible path prefixes. choose the first that creates an acceptable path (without cycles)
+          for await (let prefix of findPrefixChains(first(nodes))) {
+            prefix = prefix.slice(0, -1) // prefix includes the first node
+            if (isCorrectNodePathPrefix(prefix, nodeIds)) {
+              newOpenedNodeIds = [...prefix, ...nodeIds]
+              break
+            }
+          }
+        }
+        // if there's a path to activeNode (and it isn't on the path already) - open it as well
+        prefixedNodeIds ??= newOpenedNodeIds
+        if (
+          newOpenedNodeIds &&
+          activeNodeId &&
+          !openingCycle &&
+          !newOpenedNodeIds.includes(activeNodeId)
+        ) {
+          for await (let suffix of await graphWorker.findChains(
+            getNode(graph, last(newOpenedNodeIds)),
+            getNode(graph, activeNodeId)
+          )) {
+            suffix = suffix.slice(1) // suffix contains the fromNode
+            if (isCorrectNodePathPrefix(newOpenedNodeIds, suffix)) {
+              newOpenedNodeIds = [...newOpenedNodeIds, ...suffix]
+              break
+            }
+          }
+        }
+        if (!newOpenedNodeIds) {
+          // eslint-disable-next-line no-throw-literal
+          throw `Node ${
+            first(nodes).name || first(nodes).id
+          } is not connected to anything`
+        }
+
+        if (prefixedNodeIds.length > 1) {
+          setActiveEdgeId(
+            getEdgeId(nth(prefixedNodeIds, -2), nth(prefixedNodeIds, -1))
+          )
+        }
+
+        if (openingCycle) {
+          // remove the last cycled node
+          newOpenedNodeIds = newOpenedNodeIds.slice(0, -1)
+        }
+
+        // activate the last node (or edge if there's a cycle) - ignore the suffixed part leading to active node
+        if (newOpenedNodeIds !== openedNodeIds) {
+          setOpenedNodeIds(normalizePath(newOpenedNodeIds))
+        }
+        scrollToTreeIndex(
+          Math.min(prefixedNodeIds.length, newOpenedNodeIds.length) - 1
         )
-        scrollToTreeIndex(newOpenedIds.length - 1)
       }
       trackLoading(run())
     },
     [
       trackLoading,
       openedNodeIds,
-      graph,
-      activeEdgeId,
-      graphWorker,
       normalizePath,
+      activeNodeId,
       scrollToTreeIndex,
+      activeEdge,
+      graphWorker,
+      graph,
     ]
   )
 
-  // Normalize path after node change
+  // Normalize path after mode change
   useEffect(() => {
-    openNode(resolveNode(graph, activeEdge?.toId) || graph.root)
+    if (activeEdge) {
+      openNodeChain([
+        resolveNode(graph, activeEdge.fromId),
+        resolveNode(graph, activeEdge.toId),
+      ])
+    } else {
+      openNodeChain([graph.root])
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modeId])
 
@@ -365,22 +441,15 @@ function TreePage({
         node={getNode(graph, nodeId)}
         childNode={resolveNode(graph, openedNodeIds[index + 1])}
         activateEdge={(edge) => {
-          const node = getNode(graph, edge.toId)
-          // ignore if this edge is already opened or there's a dependency cycle
-          const alreadyOpened = openedNodeIds[index + 1] === node.id
-          const belongsToCycle = openedNodeIds
-            .slice(0, index + 1)
-            .includes(node.id)
-          if (!alreadyOpened && !belongsToCycle) {
-            const newOpened = [...openedNodeIds.slice(0, index + 1), node.id]
-            // check if there's a chain starting with these nodes... if yes - open it
-            const chain = chains.find((chain) => chain.includes(node.id))
-            if (chain)
-              newOpened.push(...chain.slice(chain.indexOf(node.id) + 1))
-            setOpenedNodeIds(newOpened)
-            scrollToTreeIndex(newOpened.length - 1)
+          if (openedNodeIds.includes(edge.toId)) {
+            // handle cycles (opening the from->to edge will cause opening a path that doesn't have a cycle)
+            openNodeChain([getNode(graph, edge.toId)])
+          } else {
+            openNodeChain([
+              getNode(graph, edge.fromId),
+              getNode(graph, edge.toId),
+            ])
           }
-          setActiveEdgeId(edge.id)
         }}
         activateNode={(node) => {
           setActiveNodeId(node.id)
@@ -400,7 +469,7 @@ function TreePage({
           togglePinned,
           enabledIds: enabledIds || [],
           activeEdgeId: activeEdgeId,
-          openNode,
+          openNodeChain,
           openedNodeIds,
           setOpenedNodeIds,
           activeNodeId,
@@ -424,7 +493,7 @@ function TreePage({
         <div className={classes.treeShadeRight}></div>
         <Paper className={classes.navigator}>
           <LoadingBoundary fallback={"..."}>
-            <NodeNavigator modes={navigatorModes} />
+            <NodeNavigator modes={navigatorModes} key={modeId} />
           </LoadingBoundary>
         </Paper>
       </TreeContextProvider>

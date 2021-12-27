@@ -3,7 +3,6 @@ import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline"
 import DownloadForOfflineOutlinedIcon from "@mui/icons-material/DownloadForOfflineOutlined"
 import {
   Checkbox,
-  IconButton,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -156,7 +155,6 @@ export default function TreeItem({
     activeNodeId,
     activeEdgeId,
     openedNodeIds,
-    openNode,
   } = useTreeContext()
   const activeNode = activeNodeId === edge.toId
   const activeEdge = activeEdgeId === edge.id
@@ -176,10 +174,6 @@ export default function TreeItem({
     openedNodeIds,
     levelIndex,
   })
-
-  useEffect(() => {
-    console.log("Mounted TreeItem")
-  }, [])
 
   const { classes, cx, theme } = useStyles({
     enabled,
@@ -235,7 +229,7 @@ export default function TreeItem({
         )
       )
     },
-    [edge, graph, updateChanges]
+    [edge, graph, graphWorker, updateChanges]
   )
 
   const group = getNodeGroup(getNode(graph, edge.toId))
@@ -335,7 +329,7 @@ const useStyles = makeStyles<
     const lineColor = getLineColor(theme, {
       enabled,
       chained: activeNode || !!chained,
-      cycled: !!cycled,
+      cycled: !!cycled && cycled !== "lone",
     })
     const parentLineColor = getLineColor(theme, {
       enabled,
@@ -382,7 +376,7 @@ const useStyles = makeStyles<
       },
       connectorLeft: {
         left: 0,
-        opacity: opened ? 1 : 0,
+        opacity: opened || cycled === "end" ? 1 : 0,
         background: `linear-gradient(90deg, ${theme.graph.treeRailColor}, ${parentLineColor})`,
       },
       connectorRight: {

@@ -31,7 +31,7 @@ async function collectNodeCycles(
 
     const cycleStart = branch.indexOf(edge.toId)
     if (cycleStart >= 0) {
-      cycles.push(branch.slice(cycleStart))
+      cycles.push([...branch.slice(cycleStart), edge.toId])
     } else {
       if (visited[edge.toId]) continue
       await collectNodeCycles(graph, getNode(graph, edge.toId), {

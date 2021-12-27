@@ -55,17 +55,10 @@ export default function NodeNavigator({ className, modes }: Props) {
   const { classes, cx } = useStyles()
   const [modeId, setModeId] = useState(null)
   const defaultModeId = Object.keys(modes)[0]
-  const [modeMenuAnchor, setModeMenuAnchor] = useState(undefined)
   const mode = modes[modeId] || modes[defaultModeId]
 
-  const {
-    graph,
-    pinned,
-    togglePinned,
-    setActiveNodeId,
-    activeEdgeId,
-    openNode,
-  } = useTreeContext()
+  const { graph, pinned, togglePinned, setActiveNodeId, openNodeChain } =
+    useTreeContext()
 
   const { getItemNode = (_, item) => item } = mode
 
@@ -123,7 +116,7 @@ export default function NodeNavigator({ className, modes }: Props) {
                   if (mode.activateItem) mode.activateItem(item, event)
                   else {
                     if (event.shiftKey) setActiveNodeId(node.id)
-                    openNode(node)
+                    openNodeChain([node])
                   }
                 }}
                 {...(mode.itemProps && mode.itemProps({ item, ...itemProps }))}
