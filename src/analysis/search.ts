@@ -39,16 +39,17 @@ function getNodeFromElement(graph: Graph, element: GraphElement) {
   return element as GraphNode
 }
 
-export function searchItems<T extends GraphElement>(
+export function searchItems<T>(
   graph: Graph,
   items: ReadonlyArray<T>,
-  search: string
+  search: string,
+  getNodeFromItem: (graph: Graph, item: T) => GraphNode
 ): ReadonlyArray<T> {
   if (!search) return []
   const matchers = search.split(" ").map(createMatcher)
   return items
     .map((item) => {
-      const node = getNodeFromElement(graph, item)
+      const node = getNodeFromItem(graph, item)
       let score = 0
       for (const matcher of matchers) {
         const matched = matcher(node)

@@ -1,7 +1,6 @@
 import ClearIcon from "@mui/icons-material/Clear"
 import { IconButton, Input, InputAdornment } from "@mui/material"
-import Fuse from "fuse.js"
-import { groupBy, map, omit, orderBy, sortBy, sumBy, uniq } from "lodash"
+import { groupBy, map, orderBy, sortBy, sumBy, uniq } from "lodash"
 import {
   createContext,
   forwardRef,
@@ -14,16 +13,10 @@ import {
   useRef,
   useState,
 } from "react"
-import AutoSizer from "react-virtualized-auto-sizer"
-import { FixedSizeList } from "react-window"
-import {
-  getNode,
-  Graph,
-  GraphEdge,
-  GraphNode,
-  GraphNodeID,
-} from "../../analysis/graph"
+import { useVirtual } from "react-virtual"
+import { getNode, Graph, GraphNode, GraphNodeID } from "../../analysis/graph"
 import { getPackageName } from "../../analysis/info"
+import { searchItems } from "../../analysis/search"
 import { makeStyles } from "../makeStyles"
 import {
   flattenTreeToRows,
@@ -32,8 +25,6 @@ import {
   TreeState,
 } from "../tree"
 import ElementListGroup from "./ElementListGroup"
-import { useVirtual } from "react-virtual"
-import { searchItems } from "../../analysis/search"
 
 export type RenderItemProps<T> = {
   item: T
@@ -97,20 +88,23 @@ const useStyles = makeStyles({ name: "ElementList" })((theme) => ({
   },
 }))
 
-type Group = {
+type Group<T> = {
   name: string
-  children: ReadonlyArray<GraphNode | GraphEdge>
+  children: ReadonlyArray<T>
   size: number
   group: true
 }
 
 const treeOptions = { getKey: (group) => group.name }
 
-function getNodeFromElement(
-  graph: Graph,
-  element: GraphNode | GraphEdge
-): GraphNode {
-  return "toId" in element ? getNode(graph, element.toId) : element
+function getNodeFromElement(graph: Graph, element: any): GraphNode {
+  if ("toId" in element) {
+    return getNode(graph, element.toId)
+  }
+  if ("id" in element && "parents" in element) {
+    return element
+  }
+  throw new Error("Unknown element type")
 }
 
 const ListContext = createContext<{ listChildren?: ReactNode }>(null)
@@ -124,7 +118,7 @@ const InnerList = forwardRef(({ children, ...rest }, ref) => {
   )
 })
 
-function ElementList<T extends GraphNode | GraphEdge>({
+function ElementList<T>({
   className,
   listClassName,
   renderItem,
@@ -145,7 +139,9 @@ function ElementList<T extends GraphNode | GraphEdge>({
   const [treeState, setTreeState] = useState<TreeState>({ expanded: [] })
 
   const filteredItems = useMemo<ReadonlyArray<T>>(() => {
-    const searchedItems = search ? searchItems(graph, items, search) : items
+    const searchedItems = search
+      ? searchItems(graph, items, search, getNode)
+      : items
     if (orderItemsBy && !search) {
       return orderBy(searchedItems, ...orderItemsBy)
     }
@@ -159,7 +155,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
   )
 
   const listItems = useMemo(() => {
-    let rows: Array<Group | GraphEdge | GraphNode>
+    let rows: Array<Group<T> | T>
     if (!search && groupItemsBy === "package") {
       const groups = groupBy(filteredItems, (item) => {
         const node = getNode(graph, item)
@@ -223,7 +219,7 @@ function ElementList<T extends GraphNode | GraphEdge>({
       )
     } else {
       return renderItem({
-        item: item as Exclude<T, Group>,
+        item: item as Exclude<T, Group<T>>,
         key: String(index),
         hidePackage: Boolean(groupItemsBy && !search),
         style,

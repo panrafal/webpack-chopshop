@@ -1,28 +1,23 @@
-import { useDropzone } from "react-dropzone"
-
-import { encodeUrlStateHash } from "./logic/useHistoryState"
-import { lazy, useCallback, useEffect, useState } from "react"
-import { PromiseTrackerFn } from "./ui/hooks/usePromiseTracker"
-import { usePinnedState } from "./logic/usePinnedState"
-import { useGraphState } from "./logic/useGraphState"
 import {
   AppBar,
   Badge,
-  Button,
-  Drawer,
-  Icon,
   LinearProgress,
   Tab,
   Tabs,
   Toolbar,
   Typography,
 } from "@mui/material"
+import { lazy, useCallback, useEffect, useState } from "react"
+import { useDropzone } from "react-dropzone"
+import { countVisibleChanges } from "./analysis/changes"
+import { useGraphState } from "./logic/useGraphState"
+import { encodeUrlStateHash } from "./logic/useHistoryState"
+import { usePinnedState } from "./logic/usePinnedState"
+import { PromiseTrackerFn } from "./ui/hooks/usePromiseTracker"
 import LoadingBoundary from "./ui/LoadingBoundary"
-import WarningBar from "./ui/WarningBar"
-import EmptyBox from "./ui/EmptyBox"
 import { makeStyles } from "./ui/makeStyles"
 import OpenStatsPage from "./ui/open/OpenStatsPage"
-import { countVisibleChanges, hasChanges } from "./analysis/changes"
+import WarningBar from "./ui/WarningBar"
 
 const TreePage = lazy(() => import("./ui/tree/TreePage"))
 const ChangesPage = lazy(() => import("./ui/changes/ChangesPage"))

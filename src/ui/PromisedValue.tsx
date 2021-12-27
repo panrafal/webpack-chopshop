@@ -1,6 +1,6 @@
 import ReportIcon from "@mui/icons-material/Report"
 import { Skeleton } from "@mui/material"
-import { Children, ReactNode } from "react"
+import { ReactNode } from "react"
 import { useStablePromise } from "./hooks/promises"
 import { makeStyles } from "./makeStyles"
 

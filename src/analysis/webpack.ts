@@ -1,14 +1,5 @@
-import {
-  createGraph,
-  addNode,
-  getNodeId,
-  addEdge,
-  ROOT_NODE_ID,
-  getNode,
-} from "./graph"
-
 import type { Graph } from "./graph"
-import { omit } from "lodash"
+import { addEdge, addNode, createGraph, getNode, getNodeId } from "./graph"
 import { getSourceLocation } from "./info"
 
 export async function readWebpackStats(

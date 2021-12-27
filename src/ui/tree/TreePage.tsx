@@ -71,7 +71,7 @@ function TreePage({
   updateChanges,
   mode: modeId,
 }: Props) {
-  const { classes, cx } = useStyles()
+  const { classes, cx, theme } = useStyles()
   const [activeEdgeId, setActiveEdgeId] = useState<GraphEdgeID | null>(null)
   const [activeNodeId, setActiveNodeId] = useState<GraphNodeID | null>(null)
   const [openedNodeIds, setOpenedNodeIds] = useState<GraphNodeID[]>([
@@ -219,6 +219,49 @@ function TreePage({
     trackLoading(chainsPromise)
   }, [chainsPromise, trackLoading])
 
+  // Smooth scrolling to index
+  const treeLevelsRef = useRef<HTMLDivElement>()
+  const scrollToTimerRef = useRef<number>()
+  const scrollToTreeIndex = useCallback((index) => {
+    if (scrollToTimerRef.current) cancelAnimationFrame(scrollToTimerRef.current)
+    scrollToTimerRef.current = null
+
+    const levelWidth = getTreeLevelWidth()
+    const padding = 16
+    const left = padding + index * (levelWidth + theme.graph.treeLevelGap)
+    const maxScrollLeft = left - padding
+    const minScrollLeft = Math.max(
+      0,
+      maxScrollLeft -
+        treeLevelsRef.current.offsetWidth +
+        levelWidth +
+        2 * padding
+    )
+    if (
+      treeLevelsRef.current.scrollLeft >= minScrollLeft &&
+      treeLevelsRef.current.scrollLeft <= maxScrollLeft
+    ) {
+      // within bounds - nothing to do
+      return
+    }
+    const scrollTo =
+      treeLevelsRef.current.scrollLeft > maxScrollLeft
+        ? maxScrollLeft
+        : minScrollLeft
+    console.log("scroll!")
+    const diff = scrollTo - treeLevelsRef.current.scrollLeft
+    if (Math.abs(diff) > 5) {
+      treeLevelsRef.current.scrollLeft += diff / 2
+      if (scrollToTimerRef.current)
+        cancelAnimationFrame(scrollToTimerRef.current)
+      scrollToTimerRef.current = requestAnimationFrame(() =>
+        scrollToTreeIndex(index)
+      )
+    } else {
+      treeLevelsRef.current.scrollLeft = scrollTo
+    }
+  }, [])
+
   const openNode = useCallback(
     (toNode: GraphNode) => {
       const run = async () => {
@@ -229,6 +272,7 @@ function TreePage({
               toNode.id
             )
           )
+          scrollToTreeIndex(openedNodeIds.indexOf(toNode.id))
           return
         }
         const activeEdge = resolveEdge(graph, activeEdgeId)
@@ -273,32 +317,25 @@ function TreePage({
         }
         const chain = chains[0]
         const chainStart = chain[0]
+        const newOpenedIds = normalizePath([
+          ...openedNodeIds.slice(
+            0,
+            openedNodeIds.findIndex((id) => id === chainStart)
+          ),
+          ...chain,
+        ])
+
         // Add the found chain to the currently opened path
-        setOpenedNodeIds(
-          normalizePath([
-            ...openedNodeIds.slice(
-              0,
-              openedNodeIds.findIndex((id) => id === chainStart)
-            ),
-            ...chain,
-          ])
-        )
+        setOpenedNodeIds(newOpenedIds)
         setActiveEdgeId(
           getEdgeId(chain[chain.length - 2], chain[chain.length - 1])
         )
+        scrollToTreeIndex(newOpenedIds.length - 1)
       }
       trackLoading(run())
     },
     [graph, trackLoading, openedNodeIds, activeEdgeId, normalizePath]
   )
-
-  const selectedTreeLevelRef = useRef<HTMLDivElement>()
-
-  // Scroll selected into view
-  useEffect(() => {
-    if (!activeEdge || !selectedTreeLevelRef.current) return
-    selectedTreeLevelRef.current.scrollIntoView()
-  }, [activeEdge, selectedTreeLevelRef])
 
   // Normalize path after node change
   useEffect(() => {
@@ -306,10 +343,7 @@ function TreePage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modeId])
 
-  const selectedTreeLevelIndex = openedNodeIds.lastIndexOf(activeEdge?.toId)
-
-  const treeLevelsRef = useRef()
-  const { virtualItems: virtualTreeLevels, totalSize } = useVirtual({
+  const { virtualItems: virtualTreeLevels } = useVirtual({
     size: openedNodeIds.length,
     parentRef: treeLevelsRef,
     horizontal: true,
@@ -324,7 +358,6 @@ function TreePage({
         key={index}
         levelIndex={index}
         className={classes.treeLevel}
-        ref={selectedTreeLevelIndex === index ? selectedTreeLevelRef : null}
         node={getNode(graph, nodeId)}
         childNode={resolveNode(graph, openedNodeIds[index + 1])}
         selectEdge={(edge) => {
@@ -341,6 +374,7 @@ function TreePage({
             if (chain)
               newOpened.push(...chain.slice(chain.indexOf(node.id) + 1))
             setOpenedNodeIds(newOpened)
+            scrollToTreeIndex(newOpened.length - 1)
           }
           setActiveEdgeId(edge.id)
         }}
