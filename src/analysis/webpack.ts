@@ -1,22 +1,18 @@
 import type { Graph } from "./graph"
 import { addEdge, addNode, createGraph, getNode, getNodeId } from "./graph"
 import { getSourceLocation } from "./info"
+import { ParseOptions } from "./open"
 
 export async function readWebpackStats(
   stats: any,
-  options: {
-    enableAllAsyncImports?: boolean
-    includeChunks?: boolean
-    includeAssets?: boolean
-  } = {}
+  options: ParseOptions
 ): Promise<Graph> {
   const debug = false
   const graph = createGraph()
-  const {
-    enableAllAsyncImports = false,
-    includeChunks = true,
-    includeAssets = true,
-  } = options
+  const { reportProgress } = options
+
+  const includeChunks = true
+  const includeAssets = true
 
   const { chunks = [], assets = [], modules = [] } = stats
   const moduleMap = new Map()
@@ -154,7 +150,7 @@ export async function readWebpackStats(
         kind: type,
         name: isEntry ? node.name : reason.userRequest,
         async,
-        enabled: !async || enableAllAsyncImports ? true : false,
+        enabled: !async,
         fromLoc: reason.loc,
         fromSource: getSourceLocation(fromModule?.source, reason.loc),
         ...(debug

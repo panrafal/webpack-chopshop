@@ -1,3 +1,4 @@
+import { GroupAddSharp } from "@mui/icons-material"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   applyChanges,
@@ -6,16 +7,22 @@ import {
   revertGraph,
 } from "../analysis/changes"
 import { Graph, modifyGraph } from "../analysis/graph"
+import { ParseOptions } from "../analysis/open"
 import { readWebpackStats } from "../analysis/webpack"
 import { GraphWorkerClient } from "../analysis/worker/GraphWorkerClient"
 import { useHistoryState } from "./useHistoryState"
 
 export type ChangesReducerFn = (changes: Changes) => Changes
 export type UpdateChangesFn = (reducer: ChangesReducerFn) => void
+export type GraphLoadState =
+  | null
+  | { message: string; progress: number }
+  | Error
 
 const appliedChanges = Symbol("appliedChanges")
 
 export function useGraphState({ trackLoading, onLoaded }) {
+  const [graphLoadState, setGraphLoadState] = useState<GraphLoadState>(null)
   const [graph, setLocalGraph] = useState<Graph | undefined | null>()
   const graphWorker = useMemo(() => new GraphWorkerClient(), [])
 
@@ -33,26 +40,31 @@ export function useGraphState({ trackLoading, onLoaded }) {
   )
 
   const openGraph = useCallback(
-    async (callback: () => Promise<any | null>) => {
+    async (
+      file: string | File,
+      options: Omit<ParseOptions, "reportProgress">
+    ) => {
       const run = async () => {
-        // setLocalGraph(null)
-        const json = await callback()
-        if (json === null) {
-          return
+        setGraphLoadState({ message: "loading", progress: 0 })
+        try {
+          if (graph) graph.parallel.abort()
+          const newGraph = await graphWorker.openGraph(file, {
+            ...options,
+            reportProgress: (message, progress) =>
+              setGraphLoadState({ message, progress }),
+          })
+          setLocalGraph(newGraph)
+          // changes will be applied as an effect of switching to a new graph
+          setGraphLoadState(null)
+          onLoaded()
+        } catch (err) {
+          console.error(err)
+          setGraphLoadState(err)
         }
-        console.time("conversion")
-        const graph = await readWebpackStats(json)
-        console.timeEnd("conversion")
-        console.log("Graph: ", graph)
-        console.warn("Errors found: ", graph.errors)
-        applyChanges(graph, changes)
-        graphWorker.setGraph(graph)
-        setLocalGraph(graph)
-        onLoaded()
       }
       trackLoading(run())
     },
-    [trackLoading, changes]
+    [trackLoading, graph, graphWorker, onLoaded]
   )
 
   useEffect(() => {
@@ -69,12 +81,14 @@ export function useGraphState({ trackLoading, onLoaded }) {
       setLocalGraph(newGraph)
       console.log("new graph set", newGraph.version)
     })
-    //
-  }, [graph, changes])
+  }, [graph, changes, graphWorker])
 
-  // const updateChanges = useCallback((fn: ChangesReducerFn) => {
-  //   const newChanges = dispatchUpdateChanges(fn)
-  // }, [])
-
-  return { graph, graphWorker, openGraph, changes, updateChanges }
+  return {
+    graph,
+    graphWorker,
+    graphLoadState,
+    openGraph,
+    changes,
+    updateChanges,
+  }
 }

@@ -99,64 +99,17 @@ export default function App({ className, trackLoading }: Props) {
 
   // Graph handling -----------------------------------
 
-  const { graph, graphWorker, openGraph, changes, updateChanges } =
-    useGraphState({
-      trackLoading,
-      onLoaded: () => setPage("tree/async"),
-    })
-
-  const handleDrop = useCallback(
-    ([file], [rejected]) => {
-      if (rejected) {
-        trackLoading(
-          Promise.reject(
-            "Only webpack build stats in json format are accepted!"
-          )
-        )
-        return
-      }
-      openGraph(
-        () =>
-          new Promise((resolve, reject) => {
-            console.time("loading")
-            const reader = new FileReader()
-            reader.onload = () => {
-              console.timeEnd("loading")
-              console.time("parsing")
-              const json = JSON.parse(reader.result as any)
-              console.timeEnd("parsing")
-              resolve(json)
-            }
-            reader.onerror = () => {
-              console.timeEnd("loading")
-
-              reject("Could not read the file")
-            }
-            reader.readAsBinaryString(file)
-          })
-      )
-    },
-    [openGraph, trackLoading]
-  )
-
-  // Load stats from Cmd Line
-  useEffect(() => {
-    if (process.env.REACT_APP_STATS) {
-      openGraph(async () => {
-        console.time(
-          `loading stats file from CLI: "stats/${process.env.REACT_APP_STATS}"`
-        )
-        const result = await fetch(
-          process.env.PUBLIC_URL + `/stats/${process.env.REACT_APP_STATS || ""}`
-        )
-        console.timeEnd("loading")
-        console.time("parsing")
-        const json = await result.json()
-        console.timeEnd("parsing")
-        return json
-      })
-    }
-  }, [])
+  const {
+    graph,
+    graphWorker,
+    graphLoadState,
+    openGraph,
+    changes,
+    updateChanges,
+  } = useGraphState({
+    trackLoading,
+    onLoaded: () => setPage("tree/async"),
+  })
 
   // Pinned items ---------------------------------------
   const [pinned, togglePinned] = usePinnedState()
@@ -165,21 +118,15 @@ export default function App({ className, trackLoading }: Props) {
 
   const [showChanges, setShowChanges] = useState(false)
 
-  const {
-    getRootProps,
-    getInputProps,
-    open: openFileDialog,
-  } = useDropzone({
-    multiple: false,
-    accept: ".json",
-    onDrop: handleDrop,
-    noClick: true,
-    noKeyboard: true,
-  })
-
   let pageElement = null
   if (!graph || page === "open") {
-    pageElement = <OpenStatsPage openFileDialog={openFileDialog} />
+    pageElement = (
+      <OpenStatsPage
+        openGraph={openGraph}
+        trackLoading={trackLoading}
+        graphLoadState={graphLoadState}
+      />
+    )
   } else if (graph && page.startsWith("tree/")) {
     pageElement = (
       <TreePage
@@ -213,9 +160,7 @@ export default function App({ className, trackLoading }: Props) {
   }
 
   return (
-    <div {...getRootProps({ className: cx(classes.root, className) })}>
-      {/* @ts-expect-error */}
-      <input {...getInputProps()} />
+    <div className={cx(classes.root, className)}>
       <AppBar position="static" color="primary">
         <Toolbar className={classes.container} variant="dense">
           {
@@ -225,13 +170,7 @@ export default function App({ className, trackLoading }: Props) {
               textColor="inherit"
               onChange={(event, v) => setPage(v)}
             >
-              <Tab
-                value="open"
-                label="Open stats"
-                onClick={(event) => {
-                  openFileDialog()
-                }}
-              />
+              <Tab value="open" label="Open stats" />
               <Tab disabled={!graph} value="tree/async" label="Split points" />
               <Tab disabled={!graph} value="tree/modules" label="Modules" />
               <Tab disabled={!graph} value="tree/cycles" label="Cycles" />

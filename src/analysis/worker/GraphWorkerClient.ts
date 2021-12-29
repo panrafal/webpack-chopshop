@@ -1,9 +1,10 @@
-import { Remote, wrap } from "comlink"
+import { proxy, Remote, wrap } from "comlink"
 import throat from "throat"
 import { Changes } from "../changes"
 import { getFilterKey } from "../dependencies"
 import { Graph } from "../graph"
-import { AbortSignal } from "../parallel"
+import { ParseOptions } from "../open"
+import { AbortSignal, createParallelProcessor } from "../parallel"
 import { GraphWorkerBackend } from "./GraphWorkerBackend"
 import { registerTransferHandlers } from "./transferHandlers"
 // import { GraphWorkerBackend } from "./GraphWorkerBackend"
@@ -31,23 +32,27 @@ function timeout(ms: number) {
 export class GraphWorkerClient
   implements Omit<GraphWorkerBackend, "applyChanges">
 {
+  private worker: Worker
   private backend: Remote<GraphWorkerBackend>
   private cache = {}
   private graph: Graph
   private throttled = throat(1)
   constructor() {
     registerTransferHandlers()
-    this.backend = this.createBackend()
+    this.setupFreshBackend()
   }
 
   get currentGraph(): Graph | null {
     return this.graph
   }
 
-  private createBackend() {
-    const worker = new Worker(new URL("./GraphWorkerBackend", import.meta.url))
-    const backend = wrap<GraphWorkerBackend>(worker)
-    return backend
+  private setupFreshBackend() {
+    if (this.worker) {
+      this.worker.terminate()
+    }
+    this.throttled = throat(1)
+    this.worker = new Worker(new URL("./GraphWorkerBackend", import.meta.url))
+    this.backend = wrap<GraphWorkerBackend>(this.worker)
   }
 
   private implement<Prop extends keyof GraphWorkerBackend>(
@@ -87,6 +92,21 @@ export class GraphWorkerClient
     }
   }
 
+  async openGraph(file: string | File, options: ParseOptions): Promise<Graph> {
+    this.setupFreshBackend()
+    const graph = await this.backend.openGraph(file, {
+      ...options,
+      reportProgress: proxy(options.reportProgress),
+    })
+    this.graph = {
+      ...graph,
+      cache: {},
+      parallel: createParallelProcessor(),
+      revert: [],
+    }
+    return this.graph
+  }
+
   setGraph(graph: Graph): any {
     this.graph = graph
     this.cache = {}
@@ -96,6 +116,7 @@ export class GraphWorkerClient
       root: graph.root,
       nodes: graph.nodes,
       edges: graph.edges,
+      errors: [],
     })
     console.timeEnd("graph copy")
     return promise

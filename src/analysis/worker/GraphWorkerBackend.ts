@@ -1,4 +1,5 @@
 import { expose } from "comlink"
+import { omit } from "lodash"
 import { findAllChains, findChains } from "../chains"
 import { applyChanges, Changes, revertGraph } from "../changes"
 import { findNodeCycles } from "../cycles"
@@ -10,6 +11,7 @@ import {
   getRetainedNodes,
 } from "../dependencies"
 import { Graph, modifyGraph } from "../graph"
+import { openGraph, ParseOptions } from "../open"
 import { createParallelProcessor } from "../parallel"
 import {
   calculateGroupSizes,
@@ -17,6 +19,8 @@ import {
   calculateTreeSize,
 } from "../size"
 import { registerTransferHandlers } from "./transferHandlers"
+
+type TransferableGraph = Omit<Graph, "cache" | "revert" | "parallel">
 
 // @ts-expect-error
 let graph: Graph = module.hot?.data?.graph
@@ -31,9 +35,18 @@ function bindGraph<Args extends Array<any>, Ret>(
 }
 
 const backend = {
-  async setGraph(
-    newGraph: Omit<Graph, "cache" | "errors" | "revert" | "parallel">
-  ) {
+  async openGraph(
+    file: string | File,
+    options: ParseOptions
+  ): Promise<TransferableGraph> {
+    if (graph) {
+      graph.parallel.abort(`Worker Abort v${graph.version}`)
+    }
+    graph = await openGraph(file, options)
+    return omit(graph, ["cache", "revert", "parallel"])
+  },
+
+  async setGraph(newGraph: TransferableGraph) {
     if (graph) {
       graph.parallel.abort(`Worker Abort v${graph.version}`)
     }
