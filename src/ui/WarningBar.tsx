@@ -2,6 +2,7 @@ import * as React from "react"
 import { Icon } from "@mui/material"
 import { amber as orange } from "@mui/material/colors"
 import { makeStyles } from "./makeStyles"
+import WarningIcon from "@mui/icons-material/Warning"
 
 type Props = {
   children: React.ReactNode
@@ -27,7 +28,7 @@ export default function WarningBar({ children }: Props) {
 
   return (
     <div className={classes.root}>
-      <Icon className={classes.icon}>warning</Icon>
+      <WarningIcon className={classes.icon} />
       <span>{children}</span>
     </div>
   )

@@ -106,16 +106,13 @@ export default function OpenStatsPage({
           {error && <ErrorBox error={error} />}
           {/* @ts-expect-error */}
           <input {...getInputProps()} />
-          <Typography variant="body1" sx={{ marginTop: 2, marginBottom: 1 }}>
-            First,{" "}
-            <a
-              href="https://webpack.js.org/api/cli/#stats-options"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              generate the stats file in webpack
-            </a>
-            , then click below or drop it anywhere on the page to start
+          <Typography
+            variant="body1"
+            sx={{ marginTop: 2, marginBottom: 2, textAlign: "center" }}
+          >
+            First, generate the stats file in webpack, then click below
+            <br />
+            or drop it anywhere on the page to start
           </Typography>
           <Button variant="contained" onClick={() => openFileDialog()}>
             Open stats file
