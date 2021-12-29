@@ -3,7 +3,7 @@ import throat from "throat"
 import { Changes } from "../changes"
 import { getFilterKey } from "../dependencies"
 import { Graph } from "../graph"
-import { ParseOptions } from "../open"
+import { OpenProgressFn, ParseOptions } from "../open"
 import { AbortSignal, createParallelProcessor } from "../parallel"
 import { GraphWorkerBackend } from "./GraphWorkerBackend"
 import { registerTransferHandlers } from "./transferHandlers"
@@ -71,7 +71,6 @@ export class GraphWorkerClient
           throw graph.parallel.aborted
         }
         const workStart = performance.now()
-        let error
         try {
           return await Promise.race([
             graph.parallel.abortSignal,
@@ -92,12 +91,17 @@ export class GraphWorkerClient
     }
   }
 
-  async openGraph(file: string | File, options: ParseOptions): Promise<Graph> {
+  async openGraph(
+    file: string | File,
+    options: ParseOptions,
+    reportProgress: OpenProgressFn
+  ): Promise<Graph> {
     this.setupFreshBackend()
-    const graph = await this.backend.openGraph(file, {
-      ...options,
-      reportProgress: proxy(options.reportProgress),
-    })
+    const graph = await this.backend.openGraph(
+      file,
+      options,
+      proxy(reportProgress)
+    )
     this.graph = {
       ...graph,
       cache: {},

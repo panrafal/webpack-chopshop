@@ -1,4 +1,3 @@
-import { GroupAddSharp } from "@mui/icons-material"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   applyChanges,
@@ -8,7 +7,6 @@ import {
 } from "../analysis/changes"
 import { Graph, modifyGraph } from "../analysis/graph"
 import { ParseOptions } from "../analysis/open"
-import { readWebpackStats } from "../analysis/webpack"
 import { GraphWorkerClient } from "../analysis/worker/GraphWorkerClient"
 import { useHistoryState } from "./useHistoryState"
 
@@ -20,6 +18,21 @@ export type GraphLoadState =
   | Error
 
 const appliedChanges = Symbol("appliedChanges")
+
+function modifyLocalAndWorkerGraphs(
+  graph,
+  graphWorker,
+  changes,
+  setLocalGraph
+) {
+  return modifyGraph(graph, (newGraph) => {
+    revertGraph(newGraph)
+    applyChanges(newGraph, changes)
+    newGraph[appliedChanges] = changes
+    graphWorker.setGraphAndApplyChanges(newGraph, changes)
+    setLocalGraph(newGraph)
+  })
+}
 
 export function useGraphState({ trackLoading, onLoaded }) {
   const [graphLoadState, setGraphLoadState] = useState<GraphLoadState>(null)
@@ -45,17 +58,35 @@ export function useGraphState({ trackLoading, onLoaded }) {
       options: Omit<ParseOptions, "reportProgress">
     ) => {
       const run = async () => {
-        setGraphLoadState({ message: "loading", progress: 0 })
         try {
           if (graph) graph.parallel.abort()
-          const newGraph = await graphWorker.openGraph(file, {
-            ...options,
-            reportProgress: (message, progress) =>
-              setGraphLoadState({ message, progress }),
-          })
-          setLocalGraph(newGraph)
-          // changes will be applied as an effect of switching to a new graph
-          setGraphLoadState(null)
+          let lastProgressMessage
+          const reportProgress = (message, progress) => {
+            if (message !== lastProgressMessage || progress === 1) {
+              if (lastProgressMessage)
+                console.timeEnd(`[Open] ${lastProgressMessage}`)
+              if (progress !== 1) console.time(`[Open] ${message}`)
+              lastProgressMessage = message
+            }
+            console.log(message, progress)
+            setGraphLoadState(progress === 1 ? null : { message, progress })
+          }
+          reportProgress("initializing", 0)
+          const newGraph = await graphWorker.openGraph(
+            file,
+            options,
+            reportProgress
+          )
+
+          reportProgress("applying changes", 0.9)
+          modifyLocalAndWorkerGraphs(
+            newGraph,
+            graphWorker,
+            changes,
+            setLocalGraph
+          )
+
+          reportProgress("done", 1)
           onLoaded()
         } catch (err) {
           console.error(err)
@@ -64,23 +95,14 @@ export function useGraphState({ trackLoading, onLoaded }) {
       }
       trackLoading(run())
     },
-    [trackLoading, graph, graphWorker, onLoaded]
+    [trackLoading, graph, graphWorker, changes, onLoaded]
   )
 
   useEffect(() => {
     if (!graph || (!hasChanges(changes) && graph.revert.length === 0)) return
     // this effect is called from the last update
     if (graph[appliedChanges] === changes) return
-    modifyGraph(graph, (newGraph) => {
-      revertGraph(newGraph)
-      applyChanges(newGraph, changes)
-      newGraph[appliedChanges] = changes
-      console.log("will set new graph", newGraph.version)
-      graphWorker.setGraphAndApplyChanges(newGraph, changes)
-      // graphWorker.setGraph(newGraph)
-      setLocalGraph(newGraph)
-      console.log("new graph set", newGraph.version)
-    })
+    modifyLocalAndWorkerGraphs(graph, graphWorker, changes, setLocalGraph)
   }, [graph, changes, graphWorker])
 
   return {

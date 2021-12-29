@@ -1,13 +1,6 @@
 import { EdgeChain } from "./chains"
 import { getFilterKey } from "./dependencies"
-import {
-  getNode,
-  Graph,
-  GraphEdge,
-  GraphEdgeID,
-  GraphNode,
-  GraphNodeID,
-} from "./graph"
+import { getNode, Graph, GraphEdge, GraphNode, GraphNodeID } from "./graph"
 
 async function collectNodeCycles(
   graph: Graph,

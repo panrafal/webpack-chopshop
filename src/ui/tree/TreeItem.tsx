@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material"
-import { MouseEvent, useCallback, useEffect } from "react"
+import { MouseEvent, useCallback } from "react"
 import { addEdgeToggleChange } from "../../analysis/changes"
 import {
   currentGraphFilter,

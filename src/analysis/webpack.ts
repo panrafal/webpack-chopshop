@@ -1,25 +1,29 @@
 import type { Graph } from "./graph"
 import { addEdge, addNode, createGraph, getNode, getNodeId } from "./graph"
 import { getSourceLocation } from "./info"
-import { ParseOptions } from "./open"
+import { OpenProgressFn, ParseOptions } from "./open"
 
 export async function readWebpackStats(
   stats: any,
-  options: ParseOptions
+  options: ParseOptions,
+  reportProgress: OpenProgressFn
 ): Promise<Graph> {
   const debug = false
   const graph = createGraph()
-  const { reportProgress } = options
 
   const includeChunks = true
   const includeAssets = true
 
   const { chunks = [], assets = [], modules = [] } = stats
   const moduleMap = new Map()
+  let index
 
   // create chunks
   if (includeChunks) {
+    index = 0
     for (const chunk of chunks) {
+      if (++index % 1000 === 0)
+        reportProgress("creating chunks", 0.3 + (index / chunks.length) * 0.1)
       addNode(graph, {
         id: getNodeId("chunk", chunk.id),
         originalId: chunk.id,
@@ -35,13 +39,16 @@ export async function readWebpackStats(
             }
           : null),
       })
-      await graph.parallel.yield()
+      // await graph.parallel.yield()
     }
   }
 
   // create assets
   if (includeAssets) {
+    index = 0
     for (const asset of assets) {
+      if (++index % 1000 === 0)
+        reportProgress("creating assets", 0.4 + (index / assets.length) * 0.1)
       addNode(graph, {
         id: getNodeId("asset", asset.name),
         originalId: asset.name,
@@ -54,12 +61,15 @@ export async function readWebpackStats(
             }
           : null),
       })
-      await graph.parallel.yield()
+      // await graph.parallel.yield()
     }
   }
 
+  index = 0
   // create modules
   for (const module of modules) {
+    if (++index % 1000 === 0)
+      reportProgress("creating modules", 0.5 + (index / modules.length) * 0.1)
     if (module.id == null) {
       // module has been removed at optimization phase (concatenated, tree-shaken, etc)
       continue
@@ -88,11 +98,14 @@ export async function readWebpackStats(
           }
         : null),
     })
-    await graph.parallel.yield()
+    // await graph.parallel.yield()
   }
 
+  index = 0
   // create edges
   for (const module of modules) {
+    if (++index % 1000 === 0)
+      reportProgress("creating edges", 0.6 + (index / modules.length) * 0.1)
     if (module.id == null) {
       // module has been removed at optimization phase (concatenated, tree-shaken, etc)
       continue
@@ -160,7 +173,7 @@ export async function readWebpackStats(
           : null),
       })
     }
-    await graph.parallel.yield()
+    // await graph.parallel.yield()
   }
   return graph
 }

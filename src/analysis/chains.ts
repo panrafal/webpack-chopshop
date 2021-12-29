@@ -1,5 +1,4 @@
-import { getFilterKey, isEdgeEnabled } from "./dependencies"
-import { currentGraphFilter } from "./filters"
+import { getFilterKey } from "./dependencies"
 import type { Graph, GraphEdge, GraphNode, GraphNodeID } from "./graph"
 import { getNode } from "./graph"
 

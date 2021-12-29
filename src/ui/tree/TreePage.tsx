@@ -1,6 +1,5 @@
 import { Paper } from "@mui/material"
 import { first, intersection, isEqual, last, nth, uniq } from "lodash"
-import { normalize } from "path/posix"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useVirtual } from "react-virtual"
 import { EdgeChain } from "../../analysis/chains"

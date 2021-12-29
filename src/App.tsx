@@ -7,11 +7,9 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material"
-import { lazy, useCallback, useEffect, useState } from "react"
-import { useDropzone } from "react-dropzone"
+import { lazy, useState } from "react"
 import { countVisibleChanges } from "./analysis/changes"
 import { useGraphState } from "./logic/useGraphState"
-import { encodeUrlStateHash } from "./logic/useHistoryState"
 import { usePinnedState } from "./logic/usePinnedState"
 import { PromiseTrackerFn } from "./ui/hooks/usePromiseTracker"
 import LoadingBoundary from "./ui/LoadingBoundary"
@@ -70,32 +68,6 @@ export default function App({ className, trackLoading }: Props) {
   const { classes, cx } = useStyles()
 
   const [page, setPage] = useState<string>("open")
-  // History ------------------------------------------
-  // useEffect(() => {
-  //   try {
-  //     const handleHistoryChange = () => {
-  //       const hash = (window.location.hash || "#").slice(1)
-  //       if (!hash) return
-  //       const hashState = decodeUrlStateHash(hash)
-  //       if (hashState.changes) setChanges(hashState.changes)
-  //     }
-
-  //     window.addEventListener("popstate", handleHistoryChange)
-  //     handleHistoryChange()
-  //     return () => {
-  //       window.removeEventListener("popstate", handleHistoryChange)
-  //     }
-  //   } catch (error) {
-  //     console.error("History failed to initialize", error)
-  //   }
-  // }, [])
-
-  // TODO: Handle navigation and state storage
-  const navigate = useCallback(() => {
-    const { fromNodeId, toNodeId } = this.state
-    const encodedState = encodeUrlStateHash({ fromNodeId, toNodeId })
-    window.history.pushState(null, null, `#${encodedState}`)
-  }, [])
 
   // Graph handling -----------------------------------
 

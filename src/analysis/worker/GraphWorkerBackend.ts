@@ -11,7 +11,7 @@ import {
   getRetainedNodes,
 } from "../dependencies"
 import { Graph, modifyGraph } from "../graph"
-import { openGraph, ParseOptions } from "../open"
+import { openGraph, OpenProgressFn, ParseOptions } from "../open"
 import { createParallelProcessor } from "../parallel"
 import {
   calculateGroupSizes,
@@ -37,20 +37,22 @@ function bindGraph<Args extends Array<any>, Ret>(
 const backend = {
   async openGraph(
     file: string | File,
-    options: ParseOptions
+    options: ParseOptions,
+    reportProgress: OpenProgressFn
   ): Promise<TransferableGraph> {
+    registerTransferHandlers()
     if (graph) {
       graph.parallel.abort(`Worker Abort v${graph.version}`)
     }
-    graph = await openGraph(file, options)
+    graph = await openGraph(file, options, reportProgress)
     return omit(graph, ["cache", "revert", "parallel"])
   },
 
   async setGraph(newGraph: TransferableGraph) {
+    registerTransferHandlers()
     if (graph) {
       graph.parallel.abort(`Worker Abort v${graph.version}`)
     }
-    registerTransferHandlers()
     console.log("[worker] setting graph")
     graph = {
       ...newGraph,

@@ -1,7 +1,5 @@
-import { Stack, Typography } from "@mui/material"
+import { Stack } from "@mui/material"
 import * as React from "react"
-import { makeStyles } from "./makeStyles"
-import BlockIcon from "@mui/icons-material/Block"
 
 type Props = {
   children: React.ReactNode

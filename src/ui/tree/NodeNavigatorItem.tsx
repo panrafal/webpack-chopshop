@@ -47,8 +47,7 @@ export default function NodeNavigatorItem({
   children,
 }: NodeNavigatorItemProps) {
   const { classes, cx, theme } = useStyles()
-  const { graph, graphWorker, updateChanges, activeNodeId, activeEdgeId } =
-    useTreeContext()
+  const { graph, activeNodeId, activeEdgeId } = useTreeContext()
   const activeEdge = resolveEdge(graph, activeEdgeId)
   const isActiveNode = activeNodeId === node.id
   const isActiveEdge = activeEdge?.toId === node.id

@@ -2,13 +2,10 @@ import ClearIcon from "@mui/icons-material/Clear"
 import { IconButton, Input, InputAdornment } from "@mui/material"
 import { groupBy, map, orderBy, sortBy, sumBy, uniq } from "lodash"
 import {
-  createContext,
-  forwardRef,
   Fragment,
   ReactElement,
   ReactNode,
   useCallback,
-  useContext,
   useMemo,
   useRef,
   useState,
@@ -107,17 +104,6 @@ function getNodeFromElement(graph: Graph, element: any): GraphNode {
   throw new Error("Unknown element type")
 }
 
-const ListContext = createContext<{ listChildren?: ReactNode }>(null)
-const InnerList = forwardRef(({ children, ...rest }, ref) => {
-  const { listChildren } = useContext(ListContext)
-  return (
-    <div ref={ref as any} {...rest}>
-      {children}
-      {listChildren}
-    </div>
-  )
-})
-
 function ElementList<T>({
   className,
   listClassName,
@@ -146,12 +132,12 @@ function ElementList<T>({
       return orderBy(searchedItems, ...orderItemsBy)
     }
     return searchedItems
-  }, [graph, items, search, orderItemsBy])
+  }, [search, graph, items, getNode, orderItemsBy])
 
   const pinnedItems = useMemo(
     () =>
       filteredItems.filter((item) => pinned.includes(getNode(graph, item).id)),
-    [pinned, filteredItems, getNode]
+    [filteredItems, pinned, getNode, graph]
   )
 
   const listItems = useMemo(() => {
@@ -177,13 +163,14 @@ function ElementList<T>({
     rows.unshift(...pinnedItems)
     return flattenTreeToRows(rows, treeState, treeOptions)
   }, [
-    getNode,
-    filteredItems,
-    pinnedItems,
-    groupItemsBy,
-    orderGroupsBy,
-    treeState,
     search,
+    groupItemsBy,
+    pinnedItems,
+    treeState,
+    filteredItems,
+    orderGroupsBy,
+    getNode,
+    graph,
   ])
 
   const stickyGroupHeaders = useMemo(() => {
@@ -195,7 +182,7 @@ function ElementList<T>({
       }
     }
     return stickyGroupHeaders
-  }, [groupItemsBy, listItems, treeState, treeOptions])
+  }, [groupItemsBy, listItems, treeState])
 
   const stickyIndexes = uniq([...stickyItems, ...stickyGroupHeaders])
     .map((item) => listItems.indexOf(item))
