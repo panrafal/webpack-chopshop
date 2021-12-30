@@ -1,5 +1,5 @@
 import { Remote, wrap } from "comlink"
-import { get } from "idb-keyval"
+import { get, set } from "idb-keyval"
 import md5 from "md5"
 import throat from "throat"
 import { SourceWorkerBackend } from "./SourceWorkerBackend"
@@ -7,8 +7,8 @@ import { SourceWorkerBackend } from "./SourceWorkerBackend"
 export class SourceWorkerClient {
   private maxWorkers = 4
   private throttled = throat(this.maxWorkers * 4)
-  private workers: Worker[]
-  private backends: Remote<SourceWorkerBackend>[]
+  private workers: Worker[] = []
+  private backends: Remote<SourceWorkerBackend>[] = []
   private roundRobinIndex = 0
 
   private getBackend(index: number) {
@@ -37,7 +37,7 @@ export class SourceWorkerClient {
       sizes = await this.throttled(() =>
         this.getBackend(this.roundRobinIndex++).getMinifiedSizes(source)
       )
-      //await set(key, sizes)
+      await set(key, sizes)
     }
     return gzip ? sizes.gzip : sizes.min
   }

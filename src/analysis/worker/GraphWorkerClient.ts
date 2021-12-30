@@ -36,7 +36,7 @@ export class GraphWorkerClient
   private backend: Remote<GraphWorkerBackend>
   private cache = {}
   private graph: Graph
-  private throttled = throat(1)
+  private throttled = (fn) => fn() //throat(1)
   constructor() {
     registerTransferHandlers()
     this.setupFreshBackend()
@@ -50,7 +50,7 @@ export class GraphWorkerClient
     if (this.worker) {
       this.worker.terminate()
     }
-    this.throttled = throat(1)
+    this.throttled = (fn) => fn() // throat(1)
     this.worker = new Worker(new URL("./GraphWorkerBackend", import.meta.url))
     this.backend = wrap<GraphWorkerBackend>(this.worker)
   }

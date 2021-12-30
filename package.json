@@ -6,10 +6,10 @@
   "license": "MIT",
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "FAST_REFRESH=true react-scripts start",
+    "start": "FAST_REFRESH=true craco start",
     "start:production": "PUBLIC_URL=/ yarn build && npx serve -s build",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
+    "build": "craco build",
+    "test": "craco test --env=jsdom",
     "test:types": "tsc --noEmit",
     "predeploy": "yarn run build",
     "deploy": "gh-pages -d build"
@@ -25,6 +25,7 @@
     ]
   },
   "dependencies": {
+    "@craco/craco": "^6.4.3",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
     "@mui/icons-material": "^5.2.4",

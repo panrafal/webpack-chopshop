@@ -1,5 +1,16 @@
-import { Box, Button, LinearProgress, Typography } from "@mui/material"
-import { useCallback, useEffect } from "react"
+import {
+  Box,
+  Button,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  LinearProgress,
+  Paper,
+  Radio,
+  RadioGroup,
+  Typography,
+} from "@mui/material"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { ParseOptions } from "../../analysis/open"
 import { GraphLoadState } from "../../logic/useGraphState"
@@ -36,10 +47,25 @@ export default function OpenStatsPage({
   graphLoadState,
 }: Props) {
   const { classes, cx } = useStyles()
+  const [minifySources, setMinifySources] = useState<string>(
+    localStorage.getItem("minifySources") || ""
+  )
 
   const loading =
     graphLoadState && "progress" in graphLoadState && graphLoadState
   const error = !loading && graphLoadState
+
+  const parseOptions: ParseOptions = useMemo(
+    () => ({
+      minifySources:
+        minifySources === "minify"
+          ? true
+          : minifySources === "gzip"
+          ? "gzip"
+          : false,
+    }),
+    [minifySources]
+  )
 
   const handleDrop = useCallback(
     ([file], [rejected]) => {
@@ -51,9 +77,9 @@ export default function OpenStatsPage({
         )
         return
       }
-      openGraph(file, {})
+      openGraph(file, parseOptions)
     },
-    [openGraph, trackLoading]
+    [openGraph, trackLoading, parseOptions]
   )
 
   // Load stats from Cmd Line
@@ -64,7 +90,7 @@ export default function OpenStatsPage({
         openGraph(
           process.env.PUBLIC_URL +
             `/stats/${process.env.REACT_APP_STATS || ""}`,
-          {}
+          parseOptions
         )
       }
     },
@@ -117,6 +143,36 @@ export default function OpenStatsPage({
           <Button variant="contained" onClick={() => openFileDialog()}>
             Open stats file
           </Button>
+          <Paper variant="outlined" sx={{ marginTop: 4, padding: 2 }}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Module sizes</FormLabel>
+              <RadioGroup
+                row
+                value={minifySources}
+                onChange={(e) => {
+                  const value = e.target.value as any
+                  setMinifySources(value)
+                  localStorage.setItem("minifySources", value)
+                }}
+              >
+                <FormControlLabel
+                  value={""}
+                  control={<Radio />}
+                  label="As-is"
+                />
+                <FormControlLabel
+                  value={"minify"}
+                  control={<Radio />}
+                  label="Minified"
+                />
+                <FormControlLabel
+                  value={"gzip"}
+                  control={<Radio />}
+                  label="GZipped"
+                />
+              </RadioGroup>
+            </FormControl>
+          </Paper>
         </>
       )}
     </Box>
