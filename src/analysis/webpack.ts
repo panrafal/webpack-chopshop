@@ -1,11 +1,14 @@
+import { ModuleResolutionKind } from "typescript"
 import type { Graph } from "./graph"
 import { addEdge, addNode, createGraph, getNode, getNodeId } from "./graph"
 import { getSourceLocation } from "./info"
 import { OpenProgressFn, ParseOptions } from "./open"
+import md5 from "md5"
+import { SourceWorkerClient } from "./worker/SourceWorkerClient"
 
 export async function readWebpackStats(
   stats: any,
-  options: ParseOptions,
+  { minifySources = true }: ParseOptions,
   reportProgress: OpenProgressFn
 ): Promise<Graph> {
   const debug = false
@@ -174,6 +177,37 @@ export async function readWebpackStats(
       })
     }
     // await graph.parallel.yield()
+
+    // minify
+    if (minifySources) {
+      const sourceWorker = new SourceWorkerClient()
+      let minifiedModules = 0
+      const promises = []
+      for (const module of modules) {
+        const node = graph.nodes[module.identifier]
+        const source = module.source
+        if (!node || !source) {
+          ++minifiedModules
+          continue
+        }
+        promises.push(
+          sourceWorker
+            .getMinifiedSize(source, minifySources === "gzip")
+            // eslint-disable-next-line no-loop-func
+            .then((size) => {
+              node.size = size
+              if (++minifiedModules % 10 === 0) {
+                reportProgress(
+                  "minifying sources",
+                  0.7 + (minifiedModules / modules.length) * 0.2
+                )
+              }
+            })
+        )
+      }
+      await Promise.allSettled(promises)
+      sourceWorker.release()
+    }
   }
   return graph
 }

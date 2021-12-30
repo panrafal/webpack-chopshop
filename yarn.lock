@@ -3639,6 +3639,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/md5@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@types/md5@npm:2.3.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: d508f4dd0663beba1660e5b3796480137690096f5683a0a7dfd2e4afa3a5d906e1f04f5a3bf02355f35ee2e64f4067adf349f4f67ccb15da50e1372b848b8579
+  languageName: node
+  linkType: hard
+
 "@types/mime@npm:^1":
   version: 1.3.2
   resolution: "@types/mime@npm:1.3.2"
@@ -3657,6 +3666,13 @@ __metadata:
   version: 2.0.2
   resolution: "@types/numeral@npm:2.0.2"
   checksum: d8b778ef5d1b20cb5919fb2cf41108b324ccfaeccb0238caaf54bd9d4bffbbd57d7b860844f05831fb356a5dc0115b477891531325180a670076036ee1b4a8ca
+  languageName: node
+  linkType: hard
+
+"@types/pako@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@types/pako@npm:1.0.3"
+  checksum: a0fcada8fe162b191b43b68036772bf6344fc047426a7187100f9570ef73c9b953fef2098ade84e709a280790e7e92043ed8f83675dfd042fa605ffc78c7e400
   languageName: node
   linkType: hard
 
@@ -3823,6 +3839,15 @@ __metadata:
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
   checksum: 205fdbe3326b7046d7eaf5e494d8084f2659086a266f3f9cf00bccc549c8e36e407f88168ad4383c8b07099957ad669f75f2532ed4bc70be2b037330f7bae019
+  languageName: node
+  linkType: hard
+
+"@types/terser@npm:^3.12.0":
+  version: 3.12.0
+  resolution: "@types/terser@npm:3.12.0"
+  dependencies:
+    terser: "*"
+  checksum: 3d236cbdb7743a9fa52ca01542f82aed114862cdbb490eac8840a9895cb96774a5dc659c5ed231dd54ccd9388f96d2d88c9512dd1bddb0b4459991198bf315ff
   languageName: node
   linkType: hard
 
@@ -5198,6 +5223,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"charenc@npm:0.0.2":
+  version: 0.0.2
+  resolution: "charenc@npm:0.0.2"
+  checksum: 81dcadbe57e861d527faf6dd3855dc857395a1c4d6781f4847288ab23cffb7b3ee80d57c15bba7252ffe3e5e8019db767757ee7975663ad2ca0939bb8fcaf2e5
+  languageName: node
+  linkType: hard
+
 "check-types@npm:^11.1.1":
   version: 11.1.2
   resolution: "check-types@npm:11.1.2"
@@ -5639,6 +5671,13 @@ __metadata:
     shebang-command: ^2.0.0
     which: ^2.0.1
   checksum: 671cc7c7288c3a8406f3c69a3ae2fc85555c04169e9d611def9a675635472614f1c0ed0ef80955d5b6d4e724f6ced67f0ad1bb006c2ea643488fcfef994d7f52
+  languageName: node
+  linkType: hard
+
+"crypt@npm:0.0.2":
+  version: 0.0.2
+  resolution: "crypt@npm:0.0.2"
+  checksum: baf4c7bbe05df656ec230018af8cf7dbe8c14b36b98726939cef008d473f6fe7a4fad906cfea4062c93af516f1550a3f43ceb4d6615329612c6511378ed9fe34
   languageName: node
   linkType: hard
 
@@ -8103,6 +8142,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"idb-keyval@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "idb-keyval@npm:6.0.3"
+  dependencies:
+    safari-14-idb-fix: ^3.0.0
+  checksum: cbd123a49f4e2059b9a0a9f0ff66114ca1960198f1204ed30b9d7c26a4eb73fb9685c4c7d0de99bd4bf07c881846aa832e4ee3760a2f745c21f03212caa2d944
+  languageName: node
+  linkType: hard
+
 "idb@npm:^6.1.4":
   version: 6.1.5
   resolution: "idb@npm:6.1.5"
@@ -8296,6 +8344,13 @@ __metadata:
     call-bind: ^1.0.2
     has-tostringtag: ^1.0.0
   checksum: c03b23dbaacadc18940defb12c1c0e3aaece7553ef58b162a0f6bba0c2a7e1551b59f365b91e00d2dbac0522392d576ef322628cb1d036a0fe51eb466db67222
+  languageName: node
+  linkType: hard
+
+"is-buffer@npm:~1.1.6":
+  version: 1.1.6
+  resolution: "is-buffer@npm:1.1.6"
+  checksum: 4a186d995d8bbf9153b4bd9ff9fd04ae75068fe695d29025d25e592d9488911eeece84eefbd8fa41b8ddcc0711058a71d4c466dcf6f1f6e1d83830052d8ca707
   languageName: node
   linkType: hard
 
@@ -9746,6 +9801,17 @@ __metadata:
   dependencies:
     tmpl: 1.0.5
   checksum: b38a025a12c8146d6eeea5a7f2bf27d51d8ad6064da8ca9405fcf7bf9b54acd43e3b30ddd7abb9b1bfa4ddb266019133313482570ddb207de568f71ecfcf6060
+  languageName: node
+  linkType: hard
+
+"md5@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "md5@npm:2.3.0"
+  dependencies:
+    charenc: 0.0.2
+    crypt: 0.0.2
+    is-buffer: ~1.1.6
+  checksum: a63cacf4018dc9dee08c36e6f924a64ced735b37826116c905717c41cebeb41a522f7a526ba6ad578f9c80f02cb365033ccd67fe186ffbcc1a1faeb75daa9b6e
   languageName: node
   linkType: hard
 
@@ -12535,6 +12601,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"safari-14-idb-fix@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "safari-14-idb-fix@npm:3.0.0"
+  checksum: 30d5baf3d9a17b52842b2c3fd3f0001fde7095a36191b6140ac78c19e8e1ff4b2607b9beb3b066c6bec107ccb5399c96e29748a6f5fcd592425f806f5e36f759
+  languageName: node
+  linkType: hard
+
 "safe-buffer@npm:5.1.2":
   version: 5.1.2
   resolution: "safe-buffer@npm:5.1.2"
@@ -13562,7 +13635,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^5.0.0, terser@npm:^5.10.0, terser@npm:^5.7.2":
+"terser@npm:*, terser@npm:^5.0.0, terser@npm:^5.10.0, terser@npm:^5.7.2":
   version: 5.10.0
   resolution: "terser@npm:5.10.0"
   dependencies:
@@ -14139,18 +14212,23 @@ __metadata:
     "@mui/material": ^5.2.4
     "@types/jest": ^27.0.3
     "@types/lodash": ^4.14.178
+    "@types/md5": ^2.3.1
     "@types/node": ^16.11.12
     "@types/numeral": ^2.0.2
+    "@types/pako": ^1.0.3
     "@types/react": ^17.0.37
     "@types/react-dom": ^17.0.11
     "@types/react-window": ^1.8.5
+    "@types/terser": ^3.12.0
     classnames: ^2.3.1
     comlink: ^4.3.1
     fuse.js: ^6.4.6
     gh-pages: ^3.2.3
     husky: ^7.0.4
+    idb-keyval: ^6.0.3
     lint-staged: ^12.1.2
     lodash: ^4.17.21
+    md5: ^2.3.0
     numeral: ^2.0.6
     pako: ^1.0.11
     prettier: ^2.5.1
@@ -14168,6 +14246,7 @@ __metadata:
     react-window: ^1.8.6
     reselect: ^3.0.1
     source-map-explorer: ^1.8.0
+    terser: ^5.10.0
     throat: ^6.0.1
     tss-react: ^3.2.2
     type-fest: ^2.8.0
