@@ -8,15 +8,17 @@ import {
   getDeepNodeChildren,
   getDeepNodeParents,
   getEnabledChildEdges,
-  getRetainedNodes,
+  getNodesRetainedByEdge,
+  getNodesRetainedByNode,
 } from "../dependencies"
 import { Graph, modifyGraph } from "../graph"
 import { openGraph, OpenProgressFn, ParseOptions } from "../open"
 import { createParallelProcessor } from "../parallel"
 import {
   calculateGroupSizes,
-  calculateRetainedTreeSize,
+  calculateTreeSizeRetainedByNode,
   calculateTreeSize,
+  calculateTreeSizeRetainedByEdge,
 } from "../size"
 import { registerTransferHandlers } from "./transferHandlers"
 
@@ -72,7 +74,8 @@ const backend = {
   },
 
   calculateGroupSizes: bindGraph(calculateGroupSizes),
-  calculateRetainedTreeSize: bindGraph(calculateRetainedTreeSize),
+  calculateTreeSizeRetainedByNode: bindGraph(calculateTreeSizeRetainedByNode),
+  calculateTreeSizeRetainedByEdge: bindGraph(calculateTreeSizeRetainedByEdge),
   calculateTreeSize: bindGraph(calculateTreeSize),
   findChains: bindGraph(findChains),
   findAllChains: bindGraph(findAllChains),
@@ -80,7 +83,8 @@ const backend = {
   getAsyncEdges: bindGraph(getAsyncEdges),
   getDeepNodeChildren: bindGraph(getDeepNodeChildren),
   getEnabledChildEdges: bindGraph(getEnabledChildEdges),
-  getRetainedNodes: bindGraph(getRetainedNodes),
+  getNodesRetainedByNode: bindGraph(getNodesRetainedByNode),
+  getNodesRetainedByEdge: bindGraph(getNodesRetainedByEdge),
   getDeepNodeParents: bindGraph(getDeepNodeParents),
 }
 

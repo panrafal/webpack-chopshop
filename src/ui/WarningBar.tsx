@@ -1,8 +1,7 @@
-import * as React from "react"
-import { Icon } from "@mui/material"
-import { amber as orange } from "@mui/material/colors"
-import { makeStyles } from "./makeStyles"
 import WarningIcon from "@mui/icons-material/Warning"
+import { amber as orange } from "@mui/material/colors"
+import * as React from "react"
+import { makeStyles } from "./makeStyles"
 
 type Props = {
   children: React.ReactNode

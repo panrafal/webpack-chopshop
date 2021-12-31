@@ -9,6 +9,7 @@ import {
 } from "../../analysis/filters"
 import {
   getAllNodes,
+  getEdge,
   getEdgeId,
   getEdges,
   getNode,
@@ -23,6 +24,10 @@ import {
 } from "../../analysis/graph"
 import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
 import { UpdateChangesFn } from "../../logic/useGraphState"
+import {
+  useHistoryState,
+  useHistoryStateLense,
+} from "../../logic/useHistoryState"
 import { TogglePinnedFn } from "../../logic/usePinnedState"
 import { useStablePromise } from "../hooks/promises"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
@@ -59,11 +64,18 @@ function TreePage({
   mode: modeId,
 }: Props) {
   const { classes, cx, theme } = useStyles()
-  const [activeEdgeId, setActiveEdgeId] = useState<GraphEdgeID | null>(null)
-  const [activeNodeId, setActiveNodeId] = useState<GraphNodeID | null>(null)
-  const [openedNodeIds, setOpenedNodeIds] = useState<GraphNodeID[]>([
-    ROOT_NODE_ID,
-  ])
+  const [activeEdgeId, setActiveEdgeId] = useHistoryStateLense(
+    "activeEdgeId",
+    (v) => getEdge(graph, v)
+  )
+  const [activeNodeId, setActiveNodeId] = useHistoryStateLense(
+    "activeNodeId",
+    (v) => getNode(graph, v)
+  )
+  const [openedNodeIds, setOpenedNodeIds] = useHistoryStateLense(
+    "openedNodeIds",
+    (v) => getNodes(graph, v)
+  )
   const activeEdge = resolveEdge(graph, activeEdgeId)
 
   // Tree Modes -------------------------------------
@@ -146,6 +158,35 @@ function TreePage({
                     )
                     .then((ids) => getNodes(graph, ids)),
                 renderTitle: () => "Enabled Children",
+                renderEmpty: () => "Nothing found",
+              },
+              retainedByNode: {
+                getItems: () =>
+                  graphWorker
+                    .getNodesRetainedByNode(
+                      graph.root,
+                      resolveNode(
+                        graph,
+                        resolveEdge(graph, activeEdgeId)?.toId
+                      ) || graph.root,
+                      currentGraphFilter
+                    )
+                    .then((ids) => getNodes(graph, ids)),
+                renderTitle: () => "Retained by Node",
+                renderEmpty: () => "Nothing found",
+              },
+              retainedByEdge: {
+                getItems: () =>
+                  activeEdgeId
+                    ? graphWorker
+                        .getNodesRetainedByEdge(
+                          graph.root,
+                          getEdge(graph, activeEdgeId),
+                          currentGraphFilter
+                        )
+                        .then((ids) => getNodes(graph, ids))
+                    : [],
+                renderTitle: () => "Retained by Edge",
                 renderEmpty: () => "Nothing found",
               },
               all: {
@@ -440,8 +481,9 @@ function TreePage({
         node={getNode(graph, nodeId)}
         childNode={resolveNode(graph, openedNodeIds[index + 1])}
         activateEdge={(edge) => {
-          if (openedNodeIds.includes(edge.toId)) {
-            // handle cycles (opening the from->to edge will cause opening a path that doesn't have a cycle)
+          const openedAtIndex = openedNodeIds.indexOf(edge.toId)
+          if (openedAtIndex >= 0 && openedAtIndex < index) {
+            // handle navigating to a cycle start (opening the from->to edge will cause opening a path that doesn't have a cycle)
             openNodeChain([getNode(graph, edge.toId)])
           } else {
             openNodeChain([

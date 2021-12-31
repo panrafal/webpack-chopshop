@@ -2,20 +2,28 @@ import pako from "pako"
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useReducer,
 } from "react"
 import { Changes } from "../analysis/changes"
+import { GraphEdgeID, GraphNodeID, ROOT_NODE_ID } from "../analysis/graph"
 import { formatSize } from "../ui/format"
 
 type HistoryState = {
   changes: Changes
+  activeEdgeId: GraphEdgeID | null
+  activeNodeId: GraphNodeID | null
+  openedNodeIds: GraphNodeID[]
 }
 
 const defaultState = {
   changes: [],
+  activeEdgeId: null,
+  activeNodeId: null,
+  openedNodeIds: [ROOT_NODE_ID],
 }
 
 const DEFLATE_HEADER = "deflate:"
@@ -63,25 +71,52 @@ function encodeToCurrentLocation(state: HistoryState, push: boolean) {
   }
 }
 
-type UpdateStateAction =
-  | Partial<HistoryState>
-  | ((state: HistoryState) => HistoryState)
+type UpdateStateAction<T> = Partial<T> | ((state: T) => T)
+type UpdateStateFn<T> = (action: UpdateStateAction<T>) => void
 
-type UpdateStateFn = (action: UpdateStateAction) => void
+type UpdateStateLenseAction<T> = T | ((state: T) => T)
+type UpdateStateLenseFn<T> = (action: UpdateStateAction<T>) => void
 
 const HistoryContext = createContext<{
   state: HistoryState
-  updateState: (action: UpdateStateAction) => void
+  updateState: (action: UpdateStateAction<HistoryState>) => void
 }>(null)
 
-export function useHistoryState(): [HistoryState, UpdateStateFn] {
+export function useHistoryState(): [HistoryState, UpdateStateFn<HistoryState>] {
   const { state, updateState } = useContext(HistoryContext)
   return [state, updateState]
 }
 
+export function useHistoryStateLense<P extends keyof HistoryState>(
+  prop: P,
+  validate?: (v: HistoryState[P]) => any
+): [HistoryState[P], UpdateStateLenseFn<HistoryState[P]>] {
+  const { state, updateState } = useContext(HistoryContext)
+  const updateStateLense = useCallback(
+    (action) =>
+      updateState((state) => {
+        const newLenseState =
+          typeof action === "function" ? action(state[prop]) : action
+        if (state[prop] === newLenseState) return state
+        return { ...state, [prop]: newLenseState }
+      }),
+    [prop, updateState]
+  )
+  let value = state[prop]
+  try {
+    if (!validate(value)) value = defaultState[prop]
+  } catch (e) {
+    value = defaultState[prop]
+  }
+  return [value, updateStateLense]
+}
+
 let queuedIdle
 
-function reduceLocationState(state: HistoryState, action: UpdateStateAction) {
+function reduceLocationState(
+  state: HistoryState,
+  action: UpdateStateAction<HistoryState>
+) {
   const newState =
     typeof action === "function" ? action(state) : { ...state, ...action }
   if (action !== decodeFromCurrentLocation && state !== newState) {

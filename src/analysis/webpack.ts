@@ -1,9 +1,7 @@
-import { ModuleResolutionKind } from "typescript"
 import type { Graph } from "./graph"
 import { addEdge, addNode, createGraph, getNode, getNodeId } from "./graph"
 import { getSourceLocation } from "./info"
 import { OpenProgressFn, ParseOptions } from "./open"
-import md5 from "md5"
 import { SourceWorkerClient } from "./worker/SourceWorkerClient"
 
 export async function readWebpackStats(

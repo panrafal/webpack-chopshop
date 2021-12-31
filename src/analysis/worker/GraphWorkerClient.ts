@@ -1,5 +1,4 @@
 import { proxy, Remote, wrap } from "comlink"
-import throat from "throat"
 import { Changes } from "../changes"
 import { getFilterKey } from "../dependencies"
 import { Graph } from "../graph"
@@ -133,7 +132,12 @@ export class GraphWorkerClient
   }
 
   calculateGroupSizes = this.implement("calculateGroupSizes")
-  calculateRetainedTreeSize = this.implement("calculateRetainedTreeSize")
+  calculateTreeSizeRetainedByNode = this.implement(
+    "calculateTreeSizeRetainedByNode"
+  )
+  calculateTreeSizeRetainedByEdge = this.implement(
+    "calculateTreeSizeRetainedByEdge"
+  )
   calculateTreeSize = this.implement("calculateTreeSize")
   findChains = this.implement("findChains")
   findAllChains = this.implement("findAllChains")
@@ -141,6 +145,7 @@ export class GraphWorkerClient
   getAsyncEdges = this.implement("getAsyncEdges")
   getDeepNodeChildren = this.implement("getDeepNodeChildren")
   getEnabledChildEdges = this.implement("getEnabledChildEdges")
-  getRetainedNodes = this.implement("getRetainedNodes")
+  getNodesRetainedByNode = this.implement("getNodesRetainedByNode")
+  getNodesRetainedByEdge = this.implement("getNodesRetainedByEdge")
   getDeepNodeParents = this.implement("getDeepNodeParents")
 }

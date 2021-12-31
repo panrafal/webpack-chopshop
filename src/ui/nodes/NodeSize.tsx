@@ -1,24 +1,11 @@
-import type { Graph, GraphNode } from "../../analysis/graph"
-
-import numeral from "numeral"
-import { Tooltip } from "@mui/material"
-import Skeleton from "@mui/material/Skeleton"
-
-import {
-  calculateTreeSize,
-  calculateRetainedTreeSize,
-} from "../../analysis/size"
-import { useStablePromise } from "../hooks/promises"
-import { baseGraphFilter, currentGraphFilter } from "../../analysis/filters"
-import ErrorBox from "../ErrorBox"
-
-import { red, green } from "@mui/material/colors"
-import { makeStyles } from "../makeStyles"
-import { formatSize } from "../format"
-import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
-import { useTreeContext } from "../tree/TreeContext"
+import { green, red } from "@mui/material/colors"
 import { useMemo } from "react"
+import { baseGraphFilter, currentGraphFilter } from "../../analysis/filters"
+import type { GraphNode } from "../../analysis/graph"
+import { formatSize } from "../format"
+import { makeStyles } from "../makeStyles"
 import PromisedValue from "../PromisedValue"
+import { useTreeContext } from "../tree/TreeContext"
 
 type Props = {
   retainerRootNode?: GraphNode | null
@@ -41,12 +28,17 @@ export default function NodeSize({ node, retainerRootNode }: Props) {
   const promise = useMemo(async () => {
     const treeSizeCalculator = retainerRootNode
       ? (filter) =>
-          graphWorker.calculateRetainedTreeSize(retainerRootNode, node, filter)
+          graphWorker.calculateTreeSizeRetainedByNode(
+            retainerRootNode,
+            node,
+            filter
+          )
       : (filter) => graphWorker.calculateTreeSize(node, filter)
     return {
       baseTreeSize: await treeSizeCalculator(baseGraphFilter),
       treeSize: await treeSizeCalculator(currentGraphFilter),
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [graph, graphWorker, node, retainerRootNode])
 
   return (

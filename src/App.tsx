@@ -88,8 +88,6 @@ export default function App({ className, trackLoading }: Props) {
 
   // UI
 
-  const [showChanges, setShowChanges] = useState(false)
-
   let pageElement = null
   if (!graph || page === "open") {
     pageElement = (
@@ -158,7 +156,6 @@ export default function App({ className, trackLoading }: Props) {
                     Show changes
                   </Badge>
                 }
-                onClick={() => setShowChanges(true)}
               />
             </Tabs>
           }

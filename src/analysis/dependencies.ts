@@ -127,25 +127,26 @@ export function getDeepNodeParents(
 
 // Returns all nodes introduced to the dependency tree of rootNode by adding the node to it.
 // In another word - how many modules are retained in the dependency tree because of the `node`
-// Does not include the node itself
-export function getRetainedNodes(
+// Does include the node itself
+export function getNodesRetainedByNode(
   graph: Graph,
   rootNode: GraphNode,
   node: GraphNode,
   filter?: (e: GraphEdge) => boolean
 ): Promise<ReadonlyArray<GraphNodeID>> {
-  const key = `getRetainedNodes:${rootNode.id}:${node.id}:${getFilterKey(
+  const key = `getNodesRetainedByNode:${rootNode.id}:${node.id}:${getFilterKey(
     filter
   )}`
   if (!graph.cache[key]) {
     // Gather all children of the rootNode
     const allChildrenPromise = getDeepNodeChildren(graph, rootNode, filter)
+
     // Mark `node` as visited and gather children again - children of `node` will be ignored
-    // The difference between these two will be our answear
+    // The difference between these two will show which nodes were included by the introduction of `node` to the tree
     const visited = {
       [node.id]: node,
     }
-    const rootsChildrenPromise = collectNodes(graph, rootNode, {
+    const filteredChildrenPromise = collectNodes(graph, rootNode, {
       visited,
       direction: "children",
       filter,
@@ -154,15 +155,55 @@ export function getRetainedNodes(
     })
     graph.cache[key] = Promise.all([
       allChildrenPromise,
-      rootsChildrenPromise,
-    ]).then(([allChildren, rootsChildren]) => {
+      filteredChildrenPromise,
+    ]).then(([allChildren, filteredChildren]) => {
       // If they're not connected - there's no retention
       if (allChildren.indexOf(node.id) < 0) {
         return []
       }
-      // All children in the tree except the ones connected to the root
-      const ids = difference(allChildren, rootsChildren)
+      // Keep only children that were introduced by having the `node` in the tree
+      const ids = difference(allChildren, filteredChildren)
+      // + the node itself
       ids.push(node.id)
+      return ids
+    })
+  }
+  return graph.cache[key]
+}
+
+// Returns all nodes introduced to the dependency tree of rootNode by adding the edge to it.
+// In another word - how many modules are retained in the dependency tree because of the `edge`
+// Includes the node itself
+export function getNodesRetainedByEdge(
+  graph: Graph,
+  rootNode: GraphNode,
+  edge: GraphEdge,
+  filter?: (e: GraphEdge) => boolean
+): Promise<ReadonlyArray<GraphNodeID>> {
+  const key = `getNodesRetainedByEdge:${rootNode.id}:${edge.id}:${getFilterKey(
+    filter
+  )}`
+  if (!edge.enabled) return Promise.resolve([])
+  if (!graph.cache[key]) {
+    // Gather all children of the rootNode
+    const allChildrenPromise = getDeepNodeChildren(graph, rootNode, filter)
+
+    // Gather children again, but with `edge` disabled
+    // The difference between these two will show which nodes were included by the introduction of `node` to the tree
+    const visited = {}
+    const filteredChildrenPromise = collectNodes(graph, rootNode, {
+      visited,
+      direction: "children",
+      filter: (e) => e.id !== edge.id && (!filter || filter(e)),
+    }).then(() => {
+      return Object.keys(visited)
+    })
+    graph.cache[key] = Promise.all([
+      allChildrenPromise,
+      filteredChildrenPromise,
+    ]).then(([allChildren, filteredChildren]) => {
+      // Keep only children that were introduced by having the `node` in the tree
+      const ids = difference(allChildren, filteredChildren)
       return ids
     })
   }

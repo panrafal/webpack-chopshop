@@ -1,11 +1,11 @@
-import type { Graph, GraphEdge, GraphNode, GraphNodeID } from "./graph"
-import { getNode } from "./graph"
 import {
   getDeepNodeChildren,
   getFilterKey,
-  getRetainedNodes,
+  getNodesRetainedByEdge,
+  getNodesRetainedByNode,
 } from "./dependencies"
-import { groupBy, sortBy } from "lodash"
+import type { Graph, GraphEdge, GraphNode, GraphNodeID } from "./graph"
+import { getNode } from "./graph"
 import { getNodeGroup, GroupInfo } from "./groups"
 
 export type EdgePath = GraphNodeID[]
@@ -25,20 +25,44 @@ export function calculateTreeSize(
   return graph.cache[key]
 }
 
-export function calculateRetainedTreeSize(
+export function calculateTreeSizeRetainedByNode(
   graph: Graph,
   rootNode: GraphNode,
   node: GraphNode,
   filter?: (e: GraphEdge) => boolean
 ): Promise<number> {
-  const key = `calculateRetainedTreeSize:${rootNode.id}:${
+  const key = `calculateTreeSizeRetainedByNode:${rootNode.id}:${
     node.id
   }:${getFilterKey(filter)}`
 
   if (!graph.cache[key]) {
-    graph.cache[key] = getRetainedNodes(graph, rootNode, node, filter).then(
-      (tree) => tree.reduce((sum, id) => sum + getNode(graph, id).size, 0)
-    )
+    graph.cache[key] = getNodesRetainedByNode(
+      graph,
+      rootNode,
+      node,
+      filter
+    ).then((tree) => tree.reduce((sum, id) => sum + getNode(graph, id).size, 0))
+  }
+  return graph.cache[key]
+}
+
+export function calculateTreeSizeRetainedByEdge(
+  graph: Graph,
+  rootNode: GraphNode,
+  edge: GraphEdge,
+  filter?: (e: GraphEdge) => boolean
+): Promise<number> {
+  const key = `calculateTreeSizeRetainedByEdge:${rootNode.id}:${
+    edge.id
+  }:${getFilterKey(filter)}`
+
+  if (!graph.cache[key]) {
+    graph.cache[key] = getNodesRetainedByEdge(
+      graph,
+      rootNode,
+      edge,
+      filter
+    ).then((tree) => tree.reduce((sum, id) => sum + getNode(graph, id).size, 0))
   }
   return graph.cache[key]
 }
@@ -60,7 +84,7 @@ export function calculateGroupSizes(
     const promise =
       !rootNode || rootNode === node
         ? getDeepNodeChildren(graph, node, filter)
-        : getRetainedNodes(graph, rootNode, node, filter)
+        : getNodesRetainedByNode(graph, rootNode, node, filter)
     graph.cache[key] = promise.then((tree) => {
       const infos = new Map<GroupInfo, GroupSizeInfo>()
       ;[node.id, ...tree].forEach((id) => {

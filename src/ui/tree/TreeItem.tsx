@@ -29,6 +29,7 @@ import {
 } from "../../analysis/graph"
 import { getNodeGroup } from "../../analysis/groups"
 import { makeStyles } from "../makeStyles"
+import EdgeSize from "../nodes/EdgeSize"
 import NodeName from "../nodes/NodeName"
 import NodeSize from "../nodes/NodeSize"
 import { AppTheme } from "../theme"
@@ -288,8 +289,8 @@ export default function TreeItem({
               color: theme.palette[group.colorName].main,
             }}
             secondary={
-              <NodeSize
-                node={getNode(graph, edge.toId)}
+              <EdgeSize
+                edge={edge}
                 retainerRootNode={retainerRootNode || graph.root}
               />
             }
