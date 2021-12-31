@@ -1,5 +1,11 @@
 import { getFilterKey } from "./dependencies"
-import type { Graph, GraphEdge, GraphNode, GraphNodeID } from "./graph"
+import type {
+  Graph,
+  GraphEdge,
+  GraphEdgeID,
+  GraphNode,
+  GraphNodeID,
+} from "./graph"
 import { getNode } from "./graph"
 
 export type EdgeChain = GraphNodeID[]
@@ -11,7 +17,7 @@ async function gatherChains(
   path: GraphNodeID[],
   options: {
     visited: {
-      [k in GraphNodeID]: GraphNode
+      [k in GraphEdgeID]: GraphEdge
     }
     filter?: (e: GraphEdge) => boolean
   }
@@ -21,7 +27,6 @@ async function gatherChains(
   const currentPath = [...path, node.id]
   if (node.id === toId) return [currentPath]
 
-  visited[node.id] = node
   const paths = []
 
   // prefer shortest paths first
@@ -30,9 +35,11 @@ async function gatherChains(
   }
 
   for (const edge of node.children) {
-    if (visited[edge.toId]) continue
-    if (edge.toId === toId) continue
+    if (visited[edge.id]) continue
+    if (edge.toId === toId) continue // already included above
     if (filter && !filter(edge)) continue
+
+    visited[edge.id] = edge
     const result = await gatherChains(
       graph,
       getNode(graph, edge.toId),
@@ -59,20 +66,6 @@ export async function findChains(
     graph.cache[key] = gatherChains(graph, fromNode, toNode.id, [], {
       visited: {},
       filter,
-    })
-  }
-  return graph.cache[key]
-}
-
-export async function findAllChains(
-  graph: Graph,
-  fromNode: GraphNode,
-  toNode: GraphNode
-): Promise<EdgeChain[]> {
-  const key = `findAllChains:${fromNode.id}:${toNode.id}`
-  if (!graph.cache[key]) {
-    graph.cache[key] = gatherChains(graph, fromNode, toNode.id, [], {
-      visited: {},
     })
   }
   return graph.cache[key]

@@ -68,7 +68,7 @@ export default function EdgeSize({ edge, retainerRootNode }: Props) {
 
           {nodeTreeSize > 0 && nodeTreeSize !== treeSize ? (
             <>
-              {" / "}
+              {" | "}
               <span>{formatSize(nodeTreeSize)}</span>
             </>
           ) : null}

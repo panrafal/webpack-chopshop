@@ -8,7 +8,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material"
-import { MouseEvent, useCallback } from "react"
+import { MouseEvent, useCallback, useMemo } from "react"
 import { addEdgeToggleChange } from "../../analysis/changes"
 import {
   currentGraphFilter,
@@ -28,6 +28,7 @@ import {
   ROOT_NODE_ID,
 } from "../../analysis/graph"
 import { getNodeGroup } from "../../analysis/groups"
+import { useStablePromise } from "../hooks/promises"
 import { makeStyles } from "../makeStyles"
 import EdgeSize from "../nodes/EdgeSize"
 import NodeName from "../nodes/NodeName"
@@ -74,19 +75,17 @@ type EdgeChainState = false | "start" | "end" | "middle" | "lone"
 function getChainedState({
   graph,
   edge,
-  chainedNodeIds,
+  activeNodeId,
+  containsActiveNode,
 }: {
   graph: Graph
   edge: GraphEdge
-  chainedNodeIds: GraphNodeID[]
+  activeNodeId: GraphNodeID | null
+  containsActiveNode: boolean
 }): EdgeChainState {
-  const hasChainedChildren = getNode(graph, edge.toId).children.some(
-    ({ toId }) => chainedNodeIds.includes(toId)
-  )
-  const isChained = chainedNodeIds.includes(edge.toId)
-  if (hasChainedChildren && edge.fromId === ROOT_NODE_ID) return "start"
-  if (isChained && hasChainedChildren) return "middle"
-  return isChained ? "end" : false
+  if (containsActiveNode && edge.fromId === ROOT_NODE_ID) return "start"
+  if (containsActiveNode) return "middle"
+  return edge.toId === activeNodeId ? "end" : false
 }
 
 function getCycledState({
@@ -160,6 +159,7 @@ export default function TreeItem({
   const activeNode = activeNodeId === edge.toId
   const activeEdge = activeEdgeId === edge.id
   const opened = openedNodeIds[levelIndex + 1] === edge.toId
+  const node = getNode(graph, edge.toId)
 
   const enabled = enabledIds.includes(edge.id)
   const toggleable =
@@ -167,7 +167,23 @@ export default function TreeItem({
     enabledIds.includes(edge.id) ||
     enabledIds.includes(edge.fromId)
 
-  const chained = getChainedState({ graph, edge, chainedNodeIds })
+  const containsActiveNodeState = useStablePromise(
+    useMemo(
+      () =>
+        activeNodeId &&
+        graphWorker
+          .getDeepNodeChildren(node, currentGraphFilter)
+          .then((ids) => ids.includes(activeNodeId)),
+      [graph, activeNodeId, graphWorker, node]
+    )
+  )
+  const chained = getChainedState({
+    graph,
+    edge,
+    activeNodeId,
+    containsActiveNode:
+      !containsActiveNodeState.loading && !!containsActiveNodeState.value,
+  })
   const cycled = getCycledState({
     graph,
     edge,

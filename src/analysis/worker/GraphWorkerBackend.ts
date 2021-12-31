@@ -1,6 +1,6 @@
 import { expose } from "comlink"
 import { omit } from "lodash"
-import { findAllChains, findChains } from "../chains"
+import { findChains } from "../chains"
 import { applyChanges, Changes, revertGraph } from "../changes"
 import { findNodeCycles } from "../cycles"
 import {
@@ -78,7 +78,6 @@ const backend = {
   calculateTreeSizeRetainedByEdge: bindGraph(calculateTreeSizeRetainedByEdge),
   calculateTreeSize: bindGraph(calculateTreeSize),
   findChains: bindGraph(findChains),
-  findAllChains: bindGraph(findAllChains),
   findNodeCycles: bindGraph(findNodeCycles),
   getAsyncEdges: bindGraph(getAsyncEdges),
   getDeepNodeChildren: bindGraph(getDeepNodeChildren),

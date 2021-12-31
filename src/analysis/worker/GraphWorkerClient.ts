@@ -140,7 +140,6 @@ export class GraphWorkerClient
   )
   calculateTreeSize = this.implement("calculateTreeSize")
   findChains = this.implement("findChains")
-  findAllChains = this.implement("findAllChains")
   findNodeCycles = this.implement("findNodeCycles")
   getAsyncEdges = this.implement("getAsyncEdges")
   getDeepNodeChildren = this.implement("getDeepNodeChildren")

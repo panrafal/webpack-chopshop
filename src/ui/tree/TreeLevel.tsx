@@ -82,7 +82,7 @@ function TreeLevel(
       [
         ...(edges || []).filter((e) => getNode(graph, e.toId) === childNode),
         ...(edges || []).filter((e) => e.toId === activeNodeId),
-        ...(edges || []).filter((e) => chainedNodeIds.includes(e.toId)),
+        // ...(edges || []).filter((e) => chainedNodeIds.includes(e.toId)),
       ].slice(0, 5),
     [graph, activeNodeId, chainedNodeIds, childNode, edges]
   )
