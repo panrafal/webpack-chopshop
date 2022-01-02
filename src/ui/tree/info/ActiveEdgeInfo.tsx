@@ -1,3 +1,6 @@
+import Flag from "@mui/icons-material/Flag"
+import Star from "@mui/icons-material/Star"
+import StarBorder from "@mui/icons-material/StarBorder"
 import {
   alpha,
   Box,
@@ -6,20 +9,15 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material"
+import SyntaxHighlighter from "react-syntax-highlighter"
+import syntaxStyle from "react-syntax-highlighter/dist/esm/styles/hljs/hybrid"
 import { getNode, resolveEdge, resolveNode } from "../../../analysis/graph"
-import { getSourceLocation } from "../../../analysis/info"
 import EmptyBox from "../../EmptyBox"
 import { makeStyles } from "../../makeStyles"
-import EdgeSize from "../../nodes/EdgeSize"
 import NodeName from "../../nodes/NodeName"
 import NodeSize from "../../nodes/NodeSize"
 import { useTreeContext } from "../TreeContext"
 import GroupSizesInfo from "./GroupSizesInfo"
-import SyntaxHighlighter from "react-syntax-highlighter"
-import syntaxStyle from "react-syntax-highlighter/dist/esm/styles/hljs/hybrid"
-import Star from "@mui/icons-material/Star"
-import StarBorder from "@mui/icons-material/StarBorder"
-import Flag from "@mui/icons-material/Flag"
 
 type Props = {
   className?: string

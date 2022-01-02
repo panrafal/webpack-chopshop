@@ -1,19 +1,15 @@
-import { Box, Divider, Paper, Typography } from "@mui/material"
+import { Box, Paper, Typography } from "@mui/material"
+import numeral from "numeral"
 import { useMemo } from "react"
 import {
   allAsyncAndEnabledFilter,
   baseGraphFilter,
   currentGraphFilter,
 } from "../../../analysis/filters"
-import numeral from "numeral"
-
-import { calculateTreeSize } from "../../../analysis/size"
-import { useStablePromise } from "../../hooks/promises"
+import ChangeValue from "../../ChangeValue"
 import { makeStyles } from "../../makeStyles"
-import NodeSize from "../../nodes/NodeSize"
 import PromisedValue from "../../PromisedValue"
 import { useTreeContext } from "../TreeContext"
-import ChangeValue from "../../ChangeValue"
 import GroupSizesInfo from "./GroupSizesInfo"
 
 type Props = {

@@ -44,7 +44,7 @@ export default function GroupSizesInfo({
   filter = currentGraphFilter,
 }: Props) {
   const { classes, cx, theme } = useStyles()
-  const { graph, graphWorker } = useTreeContext()
+  const { graphWorker } = useTreeContext()
 
   const { value, loading, error } = useStablePromise(
     graphWorker.calculateGroupSizes(retainerRootNode, node, filter)

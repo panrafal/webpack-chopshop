@@ -32,7 +32,6 @@ import { useStablePromise } from "../hooks/promises"
 import { makeStyles } from "../makeStyles"
 import EdgeSize from "../nodes/EdgeSize"
 import NodeName from "../nodes/NodeName"
-import NodeSize from "../nodes/NodeSize"
 import { AppTheme } from "../theme"
 import { useTreeContext } from "./TreeContext"
 

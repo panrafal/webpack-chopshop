@@ -1,6 +1,6 @@
 import { Paper } from "@mui/material"
 import { first, intersection, isEqual, last, nth, uniq } from "lodash"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { useVirtual } from "react-virtual"
 import { EdgeChain } from "../../analysis/chains"
 import {
@@ -15,19 +15,14 @@ import {
   getNode,
   getNodes,
   Graph,
-  GraphEdgeID,
   GraphNode,
   GraphNodeID,
   resolveEdge,
   resolveNode,
-  ROOT_NODE_ID,
 } from "../../analysis/graph"
 import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
 import { UpdateChangesFn } from "../../logic/useGraphState"
-import {
-  useHistoryState,
-  useHistoryStateLense,
-} from "../../logic/useHistoryState"
+import { useHistoryStateLense } from "../../logic/useHistoryState"
 import { TogglePinnedFn } from "../../logic/usePinnedState"
 import { useStablePromise } from "../hooks/promises"
 import { PromiseTrackerFn } from "../hooks/usePromiseTracker"
