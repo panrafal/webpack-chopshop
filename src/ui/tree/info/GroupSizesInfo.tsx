@@ -1,25 +1,16 @@
-import { Box, Paper, Tooltip, Typography } from "@mui/material"
-import { useMemo } from "react"
-import {
-  allAsyncAndEnabledFilter,
-  baseGraphFilter,
-  currentGraphFilter,
-} from "../../../analysis/filters"
-import numeral from "numeral"
-
-import { calculateGroupSizes, calculateTreeSize } from "../../../analysis/size"
+import { Tooltip } from "@mui/material"
+import { currentGraphFilter } from "../../../analysis/filters"
+import { GraphEdge, GraphNode } from "../../../analysis/graph"
+import { formatSize } from "../../format"
 import { useStablePromise } from "../../hooks/promises"
 import { makeStyles } from "../../makeStyles"
-import NodeSize from "../../nodes/NodeSize"
-import PromisedValue from "../../PromisedValue"
 import { useTreeContext } from "../TreeContext"
-import ChangeValue from "../../ChangeValue"
-import { GraphNode } from "../../../analysis/graph"
-import { formatSize } from "../../format"
 
 type Props = {
   className?: string
   node: GraphNode
+  retainerRootNode?: GraphNode
+  filter?: (e: GraphEdge) => boolean
 }
 
 const useStyles = makeStyles({ name: "GroupSizesInfo" })({
@@ -29,6 +20,8 @@ const useStyles = makeStyles({ name: "GroupSizesInfo" })({
     overflow: "hidden",
     transition: "opacity 100ms",
     opacity: 1,
+    height: 16,
+    background: "#333",
   },
   loading: {
     opacity: 0.5,
@@ -44,12 +37,17 @@ const useStyles = makeStyles({ name: "GroupSizesInfo" })({
   },
 })
 
-export default function GroupSizesInfo({ className, node }: Props) {
+export default function GroupSizesInfo({
+  className,
+  node,
+  retainerRootNode,
+  filter = currentGraphFilter,
+}: Props) {
   const { classes, cx, theme } = useStyles()
   const { graph, graphWorker } = useTreeContext()
 
   const { value, loading, error } = useStablePromise(
-    graphWorker.calculateGroupSizes(graph.root, node, currentGraphFilter)
+    graphWorker.calculateGroupSizes(retainerRootNode, node, filter)
   )
   const groups = value || []
   const overalSize = groups.reduce((sum, { size }) => sum + size, 0)

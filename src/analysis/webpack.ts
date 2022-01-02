@@ -12,8 +12,8 @@ export async function readWebpackStats(
   const debug = false
   const graph = createGraph()
 
-  const includeChunks = true
-  const includeAssets = true
+  const includeChunks = false
+  const includeAssets = false
 
   const { chunks = [], assets = [], modules = [] } = stats
   const moduleMap = new Map()

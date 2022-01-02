@@ -132,7 +132,10 @@ export const useStablePromise = <T extends any>(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(createEffectFn<T>(promise, dispatch), [promise, dispatch])
 
-  return { ...promiseState, promise }
+  return {
+    ...promiseState,
+    loading: promiseState.promise === promise ? promiseState.loading : true,
+  }
 }
 
 export const useCallbackPromise = <T extends any>(

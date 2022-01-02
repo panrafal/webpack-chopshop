@@ -380,6 +380,7 @@ const useStyles = makeStyles<
           cycled === "end" || (!cycled && chained === "end") ? 4 : 1,
         borderTopWidth: activeNode ? 4 : 1,
         borderBottomWidth: activeNode ? 4 : 1,
+        transition: "all 200ms",
       },
       cycleIcon: {
         position: "absolute",

@@ -24,7 +24,7 @@ export default function ChangeValue({ value, desc, format, className }: Props) {
           : "inherit",
       }}
     >
-      {value > 0 ? "+" : "-"}
+      {value > 0 ? "+" : value < 0 ? "-" : ""}
       {numeral(Math.abs(value)).format(format)}
     </span>
   )

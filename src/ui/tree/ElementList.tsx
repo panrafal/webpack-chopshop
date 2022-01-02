@@ -1,6 +1,6 @@
 import ClearIcon from "@mui/icons-material/Clear"
 import { IconButton, Input, InputAdornment } from "@mui/material"
-import { groupBy, map, orderBy, sortBy, sumBy, uniq } from "lodash"
+import { groupBy, map, orderBy, sortBy, sumBy, uniq, without } from "lodash"
 import {
   Fragment,
   ReactElement,
@@ -134,7 +134,7 @@ function ElementList<T>({
     return searchedItems
   }, [search, graph, items, getNode, orderItemsBy])
 
-  const pinnedItems = useMemo(
+  const pinnedItems = useMemo<ReadonlyArray<T>>(
     () =>
       filteredItems.filter((item) => pinned.includes(getNode(graph, item).id)),
     [filteredItems, pinned, getNode, graph]
@@ -158,7 +158,7 @@ function ElementList<T>({
       }))
       rows = orderBy(rows, ...orderGroupsBy)
     } else {
-      rows = filteredItems.slice()
+      rows = without(filteredItems, ...pinnedItems)
     }
     rows.unshift(...pinnedItems)
     return flattenTreeToRows(rows, treeState, treeOptions)
@@ -208,7 +208,8 @@ function ElementList<T>({
       return renderItem({
         item: item as Exclude<T, Group<T>>,
         key: String(index),
-        hidePackage: Boolean(groupItemsBy && !search),
+        hidePackage:
+          Boolean(groupItemsBy && !search) && index >= pinnedItems.length,
         style,
       })
     }

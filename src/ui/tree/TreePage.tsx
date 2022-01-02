@@ -110,7 +110,7 @@ function TreePage({
                     .then((edges) =>
                       uniq(edges.map((edge) => getNode(graph, edge.toId)))
                     ),
-                renderTitle: () => "All Async Nodes",
+                renderTitle: () => "All Split Points",
                 renderEmpty: () => "Nothing found",
               },
               children: {
@@ -126,7 +126,7 @@ function TreePage({
                     .then((edges) =>
                       uniq(edges.map((edge) => getNode(graph, edge.toId)))
                     ),
-                renderTitle: () => "Child Async Nodes",
+                renderTitle: () => "Child Split Points",
                 renderEmpty: () => "Nothing found",
               },
             } as NavigatorModes,
@@ -143,7 +143,7 @@ function TreePage({
                   graphWorker
                     .getDeepNodeChildren(graph.root, currentGraphFilter)
                     .then((ids) => getNodes(graph, ids)),
-                renderTitle: () => "Enabled Nodes",
+                renderTitle: () => "All Enabled Modules",
                 renderEmpty: () => "Nothing found",
               },
               children: {
@@ -172,26 +172,30 @@ function TreePage({
                       currentGraphFilter
                     )
                     .then((ids) => getNodes(graph, ids)),
-                renderTitle: () => "Retained by Node",
+                renderTitle: () => "Retained Modules",
                 renderEmpty: () => "Nothing found",
               },
-              retainedByEdge: {
+              parents: {
                 getItems: () =>
                   activeEdgeId
                     ? graphWorker
-                        .getNodesRetainedByEdge(
-                          graph.root,
-                          getEdge(graph, activeEdgeId),
+                        .getEnabledParentEdges(
+                          getNode(graph, activeEdge.toId),
                           currentGraphFilter
                         )
-                        .then((ids) => getNodes(graph, ids))
+                        .then((ids) => getEdges(graph, ids))
                     : [],
-                renderTitle: () => "Retained by Edge",
+                getItemNode: (graph, edge) => getNode(graph, edge.fromId),
+                activateItem: (edge, event) => {
+                  if (event.shiftKey) setActiveNodeId(edge.fromId)
+                  openNodeChain(getNodes(graph, [edge.fromId, edge.toId]))
+                },
+                renderTitle: () => "Parents",
                 renderEmpty: () => "Nothing found",
               },
               all: {
                 getItems: () => getAllNodes(graph),
-                renderTitle: () => "All Nodes",
+                renderTitle: () => "All Modules",
                 renderEmpty: () => "Nothing found",
               },
             } as NavigatorModes,
@@ -554,7 +558,7 @@ const useStyles = makeStyles({ name: "TreePage" })((theme) => ({
     gridArea: "info / span 2",
     display: "grid",
     gridAutoFlow: "column",
-    gridAutoColumns: "1fr",
+    gridAutoColumns: "minmax(0, 1fr)",
     gap: theme.spacing(3),
   },
   treeLevels: {

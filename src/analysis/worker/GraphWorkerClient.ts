@@ -144,6 +144,7 @@ export class GraphWorkerClient
   getAsyncEdges = this.implement("getAsyncEdges")
   getDeepNodeChildren = this.implement("getDeepNodeChildren")
   getEnabledChildEdges = this.implement("getEnabledChildEdges")
+  getEnabledParentEdges = this.implement("getEnabledParentEdges")
   getNodesRetainedByNode = this.implement("getNodesRetainedByNode")
   getNodesRetainedByEdge = this.implement("getNodesRetainedByEdge")
   getDeepNodeParents = this.implement("getDeepNodeParents")

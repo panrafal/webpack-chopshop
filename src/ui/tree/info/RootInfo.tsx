@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from "@mui/material"
+import { Box, Divider, Paper, Typography } from "@mui/material"
 import { useMemo } from "react"
 import {
   allAsyncAndEnabledFilter,
@@ -20,7 +20,16 @@ type Props = {
   className?: string
 }
 
-const useStyles = makeStyles({ name: "RootInfo" })({})
+const useStyles = makeStyles({ name: "RootInfo" })((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    padding: theme.spacing(2),
+  },
+  spacer: {
+    flexGrow: 1,
+  },
+}))
 
 export default function RootInfo({ className }: Props) {
   const { classes, cx } = useStyles()
@@ -43,7 +52,10 @@ export default function RootInfo({ className }: Props) {
   }, [graph])
 
   return (
-    <Paper className={cx(className)} sx={{ padding: 2 }}>
+    <Paper className={cx(className, classes.root)}>
+      <Typography variant="h6" sx={{ marginBottom: 1 }}>
+        Project
+      </Typography>
       <Box>
         {"Loaded "}
         <PromisedValue
@@ -52,7 +64,7 @@ export default function RootInfo({ className }: Props) {
             <b>{Math.round((currentSize / overallSize) * 100)}%</b>
           )}
         />
-        {", "}
+        {" of split points ("}
         <PromisedValue
           promise={sizePromise}
           render={({ currentSize }) => (
@@ -66,6 +78,7 @@ export default function RootInfo({ className }: Props) {
             <b>{numeral(overallSize).format("0[.]0b")}</b>
           )}
         />
+        {")"}
       </Box>
       <Box>
         {"Changes give "}
@@ -81,9 +94,17 @@ export default function RootInfo({ className }: Props) {
             </b>
           )}
         />
-        {" difference"}
+        {" difference in size"}
       </Box>
+      <div className={classes.spacer} />
+      <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
+        Loaded modules breakdown
+      </Typography>
       <GroupSizesInfo node={graph.root} />
+      <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
+        All modules breakdown
+      </Typography>
+      <GroupSizesInfo node={graph.root} filter={allAsyncAndEnabledFilter} />
     </Paper>
   )
 }

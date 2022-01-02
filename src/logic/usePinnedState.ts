@@ -13,12 +13,12 @@ export function usePinnedState(): [PinnedState, (TogglePinnedPayload) => void] {
         newPinned = payload
       } else {
         const { id } = payload
-        const wasPinned = pinned.includes(id)
+        const wasPinned = currentPinned.includes(id)
         const isPinned = payload.set ?? !wasPinned
         if (wasPinned === isPinned) return currentPinned
         newPinned = isPinned
-          ? [id, ...pinned]
-          : pinned.filter((pin) => pin !== id)
+          ? [id, ...currentPinned]
+          : currentPinned.filter((pin) => pin !== id)
       }
       window.localStorage.setItem("pinned", JSON.stringify(newPinned))
       return newPinned

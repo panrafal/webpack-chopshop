@@ -82,7 +82,7 @@ function TreeLevel(
       [
         ...(edges || []).filter((e) => getNode(graph, e.toId) === childNode),
         ...(edges || []).filter((e) => e.toId === activeNodeId),
-        // ...(edges || []).filter((e) => chainedNodeIds.includes(e.toId)),
+        ...(edges || []).filter((e) => chainedNodeIds.includes(e.toId)),
       ].slice(0, 5),
     [graph, activeNodeId, chainedNodeIds, childNode, edges]
   )
@@ -119,7 +119,6 @@ function TreeLevel(
         renderItem={({ item, ...itemProps }) => (
           <TreeItem
             {...itemProps}
-            key={item.id}
             edge={item}
             levelIndex={levelIndex}
             selected={item.toId === childNode?.id}

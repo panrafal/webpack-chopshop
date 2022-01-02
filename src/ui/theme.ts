@@ -37,6 +37,7 @@ declare module "@mui/material/Checkbox" {
 
 export function createAppTheme() {
   const baseTheme = createTheme({
+    typography: { fontSize: 13 },
     palette: {
       mode: "dark",
     },

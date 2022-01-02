@@ -78,7 +78,9 @@ export function calculateGroupSizes(
   node: GraphNode,
   filter?: (e: GraphEdge) => boolean
 ): Promise<GroupSizeInfo[]> {
-  const key = `calculateGroupSizes:${node.id}:${getFilterKey(filter)}`
+  const key = `calculateGroupSizes:${rootNode?.id}:${node.id}:${getFilterKey(
+    filter
+  )}`
 
   if (!graph.cache[key]) {
     const promise =
@@ -87,7 +89,8 @@ export function calculateGroupSizes(
         : getNodesRetainedByNode(graph, rootNode, node, filter)
     graph.cache[key] = promise.then((tree) => {
       const infos = new Map<GroupInfo, GroupSizeInfo>()
-      ;[node.id, ...tree].forEach((id) => {
+      if (!tree.includes(node.id)) tree = [node.id, ...tree]
+      tree.forEach((id) => {
         const node = getNode(graph, id)
         const group = getNodeGroup(node)
         let info = infos.get(group)

@@ -1,47 +1,127 @@
-import { Box, Paper } from "@mui/material"
-import { getNode, resolveEdge } from "../../../analysis/graph"
+import {
+  alpha,
+  Box,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from "@mui/material"
+import { getNode, resolveEdge, resolveNode } from "../../../analysis/graph"
 import { getSourceLocation } from "../../../analysis/info"
+import EmptyBox from "../../EmptyBox"
 import { makeStyles } from "../../makeStyles"
+import EdgeSize from "../../nodes/EdgeSize"
 import NodeName from "../../nodes/NodeName"
 import NodeSize from "../../nodes/NodeSize"
 import { useTreeContext } from "../TreeContext"
 import GroupSizesInfo from "./GroupSizesInfo"
+import SyntaxHighlighter from "react-syntax-highlighter"
+import syntaxStyle from "react-syntax-highlighter/dist/esm/styles/hljs/hybrid"
+import Star from "@mui/icons-material/Star"
+import StarBorder from "@mui/icons-material/StarBorder"
+import Flag from "@mui/icons-material/Flag"
 
 type Props = {
   className?: string
 }
 
-const useStyles = makeStyles({ name: "ActiveEdgeInfo" })({})
+const useStyles = makeStyles({ name: "ActiveEdgeInfo" })((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    padding: theme.spacing(2),
+  },
+  spacer: {
+    flexGrow: 1,
+  },
+  title: {
+    display: "grid",
+    grid: "1fr / 1fr",
+    gridAutoFlow: "column",
+  },
+  code: {
+    margin: 0,
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    border: `1px solid ${alpha(theme.palette.text.primary, 0.1)}`,
+    borderRadius: 2,
+  },
+}))
 
 export default function ActiveEdgeInfo({ className }: Props) {
   const { classes, cx } = useStyles()
-  const { graph, activeEdgeId } = useTreeContext()
+  const {
+    graph,
+    activeEdgeId,
+    setActiveNodeId,
+    activeNodeId,
+    pinned,
+    togglePinned,
+  } = useTreeContext()
   const edge = resolveEdge(graph, activeEdgeId)
-
+  const fromNode = resolveNode(graph, edge?.fromId)
+  const isPinned = pinned.includes(edge?.toId)
   return (
-    <Paper className={cx(className)} sx={{ padding: 2 }}>
+    <Paper className={cx(className, classes.root)}>
+      <Box className={classes.title}>
+        <Typography variant="h6" sx={{ marginBottom: 1 }}>
+          Active Import
+        </Typography>
+        {edge ? (
+          <>
+            <Tooltip title="Set as active module">
+              <IconButton
+                onClick={() => setActiveNodeId(edge.toId)}
+                disabled={activeNodeId === edge.toId}
+              >
+                <Flag />
+              </IconButton>
+            </Tooltip>
+            <IconButton onClick={() => togglePinned({ id: edge.toId })}>
+              {isPinned ? <Star color="warning" /> : <StarBorder />}
+            </IconButton>
+          </>
+        ) : null}
+      </Box>
       {edge ? (
         <>
-          <Box>
-            From: <NodeName node={getNode(graph, edge.fromId)} />
-          </Box>
-          <Box>
-            To: <NodeName node={getNode(graph, edge.toId)} />
-          </Box>
-          <Box>
-            {getNode(graph, edge.fromId).file || null}@{edge.fromLoc || null}
-          </Box>
-          <Box>Name: {edge.name}</Box>
-          <Box>Kind: {edge.kind}</Box>
-          <pre>{edge.fromSource}</pre>
-          <Box>
+          <NodeName node={getNode(graph, edge.toId)} tooltip />
+          <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
+            {"imported by"}
+          </Typography>
+          <NodeName node={fromNode} tooltip />
+          {edge.fromSource ? (
+            <SyntaxHighlighter
+              language="javascript"
+              style={syntaxStyle}
+              className={classes.code}
+            >
+              {edge.fromSource || ""}
+            </SyntaxHighlighter>
+          ) : null}
+
+          <div className={classes.spacer} />
+
+          <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
+            {"Dependencies used only by this module: "}
+            <NodeSize
+              retainerRootNode={graph.root}
+              node={getNode(graph, edge.toId)}
+            />
+          </Typography>
+          <GroupSizesInfo
+            retainerRootNode={graph.root}
+            node={getNode(graph, edge.toId)}
+          />
+
+          <Typography variant="subtitle2" sx={{ marginTop: 1 }}>
+            {"Dependencies used by this module: "}
             <NodeSize node={getNode(graph, edge.toId)} />
-          </Box>
+          </Typography>
           <GroupSizesInfo node={getNode(graph, edge.toId)} />
-          {/* <pre>{JSON.stringify(edge.original, null, "  ")}</pre> */}
         </>
       ) : (
-        "..."
+        <EmptyBox>Select import in the tree below</EmptyBox>
       )}
     </Paper>
   )

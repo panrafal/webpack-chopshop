@@ -60,11 +60,12 @@ export default function NodeNavigator({ className, modes }: Props) {
   const { graph, pinned, togglePinned, setActiveNodeId, openNodeChain } =
     useTreeContext()
 
-  const { getItemNode = (_, item) => item } = mode
-
   const nodesPromise = useMemo(() => mode.getItems(), [mode])
 
   const { value: nodes, loading, error } = useStablePromise(nodesPromise)
+  // mode that was defined for the last returned items (so that getItemNode operates on correct set of nodes)
+  const nodesMode = useMemo(() => mode, [nodes])
+  const { getItemNode = (_, item) => item } = nodesMode
 
   return (
     <div className={cx(className, classes.NodeNavigator)}>
@@ -113,27 +114,16 @@ export default function NodeNavigator({ className, modes }: Props) {
                 node={node}
                 retainerRootNode={graph.root}
                 onClick={(event) => {
-                  if (mode.activateItem) mode.activateItem(item, event)
+                  if (nodesMode.activateItem)
+                    nodesMode.activateItem(item, event)
                   else {
                     if (event.shiftKey) setActiveNodeId(node.id)
                     openNodeChain([node])
                   }
                 }}
-                {...(mode.itemProps && mode.itemProps({ item, ...itemProps }))}
-              >
-                {pinned.indexOf(node.id) >= 0 ? (
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      onClick={() => {
-                        togglePinned({ id: node.id, set: false })
-                      }}
-                      size="large"
-                    >
-                      <StarIcon color="disabled" />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                ) : null}
-              </NodeNavigatorItem>
+                {...(nodesMode.itemProps &&
+                  nodesMode.itemProps({ item, ...itemProps }))}
+              ></NodeNavigatorItem>
             )
           }}
           renderEmpty={() => (

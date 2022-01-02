@@ -228,6 +228,24 @@ export function getEnabledChildEdges(
   return graph.cache[key]
 }
 
+export function getEnabledParentEdges(
+  graph: Graph,
+  node: GraphNode,
+  filter?: (e: GraphEdge) => boolean
+): Promise<ReadonlyArray<GraphEdgeID>> {
+  const key = `getEnabledParentEdges:${node.id}:${getFilterKey(filter)}`
+  if (!graph.cache[key]) {
+    graph.cache[key] = getDeepNodeChildren(graph, graph.root, filter).then(
+      (nodes) => {
+        return node.parents
+          .filter((edge) => nodes.includes(edge.fromId))
+          .map((edge) => edge.id)
+      }
+    )
+  }
+  return graph.cache[key]
+}
+
 export function getAsyncEdges(
   graph: Graph,
   node: GraphNode,

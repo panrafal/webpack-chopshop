@@ -8,6 +8,7 @@ import {
   getDeepNodeChildren,
   getDeepNodeParents,
   getEnabledChildEdges,
+  getEnabledParentEdges,
   getNodesRetainedByEdge,
   getNodesRetainedByNode,
 } from "../dependencies"
@@ -82,6 +83,7 @@ const backend = {
   getAsyncEdges: bindGraph(getAsyncEdges),
   getDeepNodeChildren: bindGraph(getDeepNodeChildren),
   getEnabledChildEdges: bindGraph(getEnabledChildEdges),
+  getEnabledParentEdges: bindGraph(getEnabledParentEdges),
   getNodesRetainedByNode: bindGraph(getNodesRetainedByNode),
   getNodesRetainedByEdge: bindGraph(getNodesRetainedByEdge),
   getDeepNodeParents: bindGraph(getDeepNodeParents),
