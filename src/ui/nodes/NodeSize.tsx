@@ -46,7 +46,7 @@ export default function NodeSize({ node, retainerRootNode }: Props) {
       promise={promise}
       render={({ baseTreeSize, treeSize }) => (
         <>
-          {!retainerRootNode || treeSize > 0 ? (
+          {treeSize != null ? (
             <>
               <span>{formatSize(node.size)}</span>
               {" + "}
@@ -55,7 +55,9 @@ export default function NodeSize({ node, retainerRootNode }: Props) {
           ) : (
             "disconnected"
           )}
-          {baseTreeSize != null && treeSize !== baseTreeSize ? (
+          {baseTreeSize != null &&
+          treeSize != null &&
+          treeSize !== baseTreeSize ? (
             <span
               className={
                 treeSize > baseTreeSize ? classes.bigger : classes.smaller

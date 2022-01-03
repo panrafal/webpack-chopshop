@@ -164,7 +164,7 @@ export function getNodesRetainedByNode(
       // Keep only children that were introduced by having the `node` in the tree
       const ids = difference(allChildren, filteredChildren)
       // + the node itself
-      ids.push(node.id)
+      if (allChildren.includes(node.id)) ids.push(node.id)
       return ids
     })
   }

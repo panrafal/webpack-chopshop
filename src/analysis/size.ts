@@ -30,7 +30,7 @@ export function calculateTreeSizeRetainedByNode(
   rootNode: GraphNode,
   node: GraphNode,
   filter?: (e: GraphEdge) => boolean
-): Promise<number> {
+): Promise<number | null> {
   const key = `calculateTreeSizeRetainedByNode:${rootNode.id}:${
     node.id
   }:${getFilterKey(filter)}`
@@ -41,7 +41,11 @@ export function calculateTreeSizeRetainedByNode(
       rootNode,
       node,
       filter
-    ).then((tree) => tree.reduce((sum, id) => sum + getNode(graph, id).size, 0))
+    ).then((tree) =>
+      tree.length > 0
+        ? tree.reduce((sum, id) => sum + getNode(graph, id).size, 0)
+        : null
+    )
   }
   return graph.cache[key]
 }
