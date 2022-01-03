@@ -59,7 +59,7 @@ export default function RootInfo({ className }: Props) {
       allAsyncAndEnabledFilter
     )
     return { currentSize, baseSize, overallSize }
-  }, [graph])
+  }, [graph, graphWorker])
 
   return (
     <Paper className={cx(className, classes.root)}>

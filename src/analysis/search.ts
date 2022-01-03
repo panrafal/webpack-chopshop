@@ -1,4 +1,4 @@
-import { getNode, Graph, GraphEdge, GraphElement, GraphNode } from "./graph"
+import { Graph, GraphNode } from "./graph"
 import { getNodeGroup } from "./groups"
 
 function getScore(text: string, search: string, negated: boolean) {
@@ -30,13 +30,6 @@ function createMatcher(search: string) {
     const text = (node.file || node.name || node.id).toLocaleLowerCase()
     return getScore(text, search, negated)
   }
-}
-
-function getNodeFromElement(graph: Graph, element: GraphElement) {
-  if ("toId" in element) {
-    return getNode(graph, element.toId)
-  }
-  return element as GraphNode
 }
 
 export function searchItems<T>(

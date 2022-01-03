@@ -223,6 +223,7 @@ function TreePage({
             } as NavigatorModes,
           }
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [modeId, graph, graphWorker, activeEdgeId])
 
   // Analyse tree based on current choice
@@ -447,11 +448,13 @@ function TreePage({
       trackLoading,
       openedNodeIds,
       normalizePath,
+      graph,
       activeNodeId,
       scrollToTreeIndex,
       activeEdge,
       graphWorker,
-      graph,
+      setActiveEdgeId,
+      setOpenedNodeIds,
     ]
   )
 

@@ -150,7 +150,6 @@ export default function TreeItem({
     graphWorker,
     updateChanges,
     enabledIds,
-    chainedNodeIds,
     activeNodeId,
     activeEdgeId,
     openedNodeIds,
@@ -173,6 +172,7 @@ export default function TreeItem({
         graphWorker
           .getDeepNodeChildren(node, currentGraphFilter)
           .then((ids) => ids.includes(activeNodeId)),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [graph, activeNodeId, graphWorker, node]
     )
   )

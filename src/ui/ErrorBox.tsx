@@ -1,8 +1,8 @@
-import * as React from "react"
-import { Icon, IconButton } from "@mui/material"
-import { makeStyles } from "./makeStyles"
 import ErrorIcon from "@mui/icons-material/Error"
 import ReplayIcon from "@mui/icons-material/Replay"
+import { IconButton } from "@mui/material"
+import * as React from "react"
+import { makeStyles } from "./makeStyles"
 
 type Props = {
   error?: any

@@ -47,20 +47,19 @@ export default function NodeNavigator({ className, modes }: Props) {
   const defaultModeId = Object.keys(modes)[0]
   const mode = modes[modeId] || modes[defaultModeId]
 
-  const {
-    graph,
-    graphWorker,
-    pinned,
-    togglePinned,
-    setActiveNodeId,
-    openNodeChain,
-  } = useTreeContext()
+  const { graph, graphWorker, pinned, setActiveNodeId, openNodeChain } =
+    useTreeContext()
 
   const nodesPromise = useMemo(() => mode.getItems(), [mode])
 
   const { value: nodes, loading, error } = useStablePromise(nodesPromise)
   // mode that was defined for the last returned items (so that getItemNode operates on correct set of nodes)
-  const nodesMode = useMemo(() => mode, [nodes])
+  const nodesMode = useMemo(
+    () => mode,
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nodes]
+  )
   const { getItemNode = (_, item) => item } = nodesMode
 
   return (
