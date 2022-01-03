@@ -1,10 +1,35 @@
 {
-  "runtime~main.js": "/webpack-chopshop/static/js/runtime~main.ae8c253c.js",
-  "runtime~main.js.map": "/webpack-chopshop/static/js/runtime~main.ae8c253c.js.map",
-  "vendors.js": "/webpack-chopshop/static/js/vendors.f1ef1187.chunk.js",
-  "vendors.js.map": "/webpack-chopshop/static/js/vendors.f1ef1187.chunk.js.map",
-  "main.css": "/webpack-chopshop/static/css/main.dedf6c62.chunk.css",
-  "main.js": "/webpack-chopshop/static/js/main.a4a00359.chunk.js",
-  "main.js.map": "/webpack-chopshop/static/js/main.a4a00359.chunk.js.map",
-  "index.html": "/webpack-chopshop/index.html"
+  "files": {
+    "main.css": "/webpack-chopshop/static/css/main.8e19cb6b.css",
+    "main.js": "/webpack-chopshop/static/js/main.e00326cf.js",
+    "static/js/321.e51bae40.chunk.js": "/webpack-chopshop/static/js/321.e51bae40.chunk.js",
+    "static/js/437.c6895793.chunk.js": "/webpack-chopshop/static/js/437.c6895793.chunk.js",
+    "static/js/258.6e4d9897.chunk.js": "/webpack-chopshop/static/js/258.6e4d9897.chunk.js",
+    "static/js/647.ff74b592.chunk.js": "/webpack-chopshop/static/js/647.ff74b592.chunk.js",
+    "static/js/272.10d56604.chunk.js": "/webpack-chopshop/static/js/272.10d56604.chunk.js",
+    "static/js/763.bd7cd801.chunk.js": "/webpack-chopshop/static/js/763.bd7cd801.chunk.js",
+    "static/js/392.7197e013.chunk.js": "/webpack-chopshop/static/js/392.7197e013.chunk.js",
+    "static/js/548.0f4a087c.chunk.js": "/webpack-chopshop/static/js/548.0f4a087c.chunk.js",
+    "static/js/798.bf60c49c.chunk.js": "/webpack-chopshop/static/js/798.bf60c49c.chunk.js",
+    "static/js/825.9ecc8ef8.chunk.js": "/webpack-chopshop/static/js/825.9ecc8ef8.chunk.js",
+    "static/js/886.957899b7.chunk.js": "/webpack-chopshop/static/js/886.957899b7.chunk.js",
+    "index.html": "/webpack-chopshop/index.html",
+    "main.8e19cb6b.css.map": "/webpack-chopshop/static/css/main.8e19cb6b.css.map",
+    "main.e00326cf.js.map": "/webpack-chopshop/static/js/main.e00326cf.js.map",
+    "321.e51bae40.chunk.js.map": "/webpack-chopshop/static/js/321.e51bae40.chunk.js.map",
+    "437.c6895793.chunk.js.map": "/webpack-chopshop/static/js/437.c6895793.chunk.js.map",
+    "258.6e4d9897.chunk.js.map": "/webpack-chopshop/static/js/258.6e4d9897.chunk.js.map",
+    "647.ff74b592.chunk.js.map": "/webpack-chopshop/static/js/647.ff74b592.chunk.js.map",
+    "272.10d56604.chunk.js.map": "/webpack-chopshop/static/js/272.10d56604.chunk.js.map",
+    "763.bd7cd801.chunk.js.map": "/webpack-chopshop/static/js/763.bd7cd801.chunk.js.map",
+    "392.7197e013.chunk.js.map": "/webpack-chopshop/static/js/392.7197e013.chunk.js.map",
+    "548.0f4a087c.chunk.js.map": "/webpack-chopshop/static/js/548.0f4a087c.chunk.js.map",
+    "798.bf60c49c.chunk.js.map": "/webpack-chopshop/static/js/798.bf60c49c.chunk.js.map",
+    "825.9ecc8ef8.chunk.js.map": "/webpack-chopshop/static/js/825.9ecc8ef8.chunk.js.map",
+    "886.957899b7.chunk.js.map": "/webpack-chopshop/static/js/886.957899b7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8e19cb6b.css",
+    "static/js/main.e00326cf.js"
+  ]
 }
