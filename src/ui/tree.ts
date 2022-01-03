@@ -31,7 +31,11 @@ export function flattenTreeToRows<T>(
     result.push(row)
     if (isTreeExpanded(state, row, options)) {
       const children = getChildren(row)
-      result.push(...flattenTreeToRows(children, state, options))
+      if (children && Array.isArray(children)) {
+        result.push(...flattenTreeToRows(children, state, options))
+      } else {
+        console.warn("Non-iterable row was expanded", row)
+      }
     }
   }
   return result

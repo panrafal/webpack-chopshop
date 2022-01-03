@@ -66,8 +66,14 @@ function TreeLevel(
   }: Props,
   ref
 ) {
-  const { graph, pinned, getChildEdges, chainedNodeIds, activeNodeId } =
-    useTreeContext()
+  const {
+    graph,
+    graphWorker,
+    pinned,
+    getChildEdges,
+    chainedNodeIds,
+    activeNodeId,
+  } = useTreeContext()
   const { classes, cx } = useStyles()
 
   const {
@@ -99,23 +105,19 @@ function TreeLevel(
 
   return (
     <div className={cx(className, classes.root)} ref={ref}>
-      <LinearProgress
-        sx={{
-          position: "absolute",
-          visibility: loading ? "visible" : "hidden",
-        }}
-      />
-      {error && <ErrorBox error={error} />}
       <NodeName node={node} />
       <ElementList
         className={classes.list}
         listClassName={classes.listContainer}
         items={edges || []}
         graph={graph}
+        graphWorker={graphWorker}
         pinned={pinned}
         orderItemsBy={orderItemsBy}
         itemSize={64}
         stickyItems={stickyItems}
+        loading={loading}
+        error={error}
         renderItem={({ item, ...itemProps }) => (
           <TreeItem
             {...itemProps}

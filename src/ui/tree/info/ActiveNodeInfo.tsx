@@ -1,7 +1,16 @@
 import CenterFocusStrong from "@mui/icons-material/CenterFocusStrong"
+import Flag from "@mui/icons-material/Flag"
 import Star from "@mui/icons-material/Star"
 import StarBorder from "@mui/icons-material/StarBorder"
-import { Box, IconButton, Paper, Tooltip, Typography } from "@mui/material"
+import CropFree from "@mui/icons-material/CropFree"
+import {
+  Box,
+  Chip,
+  IconButton,
+  Paper,
+  Tooltip,
+  Typography,
+} from "@mui/material"
 import { startCase } from "lodash"
 import { currentGraphFilter } from "../../../analysis/filters"
 import { resolveNode } from "../../../analysis/graph"
@@ -11,6 +20,7 @@ import NodeSize from "../../nodes/NodeSize"
 import PromisedValue from "../../PromisedValue"
 import { useTreeContext } from "../TreeContext"
 import GroupSizesInfo from "./GroupSizesInfo"
+import EmptyBox from "../../EmptyBox"
 
 type Props = {
   className?: string
@@ -50,6 +60,7 @@ export default function ActiveNodeInfo({ className }: Props) {
     openNodeChain,
     pinned,
     togglePinned,
+    setActiveNodeId,
   } = useTreeContext()
   const node = resolveNode(graph, activeNodeId)
   const isPinned = pinned.includes(node?.id)
@@ -65,6 +76,11 @@ export default function ActiveNodeInfo({ className }: Props) {
             <Tooltip title="Navigate to this module">
               <IconButton onClick={() => openNodeChain([node])}>
                 <CenterFocusStrong />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Deactivate">
+              <IconButton onClick={() => setActiveNodeId(null)}>
+                <CropFree />
               </IconButton>
             </Tooltip>
             <IconButton onClick={() => togglePinned({ id: node.id })}>
@@ -114,7 +130,10 @@ export default function ActiveNodeInfo({ className }: Props) {
           <GroupSizesInfo node={node} />
         </>
       ) : (
-        "..."
+        <EmptyBox>
+          Select module by clicking a <Flag fontSize="inherit" /> on an import
+          or clicking an item in the tree below while holding <b>[shift]</b>
+        </EmptyBox>
       )}
     </Paper>
   )

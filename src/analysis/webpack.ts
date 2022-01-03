@@ -12,7 +12,7 @@ export async function readWebpackStats(
   const debug = false
   const graph = createGraph()
 
-  const includeChunks = true
+  const includeChunks = false
   const includeAssets = false
 
   const { chunks = [], assets = [], modules = [] } = stats
@@ -158,12 +158,23 @@ export async function readWebpackStats(
         reason.moduleIdentifier && moduleMap.get(reason.moduleIdentifier)
       const async =
         isEntry || (type.includes("import()") && !type.includes("eager"))
+
+      let asyncIds
+      if (async) {
+        asyncIds = module.chunks.flatMap((chunkId) => {
+          const chunk = chunks.find((ch) => ch.id === chunkId)
+          if (!chunk) return []
+          return [chunk.id, ...chunk.names, ...chunk.files]
+        })
+      }
+
       addEdge(graph, {
         fromId: fromNode.id,
         toId: node.id,
         kind: type,
         name: isEntry ? node.name : reason.userRequest,
         async,
+        asyncIds,
         enabled: !async,
         fromLoc: reason.loc,
         fromSource: getSourceLocation(fromModule?.source, reason.loc),

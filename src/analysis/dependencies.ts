@@ -235,13 +235,16 @@ export function getEnabledParentEdges(
 ): Promise<ReadonlyArray<GraphEdgeID>> {
   const key = `getEnabledParentEdges:${node.id}:${getFilterKey(filter)}`
   if (!graph.cache[key]) {
-    graph.cache[key] = getDeepNodeChildren(graph, graph.root, filter).then(
-      (nodes) => {
-        return node.parents
-          .filter((edge) => nodes.includes(edge.fromId))
-          .map((edge) => edge.id)
-      }
-    )
+    const visited = {}
+    graph.cache[key] = collectEdges(graph, graph.root, {
+      visited,
+      direction: "children",
+      filter,
+    }).then(() => {
+      return node.parents
+        .filter((edge) => edge.enabled && edge.id in visited)
+        .map((edge) => edge.id)
+    })
   }
   return graph.cache[key]
 }

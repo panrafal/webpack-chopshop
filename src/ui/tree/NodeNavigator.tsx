@@ -54,8 +54,14 @@ export default function NodeNavigator({ className, modes }: Props) {
   const defaultModeId = Object.keys(modes)[0]
   const mode = modes[modeId] || modes[defaultModeId]
 
-  const { graph, pinned, togglePinned, setActiveNodeId, openNodeChain } =
-    useTreeContext()
+  const {
+    graph,
+    graphWorker,
+    pinned,
+    togglePinned,
+    setActiveNodeId,
+    openNodeChain,
+  } = useTreeContext()
 
   const nodesPromise = useMemo(() => mode.getItems(), [mode])
 
@@ -87,22 +93,19 @@ export default function NodeNavigator({ className, modes }: Props) {
           ))}
         </Select>
       </FormControl>
-      {
-        <LinearProgress
-          style={{ visibility: loading ? "visible" : "hidden" }}
-        />
-      }
-      {error && <ErrorBox error={error} />}
       {nodes && (
         <ElementList
           className={classes.list}
           items={nodes}
           getNode={getItemNode}
           graph={graph}
+          graphWorker={graphWorker}
           pinned={pinned}
           groupItemsBy="package"
           orderItemsBy={undefined}
           orderGroupsBy={[["size"], ["desc"]]}
+          loading={loading}
+          error={error}
           renderItem={({ item, ...itemProps }) => {
             const node = getItemNode(graph, item)
             return (

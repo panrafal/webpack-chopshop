@@ -1,5 +1,12 @@
+import ScaleIcon from "@mui/icons-material/Scale"
 import ClearIcon from "@mui/icons-material/Clear"
-import { IconButton, Input, InputAdornment } from "@mui/material"
+import {
+  IconButton,
+  Input,
+  InputAdornment,
+  LinearProgress,
+  Tooltip,
+} from "@mui/material"
 import { groupBy, map, orderBy, sortBy, sumBy, uniq, without } from "lodash"
 import {
   Fragment,
@@ -11,9 +18,13 @@ import {
   useState,
 } from "react"
 import { useVirtual } from "react-virtual"
+import { currentGraphFilter } from "../../analysis/filters"
 import { getNode, Graph, GraphNode, GraphNodeID } from "../../analysis/graph"
 import { getPackageName } from "../../analysis/info"
 import { searchItems } from "../../analysis/search"
+import { GraphWorkerClient } from "../../analysis/worker/GraphWorkerClient"
+import ErrorBox from "../ErrorBox"
+import { useStablePromise } from "../hooks/promises"
 import { makeStyles } from "../makeStyles"
 import {
   flattenTreeToRows,
@@ -44,6 +55,7 @@ export type OrderBySpec = [
 
 export type ElementListProps<T> = {
   graph: Graph
+  graphWorker: GraphWorkerClient
   items: ReadonlyArray<T>
   stickyItems?: ReadonlyArray<T>
   itemSize?: number
@@ -58,6 +70,8 @@ export type ElementListProps<T> = {
   className?: string
   listClassName?: string
   children?: ReactNode
+  loading?: boolean
+  error?: any
 }
 
 function isGroup(item: any): item is GroupElement {
@@ -92,7 +106,7 @@ type Group<T> = {
   group: true
 }
 
-const treeOptions = { getKey: (group) => group.name }
+const treeOptions = { getKey: (group) => isGroup(group) && group.name }
 
 function getNodeFromElement(graph: Graph, element: any): GraphNode {
   if ("toId" in element) {
@@ -114,25 +128,69 @@ function ElementList<T>({
   stickyItems = [],
   getNode = getNodeFromElement,
   graph,
+  graphWorker,
   pinned,
   orderItemsBy,
   groupItemsBy,
   orderGroupsBy,
+  loading,
+  error,
   children,
 }: ElementListProps<T>) {
   const { classes, cx } = useStyles()
   const [search, setSearch] = useState("")
   const [treeState, setTreeState] = useState<TreeState>({ expanded: [] })
+  const [useTreeSize, setUseTreeSize] = useState(false)
+
+  const isSearching = !!search
+  const isGrouping = !isSearching && groupItemsBy
+
+  const {
+    value: preppedItems = items,
+    loading: prepLoading,
+    error: prepError,
+  } = useStablePromise(
+    useMemo(() => {
+      // update `treeSize` in nodes, so items can be properly sorted when searching
+      if (useTreeSize) {
+        return Promise.all(
+          items.map(async (item) => {
+            const node = getNode(graph, item)
+            node.treeSize = await graphWorker.calculateTreeSizeRetainedByNode(
+              graph.root,
+              node,
+              currentGraphFilter
+            )
+            return item
+          })
+        )
+      }
+      return items
+    }, [getNode, graph, graphWorker, useTreeSize, items])
+  )
 
   const filteredItems = useMemo<ReadonlyArray<T>>(() => {
     const searchedItems = search
-      ? searchItems(graph, items, search, getNode)
-      : items
+      ? searchItems(graph, preppedItems, search, getNode)
+      : preppedItems
+    if (useTreeSize && !isGrouping) {
+      return orderBy(searchedItems, (item) => getNode(graph, item).treeSize, [
+        "desc",
+      ])
+    }
     if (orderItemsBy && !search) {
       return orderBy(searchedItems, ...orderItemsBy)
     }
     return searchedItems
-  }, [search, graph, items, getNode, orderItemsBy])
+  }, [
+    search,
+    graph,
+    preppedItems,
+    getNode,
+    useTreeSize,
+    isGrouping,
+    orderItemsBy,
+  ])
 
   const pinnedItems = useMemo<ReadonlyArray<T>>(
     () =>
@@ -142,7 +200,7 @@ function ElementList<T>({
 
   const listItems = useMemo(() => {
     let rows: Array<Group<T> | T>
-    if (!search && groupItemsBy === "package") {
+    if (isGrouping && groupItemsBy === "package") {
       const groups = groupBy(filteredItems, (item) => {
         const node = getNode(graph, item)
         if (node.kind === "module") {
@@ -153,7 +211,13 @@ function ElementList<T>({
       rows = map(groups, (children, name) => ({
         name,
         children: sortBy(children, (item) => getNode(graph, item).file),
-        size: sumBy(children, (item) => getNode(graph, item).size),
+        size: sumBy(
+          children,
+          (item) =>
+            (useTreeSize
+              ? getNode(graph, item).treeSize
+              : getNode(graph, item).size) || 0
+        ),
         group: true,
       }))
       rows = orderBy(rows, ...orderGroupsBy)
@@ -163,7 +227,7 @@ function ElementList<T>({
     rows.unshift(...pinnedItems)
     return flattenTreeToRows(rows, treeState, treeOptions)
   }, [
-    search,
+    isGrouping,
     groupItemsBy,
     pinnedItems,
     treeState,
@@ -171,6 +235,7 @@ function ElementList<T>({
     orderGroupsBy,
     getNode,
     graph,
+    useTreeSize,
   ])
 
   const stickyGroupHeaders = useMemo(() => {
@@ -208,8 +273,7 @@ function ElementList<T>({
       return renderItem({
         item: item as Exclude<T, Group<T>>,
         key: String(index),
-        hidePackage:
-          Boolean(groupItemsBy && !search) && index >= pinnedItems.length,
+        hidePackage: isGrouping && index >= pinnedItems.length,
         style,
       })
     }
@@ -229,6 +293,7 @@ function ElementList<T>({
             width: "100%",
             height: itemSize,
             position: "sticky",
+            zIndex: 1,
           },
         })}
       </Fragment>
@@ -251,21 +316,40 @@ function ElementList<T>({
         value={search}
         onChange={(el) => setSearch(el.target.value)}
         endAdornment={
-          search && (
-            <InputAdornment position="end">
+          <InputAdornment position="end">
+            {search && (
               <IconButton
                 color="inherit"
                 aria-label="Clear search"
                 onClick={() => setSearch("")}
-                size="large"
+                size="small"
               >
-                <ClearIcon color="inherit" />
+                <ClearIcon fontSize="small" color="inherit" />
               </IconButton>
-            </InputAdornment>
-          )
+            )}
+            <Tooltip title="Sort by retained size">
+              <IconButton
+                size="small"
+                onClick={() => setUseTreeSize(!useTreeSize)}
+              >
+                <ScaleIcon
+                  fontSize="small"
+                  color={useTreeSize ? "primary" : "disabled"}
+                />
+              </IconButton>
+            </Tooltip>
+          </InputAdornment>
         }
         placeholder="Search"
       />
+      <LinearProgress
+        sx={{
+          visibility: loading || prepLoading ? "visible" : "hidden",
+          width: "100%",
+        }}
+      />
+      {error || (prepError && <ErrorBox error={error || prepError} />)}
+
       <div className={cx(classes.listContainer, listClassName)} ref={parentRef}>
         <div style={{ height: 0 }}>
           <div className={cx(classes.list)} style={{ height: totalSize }}>

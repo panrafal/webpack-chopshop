@@ -95,7 +95,13 @@ function TreePage({
               graphWorker
                 .getAsyncEdges(node, stopOnAsyncModulesFilter)
                 .then((ids) => getEdges(graph, ids)),
-            renderEmptyChildren: () => "There are no deeper split points",
+            renderEmptyChildren: () => (
+              <span>
+                There are no deeper split points
+                <br />
+                Go to "Modules" tab to browse modules
+              </span>
+            ),
             navigatorModes: {
               all: {
                 getItems: () =>
@@ -429,7 +435,10 @@ function TreePage({
           setOpenedNodeIds(normalizePath(newOpenedNodeIds))
         }
         scrollToTreeIndex(
-          Math.min(prefixedNodeIds.length, newOpenedNodeIds.length) - 1
+          Math.min(
+            normalizePath(prefixedNodeIds).length,
+            normalizePath(newOpenedNodeIds).length
+          ) - 1
         )
       }
       trackLoading(run())

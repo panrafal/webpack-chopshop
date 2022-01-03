@@ -7,7 +7,7 @@ import {
   resolveEdge,
 } from "./graph"
 
-import { reject, pick, omit } from "lodash"
+import { reject, pick, omit, omitBy } from "lodash"
 import { toggleEdge, addEdge, resolveEdgeForNodes } from "./graph"
 import { nullFormat } from "numeral"
 
@@ -53,6 +53,16 @@ export function addEdgeToggleChange(
     return { ...changes, edgeToggles: omit(changes.edgeToggles, [edge.id]) }
   }
   return changes
+}
+
+export function resetEdgeToggles(changes: Changes, async: boolean): Changes {
+  return {
+    // async edges are enabled, sync edges are disabled - so we can just remove either one or the other
+    edgeToggles: omitBy(
+      changes.edgeToggles || {},
+      (enabled) => enabled === async
+    ),
+  }
 }
 
 export function revertGraph(graph: Graph) {

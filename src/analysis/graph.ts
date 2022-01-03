@@ -18,6 +18,8 @@ export type GraphEdgeSpec = {
   toId: GraphNodeID
   kind: EdgeKind
   async?: boolean
+  // IDs related to an async edge being loaded - eg. ID or asset of an async chunk
+  asyncIds?: string[]
   enabled?: boolean
   fromSource?: string
   // Location in source code

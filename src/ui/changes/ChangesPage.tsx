@@ -1,3 +1,4 @@
+import Delete from "@mui/icons-material/Delete"
 import {
   Button,
   Icon,
@@ -8,16 +9,11 @@ import {
   ListItemText,
   Toolbar,
 } from "@mui/material"
-import { omit, without } from "lodash"
+import { omit } from "lodash"
 import * as React from "react"
 import { CopyToClipboard } from "react-copy-to-clipboard"
-import {
-  addEdgeToggleChange,
-  Changes,
-  hasChanges,
-} from "../../analysis/changes"
-import { Graph, GraphNodeID, resolveEdge } from "../../analysis/graph"
-import { getNode, resolveEdgeForNodes } from "../../analysis/graph"
+import { Changes, hasChanges, resetEdgeToggles } from "../../analysis/changes"
+import { getNode, Graph, GraphNodeID, resolveEdge } from "../../analysis/graph"
 import { UpdateChangesFn } from "../../logic/useGraphState"
 import {
   decodeUrlStateHash,
@@ -90,7 +86,7 @@ export default function ChangesPage({
                   }
                   size="large"
                 >
-                  <Icon>delete</Icon>
+                  <Delete />
                 </IconButton>
                 <ListItemText
                   primary={
@@ -117,7 +113,11 @@ export default function ChangesPage({
         )}
       </List>
       <Toolbar>
-        <Button onClick={() => updateChanges((changes) => ({}))}>
+        <Button
+          onClick={() =>
+            updateChanges((changes) => resetEdgeToggles(changes, false))
+          }
+        >
           Reset changes
         </Button>
         {textsToCopy.length > 0 ? (
