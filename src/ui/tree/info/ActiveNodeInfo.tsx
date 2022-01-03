@@ -1,26 +1,19 @@
 import CenterFocusStrong from "@mui/icons-material/CenterFocusStrong"
+import CropFree from "@mui/icons-material/CropFree"
 import Flag from "@mui/icons-material/Flag"
 import Star from "@mui/icons-material/Star"
 import StarBorder from "@mui/icons-material/StarBorder"
-import CropFree from "@mui/icons-material/CropFree"
-import {
-  Box,
-  Chip,
-  IconButton,
-  Paper,
-  Tooltip,
-  Typography,
-} from "@mui/material"
+import { Box, IconButton, Paper, Tooltip, Typography } from "@mui/material"
 import { startCase } from "lodash"
 import { currentGraphFilter } from "../../../analysis/filters"
 import { resolveNode } from "../../../analysis/graph"
+import EmptyBox from "../../EmptyBox"
 import { makeStyles } from "../../makeStyles"
 import NodeName from "../../nodes/NodeName"
 import NodeSize from "../../nodes/NodeSize"
 import PromisedValue from "../../PromisedValue"
 import { useTreeContext } from "../TreeContext"
 import GroupSizesInfo from "./GroupSizesInfo"
-import EmptyBox from "../../EmptyBox"
 
 type Props = {
   className?: string

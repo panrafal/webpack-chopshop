@@ -1,10 +1,12 @@
 import * as React from "react"
-import { Icon } from "@mui/material"
+import { Icon, IconButton } from "@mui/material"
 import { makeStyles } from "./makeStyles"
 import ErrorIcon from "@mui/icons-material/Error"
+import ReplayIcon from "@mui/icons-material/Replay"
 
 type Props = {
   error?: any
+  resetErrorBoundary?: () => void
   children?: React.ReactNode
 }
 
@@ -23,7 +25,7 @@ const useStyles = makeStyles({ name: "ErrorBox" })((theme) => ({
   },
 }))
 
-const ErrorBox = ({ error, children }: Props) => {
+const ErrorBox = ({ error, resetErrorBoundary, children }: Props) => {
   const { classes } = useStyles()
   if (children === undefined) children = String(error)
   return (
@@ -32,6 +34,11 @@ const ErrorBox = ({ error, children }: Props) => {
       <span>
         {React.isValidElement(children) ? children : String(children)}
       </span>
+      {resetErrorBoundary && (
+        <IconButton onClick={() => resetErrorBoundary()}>
+          <ReplayIcon />
+        </IconButton>
+      )}
     </span>
   )
 }

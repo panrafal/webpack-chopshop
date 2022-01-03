@@ -1,15 +1,8 @@
 import BlockIcon from "@mui/icons-material/Block"
-import {
-  FormControl,
-  InputLabel,
-  LinearProgress,
-  MenuItem,
-  Select,
-} from "@mui/material"
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 import { MouseEvent, useMemo, useState } from "react"
 import { Graph, GraphNode } from "../../analysis/graph"
 import EmptyBox from "../EmptyBox"
-import ErrorBox from "../ErrorBox"
 import { useStablePromise } from "../hooks/promises"
 import { makeStyles } from "../makeStyles"
 import ElementList, { ElementListProps, RenderItemProps } from "./ElementList"

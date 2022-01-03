@@ -145,7 +145,7 @@ function ElementList<T>({
   const isSearching = !!search
   const isGrouping = !isSearching && groupItemsBy
 
-  const {
+  let {
     value: preppedItems = items,
     loading: prepLoading,
     error: prepError,
@@ -168,6 +168,8 @@ function ElementList<T>({
       return items
     }, [getNode, graph, graphWorker, useTreeSize, items])
   )
+  // while loading, we should fallback to unprepped items - otherwise we may keep reference to item list with a different format
+  if (prepLoading) preppedItems = items
 
   const filteredItems = useMemo<ReadonlyArray<T>>(() => {
     const searchedItems = search

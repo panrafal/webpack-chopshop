@@ -103,17 +103,6 @@ function TreePage({
               </span>
             ),
             navigatorModes: {
-              all: {
-                getItems: () =>
-                  graphWorker
-                    .getAsyncEdges(graph.root)
-                    .then((ids) => getEdges(graph, ids))
-                    .then((edges) =>
-                      uniq(edges.map((edge) => getNode(graph, edge.toId)))
-                    ),
-                renderTitle: () => "All Split Points",
-                renderEmpty: () => "Nothing found",
-              },
               children: {
                 getItems: () =>
                   graphWorker
@@ -130,6 +119,17 @@ function TreePage({
                 renderTitle: () => "Child Split Points",
                 renderEmpty: () => "Nothing found",
               },
+              all: {
+                getItems: () =>
+                  graphWorker
+                    .getAsyncEdges(graph.root)
+                    .then((ids) => getEdges(graph, ids))
+                    .then((edges) =>
+                      uniq(edges.map((edge) => getNode(graph, edge.toId)))
+                    ),
+                renderTitle: () => "All Split Points",
+                renderEmpty: () => "Nothing found",
+              },
             } as NavigatorModes,
           }
 
@@ -139,14 +139,6 @@ function TreePage({
             normalizePath: (path: GraphNodeID[]) => path,
             getChildEdges: (node: GraphNode) => node.children,
             navigatorModes: {
-              enabled: {
-                getItems: () =>
-                  graphWorker
-                    .getDeepNodeChildren(graph.root, currentGraphFilter)
-                    .then((ids) => getNodes(graph, ids)),
-                renderTitle: () => "All Enabled Modules",
-                renderEmpty: () => "Nothing found",
-              },
               children: {
                 getItems: () =>
                   graphWorker
@@ -158,7 +150,7 @@ function TreePage({
                       currentGraphFilter
                     )
                     .then((ids) => getNodes(graph, ids)),
-                renderTitle: () => "Enabled Children",
+                renderTitle: () => "Loaded Child Modules",
                 renderEmpty: () => "Nothing found",
               },
               retainedByNode: {
@@ -173,7 +165,7 @@ function TreePage({
                       currentGraphFilter
                     )
                     .then((ids) => getNodes(graph, ids)),
-                renderTitle: () => "Retained Modules",
+                renderTitle: () => "Retained Child Modules",
                 renderEmpty: () => "Nothing found",
               },
               parents: {
@@ -191,7 +183,15 @@ function TreePage({
                   if (event.shiftKey) setActiveNodeId(edge.fromId)
                   openNodeChain(getNodes(graph, [edge.fromId, edge.toId]))
                 },
-                renderTitle: () => "Parents",
+                renderTitle: () => "Enabled Parent Modules",
+                renderEmpty: () => "Nothing found",
+              },
+              enabled: {
+                getItems: () =>
+                  graphWorker
+                    .getDeepNodeChildren(graph.root, currentGraphFilter)
+                    .then((ids) => getNodes(graph, ids)),
+                renderTitle: () => "All Loaded Modules",
                 renderEmpty: () => "Nothing found",
               },
               all: {

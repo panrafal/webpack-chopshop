@@ -1,16 +1,13 @@
 import AutoFixHigh from "@mui/icons-material/AutoFixHigh"
-import DoneAll from "@mui/icons-material/DoneAll"
 import Clear from "@mui/icons-material/Clear"
-import {
-  Box,
-  Dialog,
-  IconButton,
-  Paper,
-  Tooltip,
-  Typography,
-} from "@mui/material"
+import DoneAll from "@mui/icons-material/DoneAll"
+import { Box, IconButton, Paper, Tooltip, Typography } from "@mui/material"
 import numeral from "numeral"
 import { useMemo, useState } from "react"
+import {
+  addEdgeToggleChange,
+  resetEdgeToggles,
+} from "../../../analysis/changes"
 import {
   allAsyncAndEnabledFilter,
   baseGraphFilter,
@@ -21,10 +18,6 @@ import { makeStyles } from "../../makeStyles"
 import PromisedValue from "../../PromisedValue"
 import { useTreeContext } from "../TreeContext"
 import GroupSizesInfo from "./GroupSizesInfo"
-import {
-  addEdgeToggleChange,
-  resetEdgeToggles,
-} from "../../../analysis/changes"
 import LoadoutDialog from "./LoadoutDialog"
 
 type Props = {
